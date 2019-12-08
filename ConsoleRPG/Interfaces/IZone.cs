@@ -5,8 +5,8 @@ using System.Text;
 
 namespace ConsoleRPG.Interfaces
 {
-    interface IZone : INameable
+    interface IZone : INameable,ITierable
     {
-        Tiers Tier { get; }
+
     }
 }
