@@ -6,6 +6,6 @@ namespace ConsoleRPG.Interfaces
 {
     interface INameable
     {
-        string Name { get; }
+        public string Name { get; }
     }
 }
