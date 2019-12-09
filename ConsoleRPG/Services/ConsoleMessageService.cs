@@ -9,7 +9,8 @@ namespace ConsoleRPG.Services
 {
     public class ConsoleMessageService : IMessageService
     {
-        public Action<Message> ShowMessageAction { get; set; } = Console.WriteLine;
+        public Action<string> ShowMessageAction { get; set; } = Console.WriteLine;
+        public Action ClearTextAction { get; set; } = Console.Clear;
         public Func<string> ReadInputAction { get; set; } = Console.ReadLine;
 
         public void ShowMessage(Message message)
@@ -17,7 +18,7 @@ namespace ConsoleRPG.Services
             Console.ForegroundColor = message.Type == MessageType.Info
                 ? ConsoleColor.Cyan
                 : (message.Type == MessageType.Warning ? ConsoleColor.Yellow : ConsoleColor.Red);
-            ShowMessageAction.Invoke(message);
+            ShowMessageAction.Invoke(message.Text);
         }
 
         public void ShowMessage(string messageText, MessageType type)
@@ -25,12 +26,17 @@ namespace ConsoleRPG.Services
             Console.ForegroundColor = type == MessageType.Info
                 ? ConsoleColor.Cyan
                 : (type == MessageType.Warning ? ConsoleColor.Yellow : ConsoleColor.Red);
-            ShowMessageAction.Invoke(new Message(messageText, type));
+            ShowMessageAction.Invoke(new Message(messageText, type).Text);
         }
 
         public string ReadPlayerInput()
         {
             return ReadInputAction();
+        }
+
+        public void ClearTextField()
+        {
+            ClearTextAction.Invoke();
         }
     }
 }

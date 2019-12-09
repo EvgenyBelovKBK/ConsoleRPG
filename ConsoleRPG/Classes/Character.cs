@@ -29,11 +29,10 @@ namespace ConsoleRPG.Classes
         {
             foreach (var item in items)
             {
-                Stats["HP"] += item.Stats["HP"];
-                Stats["Damage"] += item.Stats["Damage"];
-                Stats["Armor"] += item.Stats["Armor"];
-                Stats["Lifesteal"] += item.Stats["Lifesteal"];
-                Stats["CritChance"] += item.Stats["CritChance"];
+                foreach (var stat in item.Stats)
+                {
+                    Stats[stat.Key] = stat.Value;
+                }
             }
         }
     }

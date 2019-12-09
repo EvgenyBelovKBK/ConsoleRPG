@@ -8,11 +8,19 @@ namespace ConsoleRPG.Classes
 {
     public class Player : Character
     {
-        public Level CurrentLevel { get; set; }
+        private Level mCurrentLevel;
+        public Level CurrentLevel
+        {
+            get { return mCurrentLevel; }
+            set
+            {
+                mCurrentLevel = value;
+                mCurrentLevel.Generate();
+            }
+        }
 
         public Player(ObservableCollection<Item> items, int gold, string name, int hp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(items, gold, name, hp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
-            CurrentLevel = Level.Levels.First();
         }
     }
 }

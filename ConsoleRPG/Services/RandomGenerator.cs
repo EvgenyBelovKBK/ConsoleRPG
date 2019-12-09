@@ -52,8 +52,13 @@ namespace ConsoleRPG.Services
             foreach (var currentTier in itemsTiersCount)
             {
                 var currentTierList = thingsEnumerable.Where(x => x.Tier == currentTier.Key).ToArray();
-                var minIndex = Array.IndexOf(currentTierList, currentTierList.First());
-                var maxIndex = Array.IndexOf(currentTierList, currentTierList.Last());
+                var minIndex = 0;
+                var maxIndex = 0;
+                if (currentTierList.Length > 0)
+                {
+                    minIndex = Array.IndexOf(currentTierList, currentTierList.First());
+                    maxIndex = Array.IndexOf(currentTierList, currentTierList.Last());
+                }
                 var indexes = new List<int>();
                 for (int i = 0; i < currentTier.Value; i++)
                 {

@@ -1,6 +1,7 @@
 ﻿using ConsoleRPG.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ConsoleRPG.Classes
@@ -12,7 +13,7 @@ namespace ConsoleRPG.Classes
         public const int LevelCount = 10;
         public List<Level> Levels { get; }
         public Tiers Tier { get; set; }
-        public static IEnumerable<Campaign> Campaigns { get; }
+        
 
         public Campaign(Tiers tier, string name, List<Level> levels)
         {
@@ -20,14 +21,5 @@ namespace ConsoleRPG.Classes
             Name = name;
             Levels = levels;
         }
-        //TODO: Generate campaigns
-        //public static IEnumerable<Campaign> FillCampaigns()
-        //{
-        //    var campaigns = new List<Campaign>()
-        //    {
-        //        new Campaign(Tiers.Tier1,"The Forests of Alakyr",)
-        //    };
-        //}
-
     }
 }

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ConsoleRPG.Constants;
+using ConsoleRPG.Enums;
+using ConsoleRPG.Interfaces;
 
 namespace ConsoleRPG.Classes
 {
     public class Level
     {
+        public static IMessageService mMessageService;
         public int Number { get; }
         public string CampaignName { get;}
         public List<Enemy> Enemies { get; set; }
-        public static IEnumerable<Level> Levels { get; }
 
         public Level(int number, string campaignName, List<Enemy> enemies)
         {
@@ -18,13 +21,13 @@ namespace ConsoleRPG.Classes
             Enemies = enemies;
         }
 
-        //TODO: Generate random levels
-        //public static IEnumerable<Level> FillLevels()
-        //{
-        //    var levels = new List<Level>()
-        //    {
-        //        new Level(0,"The Forests of Alakyr",),
-        //    };
-        //}
+        public void Generate()
+        {
+            foreach (var enemy in Enemies)
+            {
+                mMessageService.ShowMessage(enemy.AsciiArt,MessageType.Info);
+            }
+        }
+
     }
 }
