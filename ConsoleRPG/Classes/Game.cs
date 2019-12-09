@@ -22,6 +22,8 @@ namespace ConsoleRPG.Classes
         }
         public void MoveToNextLevel(Player player)
         {
+            mMessageService.ClearTextField();
+            ShowConsolePlayerUi(player);
             bool enterShop;
             var level = player.CurrentLevel.Number;
             if (level != 0)
@@ -38,6 +40,7 @@ namespace ConsoleRPG.Classes
                 }
                 else
                     enterShop = true;
+
                 if (enterShop)
                 {
                     var shopNumber = level != 0
@@ -52,6 +55,23 @@ namespace ConsoleRPG.Classes
             }
 
             player.CurrentLevel = Program._levels.ToArray()[level + 1];
+        }
+
+        public static void ShowConsolePlayerUi(Player player)
+        {
+            mMessageService.ShowMessage($"Золото:{player.Gold}",MessageType.Info);
+            mMessageService.ShowMessage($"Инвентарь:",MessageType.Info);
+            for (int i = 0; i < player.Items.Count; i++)
+            {
+                var playerItem = player.Items[i];
+                mMessageService.ShowMessage($"{i+1}){playerItem.Name}",MessageType.Info);
+                foreach (var stat in playerItem.Stats.Where(x => x.Value != 0))
+                {
+                    mMessageService.ShowMessage($"{stat.Key}:{stat.Value},",MessageType.Info);
+                }
+            }
+            mMessageService.ShowMessage($"Характеристики:", MessageType.Info);
+            Statistics.ShowConsoleBoxedStats(player.Stats);
         }
     }
 }

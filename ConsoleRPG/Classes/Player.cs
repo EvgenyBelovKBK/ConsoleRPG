@@ -22,5 +22,6 @@ namespace ConsoleRPG.Classes
         public Player(ObservableCollection<Item> items, int gold, string name, int hp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(items, gold, name, hp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
         }
+
     }
 }

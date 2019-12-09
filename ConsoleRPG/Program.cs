@@ -33,6 +33,8 @@ namespace ConsoleRPG
             Level.mMessageService = messageService;
             Shop.mMessageService = messageService;
             var player = CreateCharacter();
+            messageService.ShowMessage("В путь!", MessageType.Info);
+            Thread.Sleep(1500);
             messageService.ClearTextField();
             while (true)
             {
@@ -52,13 +54,14 @@ namespace ConsoleRPG
             messageService.ShowMessage("Например можно создать персонажа так - 7 урона/3 брони(10) и 70 здоровья/20 шанса крит. удара/20 процентов вампиризма(110)", MessageType.Info);
             Thread.Sleep(sleepTime + 5000);
             messageService.ClearTextField();
+            Changing:
             messageService.ShowMessage("Введите показатели урона и брони(например так - 7 3)", MessageType.Info);
             var dmgAndArmor = messageService.ReadInputAction().Split().Select(int.Parse).ToArray();
             var isValidDmgAndArmor = CheckIfValidStats(dmgAndArmor, 10);
 
             while (!isValidDmgAndArmor)
             {
-                messageService.ShowMessage("Не хитрите,сумма брони и урона больше 10 быть не может(вы же не хотите пройти игру за минуту?)", MessageType.Error);
+                messageService.ShowMessage("Сумма брони и урона больше 10 быть не может", MessageType.Error);
                 Thread.Sleep(sleepTime);
                 messageService.ClearTextField();
                 messageService.ShowMessage("Введите показатели урона и брони(например так - 7 3)", MessageType.Info);
@@ -75,7 +78,7 @@ namespace ConsoleRPG
 
             while (!isValidOtherStats)
             {
-                messageService.ShowMessage("Не хитрите,сумма здоровья,шанса крит. удара и вампиризма больше 110 быть не может(вы же не хотите пройти игру за минуту?)", MessageType.Error);
+                messageService.ShowMessage("Сумма здоровья,шанса крит. удара и вампиризма больше 110 быть не может", MessageType.Error);
                 Thread.Sleep(sleepTime);
                 messageService.ClearTextField();
                 messageService.ShowMessage("Введите показатели здоровья,шанса крид. удара и вампиризма(например так - 70 20 20)", MessageType.Info);
@@ -84,10 +87,15 @@ namespace ConsoleRPG
             }
 
             messageService.ShowMessage("Интересная тактика!", MessageType.Info);
-            messageService.ShowMessage("В путь!", MessageType.Info);
-            return new Player(items: new ObservableCollection<Item>(), gold: 13, name: "Test", hp: otherStats[0], damage: dmgAndArmor[0],
+            var player = new Player(items: new ObservableCollection<Item>(), gold: 13, name: "Test", hp: otherStats[0], damage: dmgAndArmor[0],
                     armor: dmgAndArmor[1], lifestealPercent: otherStats[2], criticalStrikeChance: otherStats[1])
                 { CurrentLevel = _levels.First() };
+            Statistics.ShowConsoleBoxedStats(player.Stats);
+            messageService.ShowMessage("Вы уверены в своем выборе?(да/нет)", MessageType.Error);
+            var isSure = messageService.ReadPlayerInput() == "да";
+            if (!isSure)
+                goto Changing;
+            return player;
         }
 
         static bool CheckIfValidStats(int[] stats, int maxNumber)

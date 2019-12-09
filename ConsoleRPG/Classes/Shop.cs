@@ -60,15 +60,19 @@ namespace ConsoleRPG.Classes
 
         public bool Enter(Shop shop,Player player)
         {
-            mMessageService.ShowMessage($"Добро пожаловать в {Name},чтобы купить или продать предметы введите команду(b/s) и номер предмета!(b 2,s 1)",MessageType.Info);
+            mMessageService.ClearTextField();
+            mMessageService.ShowMessage($"Добро пожаловать в {Name}", MessageType.Info);
+            mMessageService.ShowMessage("чтобы купить или продать предметы введите команду(b/s) и номер предмета!(b 2,s 1)",MessageType.Info);
             mMessageService.ShowMessage($"Чтобы выйти из магазина введите q", MessageType.Info);
             var command = "";
+            Game.ShowConsolePlayerUi(player);
             ShowStock();
             while ((command = mMessageService.ReadInputAction.Invoke()) != "q")
             {
                 var isBuying = command.Contains("b");
                 var itemNumber = 0;
                 var isValidNumber = int.TryParse(command.Split(' ')[1], out itemNumber);
+                itemNumber -= 1;
                 if (!isValidNumber || (isBuying && !Stock.Contains(Stock[itemNumber])) ||
                     (!isBuying && !player.Items.Contains(player.Items[itemNumber])))
                 {
@@ -76,11 +80,14 @@ namespace ConsoleRPG.Classes
                     continue;
                 }
 
-                itemNumber -= 1;
                 if (isBuying)
                     BuyItem(Stock[itemNumber], player);
                 else
                     SellItem(player.Items[itemNumber], player);
+                mMessageService.ClearTextField();
+                mMessageService.ShowMessage("чтобы купить или продать предметы введите команду(b/s) и номер предмета!(b 2,s 1)", MessageType.Info);
+                mMessageService.ShowMessage($"Чтобы выйти из магазина введите q", MessageType.Info);
+                Game.ShowConsolePlayerUi(player);
                 ShowStock();
             }
             return true;
