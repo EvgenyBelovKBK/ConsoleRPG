@@ -8,11 +8,11 @@ using ConsoleRPG.Interfaces;
 
 namespace ConsoleRPG.Services
 {
-    public class RandomGenerator<T> : IRandomGenerator<T> where T:ITierable
+    public class ThingRandomGenerator<T> : IRandomGenerator<T> where T:ITierable
     {
         public Random Random { get; set; }
 
-        public RandomGenerator( )
+        public ThingRandomGenerator( )
         {
             Random = new Random();
         }
@@ -74,7 +74,7 @@ namespace ConsoleRPG.Services
             return items;
         }
 
-        private bool IsRolled(int chance)
+        public bool IsRolled(int chance)
         {
             return chance != 0 && GetRandomNumber() <= chance;
         }

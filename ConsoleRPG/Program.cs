@@ -17,8 +17,9 @@ namespace ConsoleRPG
     {
 
         static IMessageService messageService = new ConsoleMessageService();
-        static IRandomGenerator<Item> itemRandomGenerator = new RandomGenerator<Item>();
-        static IRandomGenerator<Enemy> enemyRandomGenerator = new RandomGenerator<Enemy>();
+        static ThingRandomGenerator<Item> itemRandomGenerator = new ThingRandomGenerator<Item>();
+        static ThingRandomGenerator<Enemy> enemyRandomGenerator = new ThingRandomGenerator<Enemy>();
+        static FightingService fightingService = new FightingService(new NumbersRandomGenerator(),new LogMessageService() );
         public static Level[] _levels = new Level[51];
         public static Campaign[] _campaigns = new Campaign[5];
         public static List<Enemy> _enemies = new List<Enemy>();
@@ -27,7 +28,7 @@ namespace ConsoleRPG
 
         static void Main(string[] args)
         {
-            var game = new Game(messageService);
+            var game = new Game(messageService,fightingService);
 
             var whenCompleted = FillGameInfo().Result;
             Level.mMessageService = messageService;

@@ -5,20 +5,41 @@ using System.Text;
 using ConsoleRPG.Constants;
 using ConsoleRPG.Enums;
 using ConsoleRPG.Interfaces;
+using ConsoleRPG.Services;
 
 namespace ConsoleRPG.Classes
 {
     public class Game
     {
         private static IMessageService mMessageService;
-        public Game(IMessageService messageService)
+
+        private static FightingService mFightingService;
+        public Game(IMessageService messageService,FightingService fightingService)
         {
             mMessageService = messageService;
+            mFightingService = fightingService;
         }
 
         public void Fight(Player player,List<Enemy> enemies)
         {
+            mMessageService.ClearTextAction();
+            mMessageService.ShowMessage("Вы вошли в битву",MessageType.Warning);
+            mMessageService.ShowMessage("Чтобы начать драку с противником введите его номер",MessageType.Info);
+            var isPlayerTurn = true;
+            while (enemies.Count > 0)
+            {
+                EnemyInput:
+                var enemyNumber = int.Parse(mMessageService.ReadPlayerInput()) - 1;
+                var isValidEnemy = enemies[enemyNumber] != null;
+                if (!isValidEnemy)
+                {
+                    mMessageService.ShowMessage("Такого противника нет!",MessageType.Error);
+                    goto EnemyInput;
+                }
 
+                isPlayerTurn = !isPlayerTurn;
+                mFightingService.CalculateFight(player,enemies[enemyNumber],isPlayerTurn);
+            }
         }
         public void MoveToNextLevel(Player player)
         {
