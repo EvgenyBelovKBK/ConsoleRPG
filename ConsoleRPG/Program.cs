@@ -91,7 +91,7 @@ namespace ConsoleRPG
             var player = new Player(items: new ObservableCollection<Item>(), gold: 13, name: "Test", hp: otherStats[0], damage: dmgAndArmor[0],
                     armor: dmgAndArmor[1], lifestealPercent: otherStats[2], criticalStrikeChance: otherStats[1])
                 { CurrentLevel = _levels.First() };
-            Statistics.ShowConsoleBoxedStats(player.Stats);
+            Game.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             messageService.ShowMessage("Вы уверены в своем выборе?(да/нет)", MessageType.Error);
             var isSure = messageService.ReadPlayerInput() == "да";
             if (!isSure)

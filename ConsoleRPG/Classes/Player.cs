@@ -15,7 +15,7 @@ namespace ConsoleRPG.Classes
             set
             {
                 mCurrentLevel = value;
-                mCurrentLevel.Generate();
+                mCurrentLevel.ShowEnemies();
             }
         }
 

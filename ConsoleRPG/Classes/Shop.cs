@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using ConsoleRPG.Constants;
 using ConsoleRPG.Enums;
 
@@ -28,11 +29,13 @@ namespace ConsoleRPG.Classes
             if (player.Items.Count == Character.InventorySpace)
             {
                 mMessageService.ShowMessage("Инвентарь полон!", MessageType.Error);
+                Thread.Sleep(1000);
                 return;
             }
             else if (player.Gold < item.Cost)
             {
                 mMessageService.ShowMessage("Не хватает денег!", MessageType.Error);
+                Thread.Sleep(1000);
                 return;
             }
 
@@ -54,7 +57,7 @@ namespace ConsoleRPG.Classes
             {
                 var item = Stock[i];
                 mMessageService.ShowMessage($"{i+1}){item.Cost} золота - {item.Name}",MessageType.Info);
-                Statistics.ShowConsoleBoxedStats(item.Stats);
+                Game.ShowConsoleBoxedInfo(item.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             }
         }
 
@@ -71,10 +74,15 @@ namespace ConsoleRPG.Classes
             {
                 var isBuying = command.Contains("b");
                 var itemNumber = 0;
+                if(command.Split().Length < 2)
+                {
+                    mMessageService.ShowMessage("Неправильный ввод", MessageType.Error);
+                    continue;
+                }
                 var isValidNumber = int.TryParse(command.Split(' ')[1], out itemNumber);
                 itemNumber -= 1;
-                if (!isValidNumber || (isBuying && !Stock.Contains(Stock[itemNumber])) ||
-                    (!isBuying && !player.Items.Contains(player.Items[itemNumber])))
+                if (!isValidNumber || (isBuying && (itemNumber < 0  || itemNumber >= shop.Stock.Count)) ||
+                    (!isBuying && (itemNumber < 0 || itemNumber >= player.Items.Count)))
                 {
                     mMessageService.ShowMessage("Предмета с таким номером не существует", MessageType.Error);
                     continue;

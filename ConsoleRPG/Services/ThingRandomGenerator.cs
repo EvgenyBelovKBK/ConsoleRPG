@@ -8,7 +8,7 @@ using ConsoleRPG.Interfaces;
 
 namespace ConsoleRPG.Services
 {
-    public class ThingRandomGenerator<T> : IRandomGenerator<T> where T:ITierable
+    public class ThingRandomGenerator<T> : IRandomGenerator where T:ITierable
     {
         public Random Random { get; set; }
 

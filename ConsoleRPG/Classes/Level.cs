@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ConsoleRPG.Constants;
 using ConsoleRPG.Enums;
@@ -21,11 +22,15 @@ namespace ConsoleRPG.Classes
             Enemies = enemies;
         }
 
-        public void Generate()
+        public void ShowEnemies()
         {
+            var i = 1;
             foreach (var enemy in Enemies)
             {
+                mMessageService.ShowMessage(i + ")" + enemy.Name,MessageType.Warning);
                 mMessageService.ShowMessage(enemy.AsciiArt,MessageType.Info);
+                Game.ShowConsoleBoxedInfo(enemy.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
+                i++;
             }
         }
 

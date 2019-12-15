@@ -10,10 +10,10 @@ namespace ConsoleRPG.Services
 {
     public class FightingService
     {
-        private readonly IRandomGenerator<int> mRandomGenerator;
+        private readonly IRandomGenerator mRandomGenerator;
 
         private readonly IMessageService mMessageService;
-        public FightingService(IRandomGenerator<int> randomGenerator, IMessageService messageService)
+        public FightingService(IRandomGenerator randomGenerator, IMessageService messageService)
         {
             mRandomGenerator = randomGenerator;
             mMessageService = messageService;
@@ -33,8 +33,10 @@ namespace ConsoleRPG.Services
             return (int)lifesteal;
         }
 
-        public void CalculateFight(Player player,Enemy enemy,bool isPlayerTurn)
+        public void CalculateFight(Player player,Enemy enemy,bool isPlayerTurn,out bool isEnemyDied,out bool isPlayerDied)
         {
+            isEnemyDied = false;
+            isPlayerDied = false; 
             var playerDamageToEnemy = CalculateFinalDamage(player.Stats[StatsConstants.DamageStat],
                 player.Stats[StatsConstants.CritChanceStat], enemy.Stats[StatsConstants.ArmorStat]);
             var enemyDamageToPlayer = CalculateFinalDamage(enemy.Stats[StatsConstants.DamageStat],
@@ -47,28 +49,46 @@ namespace ConsoleRPG.Services
             {
                 enemy.Stats[StatsConstants.HpStat] -= playerDamageToEnemy;
                 player.Stats[StatsConstants.HpStat] += playerLifesteal;
-                if (enemy.Stats[StatsConstants.HpStat] <= 0)
+                if (CheckIfSomeoneDiedAndReport(enemy.Stats[StatsConstants.HpStat],false))
                 {
-                    mMessageService.ShowMessage("Противник уничтожен!", MessageType.Warning);
+                    isEnemyDied = true;
                     return;
                 }
 
                 player.Stats[StatsConstants.HpStat] -= enemyDamageToPlayer;
                 enemy.Stats[StatsConstants.HpStat] += enemyLifesteal;
+                if (CheckIfSomeoneDiedAndReport(player.Stats[StatsConstants.HpStat],true))
+                    isPlayerDied = true;
             }
             else
             {
                 player.Stats[StatsConstants.HpStat] -= enemyDamageToPlayer;
                 enemy.Stats[StatsConstants.HpStat] += enemyLifesteal;
-                if (player.Stats[StatsConstants.HpStat] <= 0)
+                if (CheckIfSomeoneDiedAndReport(player.Stats[StatsConstants.HpStat], true))
                 {
-                    mMessageService.ShowMessage("Вы погибли...",MessageType.Error);
+                    isPlayerDied = true;
                     return;
                 }
                 enemy.Stats[StatsConstants.HpStat] -= playerDamageToEnemy;
                 player.Stats[StatsConstants.HpStat] += playerLifesteal;
-
+                if (CheckIfSomeoneDiedAndReport(enemy.Stats[StatsConstants.HpStat], false))
+                {
+                    isEnemyDied = true;
+                }
             }
+        }
+
+        public bool CheckIfSomeoneDiedAndReport(int hp, bool isPlayer)
+        {
+            var death = false;
+            var message = isPlayer ? "Вы погибли..." : "Противник уничтожен";
+            if (hp <= 0)
+            {
+                mMessageService.ShowMessage(message, MessageType.Error);
+                death = true;
+            }
+
+            return death;
         }
     }
 }

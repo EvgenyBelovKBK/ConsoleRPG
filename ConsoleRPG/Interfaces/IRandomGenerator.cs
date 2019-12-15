@@ -6,7 +6,7 @@ using ConsoleRPG.Constants;
 
 namespace ConsoleRPG.Interfaces
 {
-    public interface IRandomGenerator<T>
+    public interface IRandomGenerator
     {
         Random Random { get; set; }
         int GetRandomNumber(int minValue, int maxValue);

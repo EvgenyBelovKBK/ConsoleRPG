@@ -6,7 +6,7 @@ using ConsoleRPG.Interfaces;
 
 namespace ConsoleRPG.Services
 {
-    public class NumbersRandomGenerator : IRandomGenerator<int>
+    public class NumbersRandomGenerator : IRandomGenerator
     {
         public Random Random { get; set; }
         public int GetRandomNumber(int minValue = 1, int maxValue = 100)
