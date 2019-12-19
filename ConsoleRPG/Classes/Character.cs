@@ -35,7 +35,7 @@ namespace ConsoleRPG.Classes
 
         public override void CalculateStatsFromItems(IEnumerable<Item> items)
         {
-            Stats = BaseStats;
+            Stats = new Dictionary<string, int>(BaseStats);
             foreach (var item in items)
             {
                 foreach (var stat in item.Stats)

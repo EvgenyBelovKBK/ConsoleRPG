@@ -8,7 +8,7 @@ namespace ConsoleRPG.Services
 {
     public class NumbersRandomGenerator : IRandomGenerator
     {
-        public Random Random { get; set; }
+        public Random Random { get; set; } = new Random();
         public int GetRandomNumber(int minValue = 1, int maxValue = 100)
         {
             return Random.Next(minValue, maxValue);

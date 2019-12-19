@@ -40,6 +40,8 @@ namespace ConsoleRPG.Classes
             var isPlayerTurn = true;
             var playerDied = false;
             var enemyDied = false;
+            mMessageService.ShowMessage(player.Name,MessageType.Info);
+            ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
             Level.ShowEnemies();
             while (Level.Enemies.Count > 0 && !playerDied)
             {
@@ -55,9 +57,12 @@ namespace ConsoleRPG.Classes
                 }
 
                 isPlayerTurn = !isPlayerTurn;
+                mMessageService.ClearTextAction();
                 var turn = isPlayerTurn ? "Вы бьете первым" : "Противник бьет первым";
                 mMessageService.ShowMessage(turn,MessageType.Info);
                 mFightingService.CalculateFight(player, Level.Enemies[enemyNumber],isPlayerTurn,out enemyDied,out playerDied);
+                mMessageService.ShowMessage(player.Name, MessageType.Info);
+                ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
                 Level.ShowEnemies();
                 if (enemyDied)
                     Level.Enemies.Remove(Level.Enemies[enemyNumber]);
@@ -98,7 +103,8 @@ namespace ConsoleRPG.Classes
                 else
                     player.Gold += 20;
             }
-
+            else
+                Fight(player,player.CurrentLevel);
             player.CurrentLevel = Program._levels.ToArray()[level + 1];
         }
 
