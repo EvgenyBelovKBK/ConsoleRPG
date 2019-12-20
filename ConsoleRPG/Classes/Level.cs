@@ -12,14 +12,27 @@ namespace ConsoleRPG.Classes
     {
         public static IMessageService mMessageService;
         public int Number { get; }
-        public string CampaignName { get;}
+        public string LevelName { get;}
         public List<Enemy> Enemies { get; set; }
 
-        public Level(int number, string campaignName, List<Enemy> enemies)
+        public Level(int number, string levelName, List<Enemy> enemies)
         {
             Number = number;
-            CampaignName = campaignName;
-            Enemies = enemies;
+            LevelName = levelName;
+            Enemies = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                Enemies.Add(new Enemy(enemy.Tier,
+                    enemy.Items,
+                    enemy.Gold,
+                    enemy.Name,
+                    enemy.Stats[StatsConstants.HpStat],
+                    enemy.Stats[StatsConstants.DamageStat],
+                    enemy.Stats[StatsConstants.ArmorStat],
+                    enemy.Stats[StatsConstants.LifestealStat],
+                    enemy.Stats[StatsConstants.CritChanceStat],
+                    enemy.AsciiArt));
+            }
         }
 
         public void ShowEnemies()

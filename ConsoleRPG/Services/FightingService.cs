@@ -23,13 +23,16 @@ namespace ConsoleRPG.Services
         {
             var damageAfterCritRoll = mRandomGenerator.IsRolled(criticalStrikeChance) ? damage * 2 : damage;
             var finalDamage = damageAfterCritRoll - targetArmor;
+            finalDamage = finalDamage < 0 ? 0 : finalDamage;
             return finalDamage;
         }
 
-        private int CalculateLifesteal(int finalDamage, int lifestealPercent)
+        private int CalculateLifesteal(int finalDamage, int lifestealPercent,int currentHp, int maxHp)
         {
             var onePercentOfDamage = (double)finalDamage / 100;
             var lifesteal = onePercentOfDamage * lifestealPercent;
+            if (currentHp + lifesteal > maxHp)
+                lifesteal = maxHp - currentHp;
             return (int)lifesteal;
         }
 
@@ -42,8 +45,8 @@ namespace ConsoleRPG.Services
             var enemyDamageToPlayer = CalculateFinalDamage(enemy.Stats[StatsConstants.DamageStat],
                 enemy.Stats[StatsConstants.CritChanceStat], player.Stats[StatsConstants.ArmorStat]);
 
-            var playerLifesteal = CalculateLifesteal(playerDamageToEnemy,player.Stats[StatsConstants.LifestealStat]);
-            var enemyLifesteal = CalculateLifesteal(enemyDamageToPlayer,enemy.Stats[StatsConstants.LifestealStat]);
+            var playerLifesteal = CalculateLifesteal(playerDamageToEnemy,player.Stats[StatsConstants.LifestealStat],player.Stats[StatsConstants.HpStat],player.Stats[StatsConstants.MaxHpStat]);
+            var enemyLifesteal = CalculateLifesteal(enemyDamageToPlayer,enemy.Stats[StatsConstants.LifestealStat], enemy.Stats[StatsConstants.HpStat], enemy.Stats[StatsConstants.MaxHpStat]);
 
             if (isPlayerTurn)
             {
@@ -51,6 +54,7 @@ namespace ConsoleRPG.Services
                 player.Stats[StatsConstants.HpStat] += playerLifesteal;
                 if (CheckIfSomeoneDiedAndReport(enemy.Stats[StatsConstants.HpStat],false))
                 {
+                    player.Gold += enemy.Gold;
                     isEnemyDied = true;
                     return;
                 }

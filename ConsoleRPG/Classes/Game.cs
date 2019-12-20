@@ -23,29 +23,30 @@ namespace ConsoleRPG.Classes
 
         public void ShowPlayerDeathScreen(Player player,Enemy killerEnemy)
         {
+            Thread.Sleep(1000);
             mMessageService.ClearTextField();
             mMessageService.ShowMessage("В следующий раз вам повезет больше!",MessageType.Info);
             Thread.Sleep(3000);
             mMessageService.ShowMessage(killerEnemy.Name,MessageType.Error);
             ShowConsoleBoxedInfo(killerEnemy.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             ShowConsolePlayerUi(player);
-
         }
 
         public void Fight(Player player,Level Level)
         {
             mMessageService.ClearTextAction();
+            mMessageService.ShowMessage($"Уровень {Level.LevelName}", MessageType.Warning);
             mMessageService.ShowMessage("Вы вошли в битву",MessageType.Warning);
             mMessageService.ShowMessage("Чтобы начать драку с противником введите его номер",MessageType.Info);
             var isPlayerTurn = true;
             var playerDied = false;
             var enemyDied = false;
-            mMessageService.ShowMessage(player.Name,MessageType.Info);
-            ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
-            Level.ShowEnemies();
             while (Level.Enemies.Count > 0 && !playerDied)
             {
-                EnemyInput:
+                mMessageService.ShowMessage(player.Name, MessageType.Info);
+                ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+                Level.ShowEnemies();
+            EnemyInput:
                 var enemyNumber = 0;
 
                 var isValidEnemy = int.TryParse(mMessageService.ReadPlayerInput(),out enemyNumber);
@@ -61,9 +62,6 @@ namespace ConsoleRPG.Classes
                 var turn = isPlayerTurn ? "Вы бьете первым" : "Противник бьет первым";
                 mMessageService.ShowMessage(turn,MessageType.Info);
                 mFightingService.CalculateFight(player, Level.Enemies[enemyNumber],isPlayerTurn,out enemyDied,out playerDied);
-                mMessageService.ShowMessage(player.Name, MessageType.Info);
-                ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
-                Level.ShowEnemies();
                 if (enemyDied)
                     Level.Enemies.Remove(Level.Enemies[enemyNumber]);
                 if(playerDied)
@@ -77,7 +75,11 @@ namespace ConsoleRPG.Classes
             bool enterShop;
             var level = player.CurrentLevel.Number;
             if (level != 0)
-                mMessageService.ShowMessage($"Уровень {level} пройден!",MessageType.Info);
+            {
+                mMessageService.ShowMessage($"Уровень {level} пройден!", MessageType.Info);
+                Thread.Sleep(1500);
+            }
+
             if (level % 10 == 0)
             {
                 if (level != 0)
@@ -85,18 +87,18 @@ namespace ConsoleRPG.Classes
                     mMessageService.ShowMessage(
                         "Поздравляю,вы прошли одну из кампаний,у вас есть возможность зайти в магазин или продолжить(+20 золота)",
                         MessageType.Info);
-                    mMessageService.ShowMessage("Войти в магазин(да/нет)", MessageType.Warning);
-                    enterShop = mMessageService.ReadInputAction().ToLowerInvariant() == "да";
+                    mMessageService.ShowMessage("Войти в магазин(y/n)", MessageType.Warning);
+                    enterShop = mMessageService.ReadInputAction().ToLowerInvariant() == "y";
                 }
                 else
                     enterShop = true;
 
                 if (enterShop)
                 {
-                    var shopNumber = level != 0
-                        ? (Tiers) (level / 10 + 1)
+                    var shopTier = level != 0
+                        ? (Tiers) (level / 10)
                         : Tiers.Tier1;
-                    var shop = Program._shops.First(x => x.Tier == shopNumber);
+                    var shop = Program._shops.First(x => x.Tier == shopTier);
                     shop.Enter(shop, player);
                     shop.Leave(shop);
                 }

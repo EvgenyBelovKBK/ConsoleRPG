@@ -22,9 +22,9 @@ namespace ConsoleRPG.Constants
             {
                 Tiers.Tier2 ,new Dictionary<Tiers,int>()
                 {
-                    {Tiers.Tier1,10 },
-                    {Tiers.Tier2,85 },
-                    {Tiers.Tier3,5 },
+                    {Tiers.Tier1,25 },
+                    {Tiers.Tier2,75 },
+                    {Tiers.Tier3,0 },
                     {Tiers.Tier4,0 },
                     {Tiers.Tier5,0 }
                 }
@@ -56,7 +56,7 @@ namespace ConsoleRPG.Constants
                     {Tiers.Tier2,0 },
                     {Tiers.Tier3,0 },
                     {Tiers.Tier4,10 },
-                    {Tiers.Tier5,90 }
+                    {Tiers.Tier5,80 }
                 }
             },
         };

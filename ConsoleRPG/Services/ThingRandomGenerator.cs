@@ -25,20 +25,24 @@ namespace ConsoleRPG.Services
         /// <summary>
         /// Получает словарь - тир = кол-во штук этого тира
         /// </summary>
-        /// <param name="thingCount">кол-во штук</param>
+        /// <param name="totalAmount">кол-во штук</param>
         /// <param name="chancesDictionary">тир = шанс</param>
         /// <returns></returns>
-        public Dictionary<Tiers, int> GetThingsCountInTiers(int thingCount, Dictionary<Tiers, int> chancesDictionary)
+        public Dictionary<Tiers, int> GetThingsCountInTiers(int totalAmount, Dictionary<Tiers, int> chancesDictionary)
         {
             var result = new Dictionary<Tiers, int>(){{Tiers.Tier1,0}, { Tiers.Tier2, 0 }, { Tiers.Tier3, 0 }, { Tiers.Tier4, 0 }, { Tiers.Tier5, 0 }};
-            foreach (var chancePair in chancesDictionary)
+            var standartTier = chancesDictionary.OrderByDescending(x => x.Value).First().Key;
+            var currentAmount = 0;
+            while (currentAmount < totalAmount)
             {
-                for (int i = 0; i < thingCount; i++)
+                foreach (var chancePair in chancesDictionary)
                 {
+                    if(currentAmount == totalAmount)
+                        break;
                     if (IsRolled(chancePair.Value))
                     {
                         result[chancePair.Key]++;
-                        thingCount--;
+                        currentAmount++;
                     }
                 }
             }
@@ -51,7 +55,7 @@ namespace ConsoleRPG.Services
             var itemsTiersCount = GetThingsCountInTiers(itemsCount, chancesDictionary);
             foreach (var currentTier in itemsTiersCount)
             {
-                var currentTierList = thingsEnumerable.Where(x => x.Tier == currentTier.Key).ToArray();
+                var currentTierList = new List<T>(thingsEnumerable.Where(x => x.Tier == currentTier.Key)).ToArray();
                 var minIndex = 0;
                 var maxIndex = 0;
                 if (currentTierList.Length > 0)

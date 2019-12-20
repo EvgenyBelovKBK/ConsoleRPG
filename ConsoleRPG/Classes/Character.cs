@@ -16,7 +16,7 @@ namespace ConsoleRPG.Classes
         public const int InventorySpace = 5;
         private Dictionary<string, int> BaseStats { get; }
 
-        protected Character(ObservableCollection<Item> items, int gold, string name,int hp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(hp, damage, armor, lifestealPercent, criticalStrikeChance)
+        protected Character(ObservableCollection<Item> items, int gold, string name,int currentHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(currentHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Items = items;
             Gold = gold;
@@ -26,11 +26,12 @@ namespace ConsoleRPG.Classes
                 CalculateStatsFromItems(Items);
             };
             BaseStats = new Dictionary<string, int>();
-            BaseStats.Add("HP", hp);
-            BaseStats.Add("Damage", damage);
-            BaseStats.Add("Armor", armor);
-            BaseStats.Add("Lifesteal", lifestealPercent);
-            BaseStats.Add("CritChance", criticalStrikeChance);
+            BaseStats.Add(StatsConstants.MaxHpStat, currentHp);
+            BaseStats.Add(StatsConstants.HpStat, currentHp);
+            BaseStats.Add(StatsConstants.DamageStat, damage);
+            BaseStats.Add(StatsConstants.ArmorStat, armor);
+            BaseStats.Add(StatsConstants.LifestealStat, lifestealPercent);
+            BaseStats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
         }
 
         public override void CalculateStatsFromItems(IEnumerable<Item> items)
@@ -41,6 +42,8 @@ namespace ConsoleRPG.Classes
                 foreach (var stat in item.Stats)
                 {
                     Stats[stat.Key] += stat.Value;
+                    if (stat.Key == StatsConstants.MaxHpStat)
+                        Stats[StatsConstants.HpStat] += stat.Value;
                 }
             }
         }

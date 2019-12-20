@@ -11,7 +11,7 @@ namespace ConsoleRPG.Classes
         public Tiers Tier { get; set; }
         public string AsciiArt { get; set; }
 
-        public Enemy(Tiers tier,ObservableCollection<Item> items, int gold, string name, int hp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,string asciiArt = "") : base(items, gold, name, hp, damage, armor, lifestealPercent, criticalStrikeChance)
+        public Enemy(Tiers tier,ObservableCollection<Item> items, int gold, string name,int currentHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,string asciiArt = "") : base(items, gold, name,currentHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Tier = tier;
             AsciiArt = asciiArt;
