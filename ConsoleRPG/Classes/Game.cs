@@ -28,7 +28,7 @@ namespace ConsoleRPG.Classes
             mMessageService.ShowMessage("В следующий раз вам повезет больше!",MessageType.Info);
             Thread.Sleep(3000);
             mMessageService.ShowMessage(killerEnemy.Name,MessageType.Error);
-            ShowConsoleBoxedInfo(killerEnemy.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             ShowConsolePlayerUi(player);
         }
 
@@ -38,7 +38,7 @@ namespace ConsoleRPG.Classes
             mMessageService.ShowMessage($"Уровень {Level.LevelName}", MessageType.Warning);
             mMessageService.ShowMessage("Вы вошли в битву",MessageType.Warning);
             mMessageService.ShowMessage("Чтобы начать драку с противником введите его номер",MessageType.Info);
-            var isPlayerTurn = true;
+            var isPlayerTurn = false;
             var playerDied = false;
             var enemyDied = false;
             while (Level.Enemies.Count > 0 && !playerDied)
@@ -46,6 +46,9 @@ namespace ConsoleRPG.Classes
                 mMessageService.ShowMessage(player.Name, MessageType.Info);
                 ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
                 Level.ShowEnemies();
+                isPlayerTurn = !isPlayerTurn;
+                var turn = isPlayerTurn ? "Вы бьете первым" : "Противник бьет первым";
+                mMessageService.ShowMessage(turn, MessageType.Info);
             EnemyInput:
                 var enemyNumber = 0;
 
@@ -57,10 +60,8 @@ namespace ConsoleRPG.Classes
                     goto EnemyInput;
                 }
 
-                isPlayerTurn = !isPlayerTurn;
+
                 mMessageService.ClearTextAction();
-                var turn = isPlayerTurn ? "Вы бьете первым" : "Противник бьет первым";
-                mMessageService.ShowMessage(turn,MessageType.Info);
                 mFightingService.CalculateFight(player, Level.Enemies[enemyNumber],isPlayerTurn,out enemyDied,out playerDied);
                 if (enemyDied)
                     Level.Enemies.Remove(Level.Enemies[enemyNumber]);
@@ -107,6 +108,9 @@ namespace ConsoleRPG.Classes
             }
             else
                 Fight(player,player.CurrentLevel);
+            if(player.Stats[StatsConstants.HpStat] < 0)
+                return;
+            Thread.Sleep(3000);
             player.CurrentLevel = Program._levels.ToArray()[level + 1];
         }
 

@@ -77,9 +77,9 @@ namespace ConsoleRPG.Constants
             {
                 Tiers.Tier2 ,new Dictionary<Tiers,int>()
                 {
-                    {Tiers.Tier1,30 },
-                    {Tiers.Tier2,60 },
-                    {Tiers.Tier3,10 },
+                    {Tiers.Tier1,25 },
+                    {Tiers.Tier2,70 },
+                    {Tiers.Tier3,5 },
                     {Tiers.Tier4,0 },
                     {Tiers.Tier5,0 }
                 }
@@ -89,8 +89,8 @@ namespace ConsoleRPG.Constants
                 {
                     {Tiers.Tier1,0 },
                     {Tiers.Tier2,20 },
-                    {Tiers.Tier3,65 },
-                    {Tiers.Tier4,15 },
+                    {Tiers.Tier3,75 },
+                    {Tiers.Tier4,5 },
                     {Tiers.Tier5,0 }
                 }
             },
@@ -100,8 +100,8 @@ namespace ConsoleRPG.Constants
                     {Tiers.Tier1,0 },
                     {Tiers.Tier2,0 },
                     {Tiers.Tier3,0 },
-                    {Tiers.Tier4,80 },
-                    {Tiers.Tier5,20 }
+                    {Tiers.Tier4,90 },
+                    {Tiers.Tier5,10 }
                 }
             },
             {

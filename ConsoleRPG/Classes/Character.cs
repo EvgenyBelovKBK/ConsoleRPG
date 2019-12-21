@@ -14,7 +14,7 @@ namespace ConsoleRPG.Classes
         public int Gold { get; set; }
         public string Name { get; }
         public const int InventorySpace = 5;
-        private Dictionary<string, int> BaseStats { get; }
+        public Dictionary<string, int> BaseStats { get; }
 
         protected Character(ObservableCollection<Item> items, int gold, string name,int currentHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(currentHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
