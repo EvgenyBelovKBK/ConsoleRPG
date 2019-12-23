@@ -8,7 +8,8 @@ namespace ConsoleRPG.Enums
     {
         Damage,
         Lifesteal,
-        CriticalStrike
+        CriticalStrike,
+        EnemyDeath
     } 
 
 }

@@ -27,9 +27,15 @@ namespace ConsoleRPG.Classes
             mMessageService.ClearTextField();
             mMessageService.ShowMessage("В следующий раз вам повезет больше!",MessageType.Info);
             Thread.Sleep(3000);
+            mMessageService.ShowMessage($"Вы дошли до {player.CurrentLevel.Number} уровня!",MessageType.Info);
+            mMessageService.ShowMessage($"Вы набрали {player.Points} очков!",MessageType.Warning);
+            Thread.Sleep(1000);
+            mMessageService.ShowMessage($"Вы погибли от:",MessageType.Info);
             mMessageService.ShowMessage(killerEnemy.Name,MessageType.Error);
             ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             ShowConsolePlayerUi(player);
+            mMessageService.ShowMessage("Нажмите любую клавишу чтобы выйти...",MessageType.Info);
+            mMessageService.ReadPlayerInput();
         }
 
         public void Fight(Player player,Level Level)
