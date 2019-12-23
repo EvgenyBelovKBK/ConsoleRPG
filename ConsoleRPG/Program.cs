@@ -46,7 +46,13 @@ namespace ConsoleRPG
         static Player CreateCharacter()
         {
             int sleepTime = 3500;
-            messageService.ShowMessage("Добро пожаловать в консольную РПГ (версия 0.2)", MessageType.Info);
+            messageService.ShowMessage(@"
+                   ___                               _              ___    ___    ___   
+                  (  _`\                            (_ )           |  _`\ (  _`\ (  _`\ 
+                  | ( (_)   _     ___    ___    _    | |    __     | (_) )| |_) )| ( (_)
+                  | |  _  /'_`\ /' _ `\/',__) /'_`\  | |  /'__`\   | ,  / | ,__/'| |___ 
+                  | (_( )( (_) )| ( ) |\__, \( (_) ) | | (  ___/   | |\ \ | |    | (_, )
+                  (____/'`\___/'(_) (_)(____/`\___/'(___)`\____)   (_) (_)(_)    (____/  (версия 0.2)" + Environment.NewLine, MessageType.Info);
             Thread.Sleep(sleepTime);
             messageService.ShowMessage("Для начала выберите начальные характеристики", MessageType.Warning);
             Thread.Sleep(sleepTime);
@@ -319,23 +325,7 @@ namespace ConsoleRPG
                 #region Tier1
 
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Small goblin", currentHp: 20, damage: 5, armor: 0,
-                    lifestealPercent: 0, criticalStrikeChance: 15, asciiArt: @"
-        .-"""".
-       /       \
-   __ /   .-.  .\
-  /  `\  /   \/  \
-  |  _ \/   .==.==.
-  | (   \  /____\__\
-   \ \      (_()(_()
-    \ \            '---._
-     \                   \_
-  /\ |`       (__)________/
- /  \|     /\___/
-|    \     \||VV
-|     \     \|"""",
-|      \     ______)
-\       \  /`
- |         \("),
+                    lifestealPercent: 0, criticalStrikeChance: 15, asciiArt: AsciiArts.SmallGoblin),
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 5, "Small orc", currentHp: 60, damage: 12, armor: 5,
                     lifestealPercent: 0, criticalStrikeChance: 10),
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 6, "Small troll", currentHp: 45, damage: 17, armor: 3,
@@ -347,13 +337,13 @@ namespace ConsoleRPG
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Little swamp creature", currentHp: 60, damage: 10,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 0),
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 5, "Wild wolf", currentHp: 35, damage: 13, armor: 0,
-                    lifestealPercent: 0, criticalStrikeChance: 20),
+                    lifestealPercent: 0, criticalStrikeChance: 20,asciiArt: AsciiArts.WildWolf),
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Small bat", currentHp: 10, damage: 10, armor: 0,
-                    lifestealPercent: 50, criticalStrikeChance: 10),
+                    lifestealPercent: 50, criticalStrikeChance: 10,asciiArt: AsciiArts.SmallBat),
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Zombie", currentHp: 30, damage: 10, armor: 2,
-                    lifestealPercent: 0, criticalStrikeChance: 0),
+                    lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Zombie),
                 new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 6, "Young Blackgate warrior", currentHp: 20,
-                    damage: 15, armor: 5, lifestealPercent: 0, criticalStrikeChance: 15),
+                    damage: 15, armor: 5, lifestealPercent: 0, criticalStrikeChance: 15,asciiArt: AsciiArts.YoungBlackgateWarrior),
 
                 #endregion
 
@@ -370,9 +360,9 @@ namespace ConsoleRPG
                 new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Cursed elf", currentHp: 50, damage: 30, armor: 10,
                     lifestealPercent: 0, criticalStrikeChance: 35),
                 new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Big hungry boar", currentHp: 100, damage: 26,
-                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 10),
+                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 10,asciiArt: AsciiArts.BigHungryBoar),
                 new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 7, "Bat swarm", currentHp: 70, damage: 20, armor: 0,
-                    lifestealPercent: 65, criticalStrikeChance: 0),
+                    lifestealPercent: 65, criticalStrikeChance: 0,asciiArt: AsciiArts.BatSwarm),
                 new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 10, "Cursed Iron knight", currentHp: 55, damage: 28,
                     armor: 17, lifestealPercent: 0, criticalStrikeChance: 17),
                 new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 9, "Aztec warrior", currentHp: 45, damage: 40,
@@ -392,26 +382,26 @@ namespace ConsoleRPG
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 11, "Troll", currentHp: 120, damage: 47, armor: 15,
                     lifestealPercent: 45, criticalStrikeChance: 15),
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 9, "Mother bear", currentHp: 165, damage: 50,
-                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 20),
+                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 20,asciiArt: AsciiArts.MotherBear),
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 11, "Orc-warrior", currentHp: 80, damage: 42,
                     armor: 40, lifestealPercent: 0, criticalStrikeChance: 20),
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 10, "Swamp creature", currentHp: 300, damage: 45,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 0),
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 10, "Vampire", currentHp: 90, damage: 50, armor: 20,
-                    lifestealPercent: 100, criticalStrikeChance: 20),
+                    lifestealPercent: 100, criticalStrikeChance: 20,asciiArt: AsciiArts.Vampire),
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 13, "Cursed Paladin", currentHp: 110, damage: 62,
                     armor: 50, lifestealPercent: 0, criticalStrikeChance: 21),
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 15, "Aztec voodoo-warior", currentHp: 125, damage: 58,
                     armor: 23, lifestealPercent: 40, criticalStrikeChance: 30),
                 new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 8, "Ogre", currentHp: 225, damage: 100, armor: 0,
-                    lifestealPercent: 0, criticalStrikeChance: 0),
+                    lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Ogre),
 
                 #endregion
 
                 #region Tier4
 
                 new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 14, "Little dragon", currentHp: 350, damage: 200,
-                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 0),
+                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.LittleDragon),
                 new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 28, "Goblin back-stabber", currentHp: 100, damage: 130,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 90),
                 new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 13, "Angry troll", currentHp: 150, damage: 115,
