@@ -9,7 +9,8 @@ namespace ConsoleRPG.Enums
         Damage,
         Lifesteal,
         CriticalStrike,
-        EnemyDeath
+        EnemyDeath,
+        PlayerDeath
     } 
 
 }

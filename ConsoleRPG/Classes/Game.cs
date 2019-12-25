@@ -23,73 +23,70 @@ namespace ConsoleRPG.Classes
 
         public void ShowPlayerDeathScreen(Player player,Enemy killerEnemy)
         {
-            Thread.Sleep(1000);
             mMessageService.ClearTextField();
             mMessageService.ShowMessage("В следующий раз вам повезет больше!",MessageType.Info);
             Thread.Sleep(3000);
             mMessageService.ShowMessage($"Вы дошли до {player.CurrentLevel.Number} уровня!",MessageType.Info);
+            Thread.Sleep(1000);
             mMessageService.ShowMessage($"Вы набрали {player.Points} очков!",MessageType.Warning);
             Thread.Sleep(1000);
             mMessageService.ShowMessage($"Вы погибли от:",MessageType.Info);
             mMessageService.ShowMessage(killerEnemy.Name,MessageType.Error);
             ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            Thread.Sleep(1000);
             ShowConsolePlayerUi(player);
             mMessageService.ShowMessage("Нажмите любую клавишу чтобы выйти...",MessageType.Info);
             mMessageService.ReadPlayerInput();
         }
 
-        public void Fight(Player player,Level Level)
+        public void Fight(Player player,Level level)
         {
             mMessageService.ClearTextAction();
-            mMessageService.ShowMessage($"Уровень {Level.LevelName}", MessageType.Warning);
+            mMessageService.ShowMessage($"Уровень {level.LevelName}", MessageType.Warning);
             mMessageService.ShowMessage("Вы вошли в битву",MessageType.Warning);
             mMessageService.ShowMessage("Чтобы начать драку с противником введите его номер",MessageType.Info);
             var isPlayerTurn = false;
             var playerDied = false;
             var enemyDied = false;
-            while (Level.Enemies.Count > 0 && !playerDied)
+            while (level.Enemies.Count > 0 && !playerDied)
             {
                 mMessageService.ShowMessage(player.Name, MessageType.Info);
                 ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
-                Level.ShowEnemies();
+                level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;
                 var turn = isPlayerTurn ? "Вы бьете первым" : "Противник бьет первым";
                 mMessageService.ShowMessage(turn, MessageType.Info);
-            EnemyInput:
                 var enemyNumber = 0;
-
-                var isValidEnemy = int.TryParse(mMessageService.ReadPlayerInput(),out enemyNumber);
-                enemyNumber -= 1;
-                if (!isValidEnemy || enemyNumber < 0 || enemyNumber >= Level.Enemies.Count)
+                while (true)
                 {
-                    mMessageService.ShowMessage("Такого противника нет!",MessageType.Error);
-                    goto EnemyInput;
+                    var isValidEnemy = int.TryParse(mMessageService.ReadPlayerInput(), out enemyNumber);
+                    enemyNumber -= 1;
+
+                    if (!isValidEnemy || enemyNumber < 0 || enemyNumber >= level.Enemies.Count)
+                        mMessageService.ShowMessage("Такого противника нет!", MessageType.Error);
+                    else
+                        break;
                 }
 
 
                 mMessageService.ClearTextAction();
-                mFightingService.CalculateFight(player, Level.Enemies[enemyNumber],isPlayerTurn,out enemyDied,out playerDied);
+                mFightingService.CalculateFight(player, level.Enemies[enemyNumber],isPlayerTurn,out enemyDied,out playerDied);
                 if (enemyDied)
-                    Level.Enemies.Remove(Level.Enemies[enemyNumber]);
+                    level.Enemies.Remove(level.Enemies[enemyNumber]);
                 if(playerDied)
-                    ShowPlayerDeathScreen(player, Level.Enemies[enemyNumber]);
+                    ShowPlayerDeathScreen(player, level.Enemies[enemyNumber]);
             }
         }
         public void MoveToNextLevel(Player player)
         {
             mMessageService.ClearTextField();
-            ShowConsolePlayerUi(player);
             bool enterShop;
-            var level = player.CurrentLevel.Number;
-            if (level != 0)
-            {
-                mMessageService.ShowMessage($"Уровень {level} пройден!", MessageType.Info);
-                Thread.Sleep(1500);
-            }
+            var currentLevelNumber = player.CurrentLevel.Number;
 
-            if (level % 10 == 0)
+
+            if (currentLevelNumber % 10 == 0)
             {
-                if (level != 0)
+                if (currentLevelNumber != 0)
                 {
                     mMessageService.ShowMessage(
                         "Поздравляю,вы прошли одну из кампаний,у вас есть возможность зайти в магазин или продолжить(+20 золота)",
@@ -102,10 +99,10 @@ namespace ConsoleRPG.Classes
 
                 if (enterShop)
                 {
-                    var shopTier = level != 0
-                        ? (Tiers) (level / 10)
+                    var shopTier = currentLevelNumber != 0
+                        ? (Tiers) (currentLevelNumber / 10)
                         : Tiers.Tier1;
-                    var shop = Program._shops.First(x => x.Tier == shopTier);
+                    var shop = Program.Shops.First(x => x.Tier == shopTier);
                     shop.Enter(shop, player);
                     shop.Leave(shop);
                 }
@@ -116,8 +113,8 @@ namespace ConsoleRPG.Classes
                 Fight(player,player.CurrentLevel);
             if(player.Stats[StatsConstants.HpStat] < 0)
                 return;
-            Thread.Sleep(3000);
-            player.CurrentLevel = Program._levels.ToArray()[level + 1];
+            Thread.Sleep(1500);
+            player.CurrentLevel = Program.Levels.ToArray()[currentLevelNumber + 1];
         }
 
         public static void ShowConsolePlayerUi(Player player)

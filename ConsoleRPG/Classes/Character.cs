@@ -36,7 +36,9 @@ namespace ConsoleRPG.Classes
 
         public override void CalculateStatsFromItems(IEnumerable<Item> items)
         {
+            var currentHp = Stats[StatsConstants.HpStat];
             Stats = new Dictionary<string, int>(BaseStats);
+            Stats[StatsConstants.HpStat] = currentHp;
             foreach (var item in items)
             {
                 foreach (var stat in item.Stats)

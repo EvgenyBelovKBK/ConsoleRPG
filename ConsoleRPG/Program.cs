@@ -16,27 +16,28 @@ namespace ConsoleRPG
     class Program
     {
 
-        static IMessageService messageService = new ConsoleMessageService();
-        static ThingRandomGenerator<Item> itemRandomGenerator = new ThingRandomGenerator<Item>();
-        static ThingRandomGenerator<Enemy> enemyRandomGenerator = new ThingRandomGenerator<Enemy>();
-        static FightingService fightingService = new FightingService(new NumbersRandomGenerator(),messageService );
-        public static Level[] _levels = new Level[51];
-        public static Campaign[] _campaigns = new Campaign[5];
-        public static List<Enemy> _enemies = new List<Enemy>();
-        public static List<Item> _items = new List<Item>();
-        public static List<Shop> _shops = new List<Shop>();
+        static readonly IMessageService MessageService = new ConsoleMessageService();
+        static readonly ThingRandomGenerator<Item> ItemRandomGenerator = new ThingRandomGenerator<Item>();
+        static readonly ThingRandomGenerator<Enemy> EnemyRandomGenerator = new ThingRandomGenerator<Enemy>();
+        static readonly FightingService FightingService = new FightingService(new NumbersRandomGenerator(),MessageService );
+        public static Level[] Levels = new Level[51];
+        public static Campaign[] Campaigns = new Campaign[5];
+        public static List<Enemy> Enemies = new List<Enemy>();
+        public static List<Item> Items = new List<Item>();
+        public static List<Shop> Shops = new List<Shop>();
 
         static void Main(string[] args)
         {
-            var game = new Game(messageService,fightingService);
+            Console.WindowHeight += Console.WindowHeight / 2;
+            var game = new Game(MessageService,FightingService);
 
             var whenCompleted = FillGameInfo().Result;
-            Level.mMessageService = messageService;
-            Shop.mMessageService = messageService;
+            Level.mMessageService = MessageService;
+            Shop.mMessageService = MessageService;
             var player = CreateCharacter();
-            messageService.ShowMessage("В путь!", MessageType.Info);
+            MessageService.ShowMessage("В путь!", MessageType.Info);
             Thread.Sleep(1500);
-            messageService.ClearTextField();
+            MessageService.ClearTextField();
             while (player.Stats[StatsConstants.HpStat] > 0)
             {
                 game.MoveToNextLevel(player);
@@ -46,7 +47,7 @@ namespace ConsoleRPG
         static Player CreateCharacter()
         {
             int sleepTime = 3500;
-            messageService.ShowMessage(@"
+            MessageService.ShowMessage(@"
                    ___                               _              ___    ___    ___   
                   (  _`\                            (_ )           |  _`\ (  _`\ (  _`\ 
                   | ( (_)   _     ___    ___    _    | |    __     | (_) )| |_) )| ( (_)
@@ -54,63 +55,65 @@ namespace ConsoleRPG
                   | (_( )( (_) )| ( ) |\__, \( (_) ) | | (  ___/   | |\ \ | |    | (_, )
                   (____/'`\___/'(_) (_)(____/`\___/'(___)`\____)   (_) (_)(_)    (____/  (версия 0.2)" + Environment.NewLine, MessageType.Info);
             Thread.Sleep(sleepTime);
-            messageService.ShowMessage("Для начала выберите начальные характеристики", MessageType.Warning);
+            MessageService.ShowMessage("Назови себя,путник!", MessageType.Info);
+            var name = MessageService.ReadPlayerInput();
+            MessageService.ShowMessage($"{name} выбери свои сильные и слабые стороны", MessageType.Warning);
             Thread.Sleep(sleepTime);
-            messageService.ShowMessage("Показать обучение?(y/n)",MessageType.Error);
-            var isTutorial = messageService.ReadPlayerInput().Trim() == "y";
+            MessageService.ShowMessage("Показать обучение?(y/n)",MessageType.Error);
+            var isTutorial = MessageService.ReadPlayerInput().Trim() == "y";
             if (isTutorial)
             {
-                messageService.ShowMessage("У вас есть 10 очков на распределение брони и урона и 110 очков на распределение здоровья,вампиризма и шанса критического удара", MessageType.Warning);
+                MessageService.ShowMessage("У вас есть 10 очков на распределение брони и урона и 110 очков на распределение здоровья,вампиризма и шанса критического удара", MessageType.Warning);
                 Thread.Sleep(sleepTime + 1000);
-                messageService.ShowMessage("Например можно создать персонажа так - 7 урона/3 брони(10) и 70 здоровья/20 шанса крит. удара/20 процентов вампиризма(110)", MessageType.Info);
+                MessageService.ShowMessage("Например можно создать персонажа так - 7 урона/3 брони(10) и 70 здоровья/20 шанса крит. удара/20 процентов вампиризма(110)", MessageType.Info);
                 Thread.Sleep(sleepTime + 5000);
-                messageService.ClearTextField();
+                MessageService.ClearTextField();
             }
             Changing:
-            messageService.ShowMessage("Введите показатели урона и брони(например так - 7 3)", MessageType.Info);
+            MessageService.ShowMessage("Введите показатели урона и брони(например так - 7 3)", MessageType.Info);
             var dmgAndArmor = new List<int>();
             var isValidDmgAndArmor = false;
             do
             {
-                dmgAndArmor = messageService.ReadInputAction().Split().Select(int.Parse).ToList();
+                dmgAndArmor = MessageService.ReadInputAction().Split().Select(int.Parse).ToList();
                 isValidDmgAndArmor = CheckIfValidStats(dmgAndArmor.ToArray(), 10);
                 if (!isValidDmgAndArmor)
                 {
-                    messageService.ShowMessage("Сумма брони и урона больше 10 быть не может", MessageType.Error);
+                    MessageService.ShowMessage("Сумма брони и урона больше 10 быть не может", MessageType.Error);
                     Thread.Sleep(sleepTime);
-                    messageService.ClearTextField();
+                    MessageService.ClearTextField();
                 }
 
             }
             while (!isValidDmgAndArmor);
            
-            messageService.ShowMessage("Отличный выбор!", MessageType.Info);
+            MessageService.ShowMessage("Отличный выбор!", MessageType.Info);
 
             Thread.Sleep(sleepTime);
             var isValidOtherStats = false;
             var otherStats = new List<int>();
             do
             {
-                messageService.ClearTextField();
-                messageService.ShowMessage("Введите показатели здоровья,шанса крит. удара и вампиризма(например так - 70 20 20)", MessageType.Info);
-                otherStats = messageService.ReadInputAction().Split().Select(int.Parse).ToList();
+                MessageService.ClearTextField();
+                MessageService.ShowMessage("Введите показатели здоровья,шанса крит. удара и вампиризма(например так - 70 20 20)", MessageType.Info);
+                otherStats = MessageService.ReadInputAction().Split().Select(int.Parse).ToList();
                 isValidOtherStats = CheckIfValidStats(otherStats.ToArray(), 110);
                 if (!isValidOtherStats)
                 {
-                    messageService.ShowMessage("Сумма здоровья,шанса крит. удара и вампиризма больше 110 быть не может", MessageType.Error);
+                    MessageService.ShowMessage("Сумма здоровья,шанса крит. удара и вампиризма больше 110 быть не может", MessageType.Error);
                     Thread.Sleep(sleepTime);
-                    messageService.ClearTextField();
+                    MessageService.ClearTextField();
                 }
             }
             while (!isValidOtherStats);
 
-            messageService.ShowMessage("Интересная тактика!", MessageType.Info);
-            var player = new Player(items: new ObservableCollection<Item>(), gold: 13, name: "Test", currentHp: otherStats[0], damage: dmgAndArmor[0],
+            MessageService.ShowMessage("Интересная тактика!", MessageType.Info);
+            var player = new Player(items: new ObservableCollection<Item>(), gold: 13, name: name, currentHp: otherStats[0], damage: dmgAndArmor[0],
                     armor: dmgAndArmor[1], lifestealPercent: otherStats[2], criticalStrikeChance: otherStats[1])
-                { CurrentLevel = _levels.First() };
+                { CurrentLevel = Levels.First() };
             Game.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
-            messageService.ShowMessage("Вы уверены в своем выборе?(y/n)", MessageType.Error);
-            var isSure = messageService.ReadPlayerInput().Trim() == "y";
+            MessageService.ShowMessage("Вы уверены в своем выборе?(y/n)", MessageType.Error);
+            var isSure = MessageService.ReadPlayerInput().Trim() == "y";
             if (!isSure)
                 goto Changing;
             return player;
@@ -131,7 +134,7 @@ namespace ConsoleRPG
                 {
                     progress.GetProgress(i);
                 }
-                messageService.ClearTextField();
+                MessageService.ClearTextField();
             });
             FillItems();
             FillEnemies();
@@ -144,183 +147,183 @@ namespace ConsoleRPG
 
         public static void FillLevels()
         {
-            _levels = new[]
+            Levels = new[]
             {
                 new Level(0, "Start of the Journey",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 0,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 0,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(1, "Alakyr's forests - 1",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(2, "Alakyr's forests - 2",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(3, "Alakyr's forests - 3",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(4, "Alakyr's forests - 4",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(5, "Alakyr's forests - 5",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(6, "Alakyr's forests - 6",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(7, "Alakyr's forests - 7",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(8, "Alakyr's forests - 8",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(9, "Alakyr's forests - 9",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 2,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 2,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(10, "Alakyr's throne",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier1, 2,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 2,
                         ChancesConstants.EnemyChances[Tiers.Tier1])),
                 new Level(11, "Old broken village - 1",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(12, "Old broken village - 2",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(13, "Old broken village - 3",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(14, "Old broken village - 4",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(15, "Old broken village - 5",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(16, "Old broken village - 6",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(17, "Old broken village - 7",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(18, "Old broken village - 8",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(19, "Old broken village - 9",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 2,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 2,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(20, "Old village crossroads",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier2, 3,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier2, 3,
                         ChancesConstants.EnemyChances[Tiers.Tier2])),
                 new Level(21, "Forgotten plains - 1",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(22, "Forgotten plains - 2",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(23, "Forgotten plains - 3",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(24, "Forgotten plains - 4",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(25, "Forgotten plains - 5",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(26, "Forgotten plains - 6",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(27, "Forgotten plains - 7",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(28, "Forgotten plains - 8",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(29, "Forgotten plains - 9",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 2,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 2,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(30, "Forgotten plains cave entry",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier3, 3,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier3, 3,
                         ChancesConstants.EnemyChances[Tiers.Tier3])),
                 new Level(31, "Deep crystal cave - 1",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(32, "Deep crystal cave - 2",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(33, "Deep crystal cave - 3",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(34, "Deep crystal cave - 4",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(35, "Deep crystal cave - 5",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(36, "Deep crystal cave - 6",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(37, "Deep crystal cave - 7",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(38, "Deep crystal cave - 8",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(39, "Deep crystal cave - 9",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 2,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 2,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(40, "Deep crystal cave exit",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier4, 3,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier4, 3,
                         ChancesConstants.EnemyChances[Tiers.Tier4])),
                 new Level(41, "Road to cursed Volcano - 1",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(42, "Road to cursed Volcano - 2",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(43, "Road to cursed Volcano - 3",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(44, "Road to cursed Volcano - 4",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(45, "Road to cursed Volcano - 5",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(46, "Road to cursed Volcano - 6",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(47, "Road to cursed Volcano - 7",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 1,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 1,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(48, "Road to cursed Volcano - 8",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 2,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 2,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(49, "Road to cursed Volcano - 9",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 3,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 3,
                         ChancesConstants.EnemyChances[Tiers.Tier5])),
                 new Level(50, "Volcano's abyss",
-                    enemyRandomGenerator.GenerateRandomThings(_enemies.ToArray(), Tiers.Tier5, 4,
+                    EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier5, 4,
                         ChancesConstants.EnemyChances[Tiers.Tier5]))
             };
         }
 
         public static void FillCampaigns()
         {
-            _campaigns = new[]
+            Campaigns = new[]
             {
-                new Campaign(Tiers.Tier1, "Alakyr's forests", _levels.Where(x => x.Number < 11).ToList()),
+                new Campaign(Tiers.Tier1, "Alakyr's forests", Levels.Where(x => x.Number < 11).ToList()),
                 new Campaign(Tiers.Tier2, "Old broken village",
-                    _levels.Where(x => x.Number > 10 && x.Number < 21).ToList()),
+                    Levels.Where(x => x.Number > 10 && x.Number < 21).ToList()),
                 new Campaign(Tiers.Tier3, "Forgotten plains",
-                    _levels.Where(x => x.Number > 20 && x.Number < 31).ToList()),
+                    Levels.Where(x => x.Number > 20 && x.Number < 31).ToList()),
                 new Campaign(Tiers.Tier4, "Crystal cave deeps",
-                    _levels.Where(x => x.Number > 30 && x.Number < 41).ToList()),
+                    Levels.Where(x => x.Number > 30 && x.Number < 41).ToList()),
                 new Campaign(Tiers.Tier5, "Volcano's road",
-                    _levels.Where(x => x.Number > 40 && x.Number < 51).ToList())
+                    Levels.Where(x => x.Number > 40 && x.Number < 51).ToList())
             };
         }
 
         public static void FillEnemies()
         {
-            _enemies = new List<Enemy>()
+            Enemies = new List<Enemy>()
             {
                 #region Tier1
 
@@ -453,7 +456,7 @@ namespace ConsoleRPG
 
         public static void FillItems()
         {
-            _items = new List<Item>()
+            Items = new List<Item>()
 
             {
                     #region Tier1
@@ -790,22 +793,22 @@ namespace ConsoleRPG
 
         public static void FillShops()
         {
-            _shops = new List<Shop>()
+            Shops = new List<Shop>()
             {
                 new Shop(Tiers.Tier1,"Alakir's Blessings"
-                    ,itemRandomGenerator.GenerateRandomThings(_items.ToArray()
+                    ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
                         ,Tiers.Tier1,7,ChancesConstants.ShopChances[Tiers.Tier1])),
                 new Shop(Tiers.Tier2,"Sashiri's Ornaments"
-                    ,itemRandomGenerator.GenerateRandomThings(_items.ToArray()
+                    ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
                         ,Tiers.Tier2,4,ChancesConstants.ShopChances[Tiers.Tier2])),
                 new Shop(Tiers.Tier3,"Kitava's Courts"
-                    ,itemRandomGenerator.GenerateRandomThings(_items.ToArray()
+                    ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
                         ,Tiers.Tier3,5,ChancesConstants.ShopChances[Tiers.Tier3])),
                 new Shop(Tiers.Tier4,"Far East Woods"
-                    ,itemRandomGenerator.GenerateRandomThings(_items.ToArray()
+                    ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
                         ,Tiers.Tier4,4,ChancesConstants.ShopChances[Tiers.Tier4])),
                 new Shop(Tiers.Tier5,"Volcano's landscapes"
-                    ,itemRandomGenerator.GenerateRandomThings(_items.ToArray()
+                    ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
                         ,Tiers.Tier5,3,ChancesConstants.ShopChances[Tiers.Tier5]))
             };
         }
