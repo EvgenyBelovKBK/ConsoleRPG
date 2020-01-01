@@ -12,7 +12,7 @@ namespace ConsoleRPG.Classes
     public class Shop : IZone
     {
         public static IMessageService mMessageService;
-        public string Name { get; }
+        public string Name { get; set; }
         public List<Item> Stock { get; set; }
         public Tiers Tier { get; set; }
 

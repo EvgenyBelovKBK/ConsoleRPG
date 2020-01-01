@@ -25,10 +25,11 @@ namespace ConsoleRPG
         public static List<Enemy> Enemies = new List<Enemy>();
         public static List<Item> Items = new List<Item>();
         public static List<Shop> Shops = new List<Shop>();
-
+        private static List<Player> Classes = new List<Player>();
+        private const int StartGold = 13;
         static void Main(string[] args)
         {
-            Console.WindowHeight += Console.WindowHeight / 2;
+            Console.WindowHeight = 45;
             var game = new Game(MessageService,FightingService);
 
             var whenCompleted = FillGameInfo().Result;
@@ -57,73 +58,37 @@ namespace ConsoleRPG
             Thread.Sleep(sleepTime);
             MessageService.ShowMessage("Назови себя,путник!", MessageType.Info);
             var name = MessageService.ReadPlayerInput();
-            MessageService.ShowMessage($"{name} выбери свои сильные и слабые стороны", MessageType.Warning);
+            MessageService.ShowMessage($"{name},кто ты такой?",MessageType.Info);
             Thread.Sleep(sleepTime);
-            MessageService.ShowMessage("Показать обучение?(y/n)",MessageType.Error);
-            var isTutorial = MessageService.ReadPlayerInput().Trim() == "y";
-            if (isTutorial)
+            var i = 1;
+            foreach (var playableClass in Classes)
             {
-                MessageService.ShowMessage("У вас есть 10 очков на распределение брони и урона и 110 очков на распределение здоровья,вампиризма и шанса критического удара", MessageType.Warning);
-                Thread.Sleep(sleepTime + 1000);
-                MessageService.ShowMessage("Например можно создать персонажа так - 7 урона/3 брони(10) и 70 здоровья/20 шанса крит. удара/20 процентов вампиризма(110)", MessageType.Info);
-                Thread.Sleep(sleepTime + 5000);
-                MessageService.ClearTextField();
+                MessageService.ShowMessage(i + ")" + playableClass.Name, MessageType.Warning);
+                Game.ShowConsoleBoxedInfo(playableClass.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+                i++;
             }
-            Changing:
-            MessageService.ShowMessage("Введите показатели урона и брони(например так - 7 3)", MessageType.Info);
-            var dmgAndArmor = new List<int>();
-            var isValidDmgAndArmor = false;
-            do
+
+            Player chosenClass = null;
+            while (true)
             {
-                dmgAndArmor = MessageService.ReadInputAction().Split().Select(int.Parse).ToList();
-                isValidDmgAndArmor = CheckIfValidStats(dmgAndArmor.ToArray(), 10);
-                if (!isValidDmgAndArmor)
+                var classNumber = 0;
+                var valid = int.TryParse(MessageService.ReadPlayerInput(),out classNumber);
+                chosenClass = Classes.ElementAtOrDefault(classNumber - 1);
+                if (!valid && chosenClass == null)
                 {
-                    MessageService.ShowMessage("Сумма брони и урона больше 10 быть не может", MessageType.Error);
+                    MessageService.ShowMessage("Такого в списке нет!",MessageType.Error);
                     Thread.Sleep(sleepTime);
-                    MessageService.ClearTextField();
+                    continue;
                 }
-
+                break;
             }
-            while (!isValidDmgAndArmor);
-           
-            MessageService.ShowMessage("Отличный выбор!", MessageType.Info);
-
+            MessageService.ShowMessage($"{chosenClass.Name} по имени {name},посмотрим на что ты годишься!",MessageType.Warning);
             Thread.Sleep(sleepTime);
-            var isValidOtherStats = false;
-            var otherStats = new List<int>();
-            do
-            {
-                MessageService.ClearTextField();
-                MessageService.ShowMessage("Введите показатели здоровья,шанса крит. удара и вампиризма(например так - 70 20 20)", MessageType.Info);
-                otherStats = MessageService.ReadInputAction().Split().Select(int.Parse).ToList();
-                isValidOtherStats = CheckIfValidStats(otherStats.ToArray(), 110);
-                if (!isValidOtherStats)
-                {
-                    MessageService.ShowMessage("Сумма здоровья,шанса крит. удара и вампиризма больше 110 быть не может", MessageType.Error);
-                    Thread.Sleep(sleepTime);
-                    MessageService.ClearTextField();
-                }
-            }
-            while (!isValidOtherStats);
-
-            MessageService.ShowMessage("Интересная тактика!", MessageType.Info);
-            var player = new Player(items: new ObservableCollection<Item>(), gold: 13, name: name, currentHp: otherStats[0], damage: dmgAndArmor[0],
-                    armor: dmgAndArmor[1], lifestealPercent: otherStats[2], criticalStrikeChance: otherStats[1])
-                { CurrentLevel = Levels.First() };
-            Game.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
-            MessageService.ShowMessage("Вы уверены в своем выборе?(y/n)", MessageType.Error);
-            var isSure = MessageService.ReadPlayerInput().Trim() == "y";
-            if (!isSure)
-                goto Changing;
-            return player;
+            chosenClass.Name = name;
+            chosenClass.CurrentLevel = Levels.First();
+            return chosenClass;
         }
 
-        static bool CheckIfValidStats(int[] stats, int maxNumber)
-        {
-            var sum = stats.Sum();
-            return sum <= maxNumber;
-        }
 
         static async Task<int> FillGameInfo()
         {
@@ -141,6 +106,7 @@ namespace ConsoleRPG
             FillLevels();
             FillCampaigns();
             FillShops();
+            FillClasses();
             return progress.CurrentPercent;
         }
 
@@ -327,50 +293,50 @@ namespace ConsoleRPG
             {
                 #region Tier1
 
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Small goblin", currentHp: 20, damage: 5, armor: 0,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Small goblin", maxHp: 20, damage: 5, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 15, asciiArt: AsciiArts.SmallGoblin),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 5, "Small orc", currentHp: 60, damage: 12, armor: 5,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 5, "Small orc", maxHp: 60, damage: 12, armor: 5,
                     lifestealPercent: 0, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 6, "Small troll", currentHp: 45, damage: 17, armor: 3,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 6, "Small troll", maxHp: 45, damage: 17, armor: 3,
                     lifestealPercent: 10, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Angry gnome", currentHp: 15, damage: 20, armor: 0,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Angry gnome", maxHp: 15, damage: 20, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Fly-trap", currentHp: 15, damage: 10, armor: 0,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Fly-trap", maxHp: 15, damage: 10, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Little swamp creature", currentHp: 60, damage: 10,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Little swamp creature", maxHp: 60, damage: 10,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 5, "Wild wolf", currentHp: 35, damage: 13, armor: 0,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 5, "Wild wolf", maxHp: 35, damage: 13, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 20,asciiArt: AsciiArts.WildWolf),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Small bat", currentHp: 10, damage: 10, armor: 0,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 4, "Small bat", maxHp: 10, damage: 10, armor: 0,
                     lifestealPercent: 50, criticalStrikeChance: 10,asciiArt: AsciiArts.SmallBat),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Zombie", currentHp: 30, damage: 10, armor: 2,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 3, "Zombie", maxHp: 30, damage: 10, armor: 2,
                     lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Zombie),
-                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 6, "Young Blackgate warrior", currentHp: 20,
+                new Enemy(Tiers.Tier1, new ObservableCollection<Item>(), 6, "Young Blackgate warrior", maxHp: 20,
                     damage: 15, armor: 5, lifestealPercent: 0, criticalStrikeChance: 15,asciiArt: AsciiArts.YoungBlackgateWarrior),
 
                 #endregion
 
                 #region Tier2
 
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 9, "Small werewolf", currentHp: 80, damage: 22,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 9, "Small werewolf", maxHp: 80, damage: 22,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 6, "Goblin", currentHp: 35, damage: 15, armor: 5,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 6, "Goblin", maxHp: 35, damage: 15, armor: 5,
                     lifestealPercent: 0, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Wounded troll", currentHp: 20, damage: 35,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Wounded troll", maxHp: 20, damage: 35,
                     armor: 10, lifestealPercent: 35, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Mediocre size bear", currentHp: 90, damage: 25,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Mediocre size bear", maxHp: 90, damage: 25,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Cursed elf", currentHp: 50, damage: 30, armor: 10,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Cursed elf", maxHp: 50, damage: 30, armor: 10,
                     lifestealPercent: 0, criticalStrikeChance: 35),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Big hungry boar", currentHp: 100, damage: 26,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 8, "Big hungry boar", maxHp: 100, damage: 26,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 10,asciiArt: AsciiArts.BigHungryBoar),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 7, "Bat swarm", currentHp: 70, damage: 20, armor: 0,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 7, "Bat swarm", maxHp: 70, damage: 20, armor: 0,
                     lifestealPercent: 65, criticalStrikeChance: 0,asciiArt: AsciiArts.BatSwarm),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 10, "Cursed Iron knight", currentHp: 55, damage: 28,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 10, "Cursed Iron knight", maxHp: 55, damage: 28,
                     armor: 17, lifestealPercent: 0, criticalStrikeChance: 17),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 9, "Aztec warrior", currentHp: 45, damage: 40,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 9, "Aztec warrior", maxHp: 45, damage: 40,
                     armor: 10, lifestealPercent: 20, criticalStrikeChance: 20),
-                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 12, "Goblin-assassin", currentHp: 30, damage: 55,
+                new Enemy(Tiers.Tier2, new ObservableCollection<Item>(), 12, "Goblin-assassin", maxHp: 30, damage: 55,
                     armor: 5, lifestealPercent: 0, criticalStrikeChance: 70),
 
 
@@ -378,75 +344,75 @@ namespace ConsoleRPG
 
                 #region Tier3
 
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 13, "Werewolf", currentHp: 200, damage: 55, armor: 0,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 13, "Werewolf", maxHp: 200, damage: 55, armor: 0,
                     lifestealPercent: 35, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 17, "Proffesional Goblin-assassin", currentHp: 65,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 17, "Proffesional Goblin-assassin", maxHp: 65,
                     damage: 70, armor: 15, lifestealPercent: 0, criticalStrikeChance: 80),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 11, "Troll", currentHp: 120, damage: 47, armor: 15,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 11, "Troll", maxHp: 120, damage: 47, armor: 15,
                     lifestealPercent: 45, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 9, "Mother bear", currentHp: 165, damage: 50,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 9, "Mother bear", maxHp: 165, damage: 50,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 20,asciiArt: AsciiArts.MotherBear),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 11, "Orc-warrior", currentHp: 80, damage: 42,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 11, "Orc-warrior", maxHp: 80, damage: 42,
                     armor: 40, lifestealPercent: 0, criticalStrikeChance: 20),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 10, "Swamp creature", currentHp: 300, damage: 45,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 10, "Swamp creature", maxHp: 300, damage: 45,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 10, "Vampire", currentHp: 90, damage: 50, armor: 20,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 10, "Vampire", maxHp: 90, damage: 50, armor: 20,
                     lifestealPercent: 100, criticalStrikeChance: 20,asciiArt: AsciiArts.Vampire),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 13, "Cursed Paladin", currentHp: 110, damage: 62,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 13, "Cursed Paladin", maxHp: 110, damage: 62,
                     armor: 50, lifestealPercent: 0, criticalStrikeChance: 21),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 15, "Aztec voodoo-warior", currentHp: 125, damage: 58,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 15, "Aztec voodoo-warior", maxHp: 125, damage: 58,
                     armor: 23, lifestealPercent: 40, criticalStrikeChance: 30),
-                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 8, "Ogre", currentHp: 225, damage: 100, armor: 0,
+                new Enemy(Tiers.Tier3, new ObservableCollection<Item>(), 8, "Ogre", maxHp: 225, damage: 100, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Ogre),
 
                 #endregion
 
                 #region Tier4
 
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 14, "Little dragon", currentHp: 350, damage: 200,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 14, "Little dragon", maxHp: 350, damage: 200,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.LittleDragon),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 28, "Goblin back-stabber", currentHp: 100, damage: 130,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 28, "Goblin back-stabber", maxHp: 100, damage: 130,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 90),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 13, "Angry troll", currentHp: 150, damage: 115,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 13, "Angry troll", maxHp: 150, damage: 115,
                     armor: 50, lifestealPercent: 65, criticalStrikeChance: 20),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 15, "Ursa", currentHp: 280, damage: 160, armor: 0,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 15, "Ursa", maxHp: 280, damage: 160, armor: 0,
                     lifestealPercent: 25, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 14, "Cursed Paladin's sword", currentHp: 120,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 14, "Cursed Paladin's sword", maxHp: 120,
                     damage: 135, armor: 0, lifestealPercent: 0, criticalStrikeChance: 40),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 11, "Big Swamp thing", currentHp: 500, damage: 150,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 11, "Big Swamp thing", maxHp: 500, damage: 150,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 16, "Dracula", currentHp: 180, damage: 190, armor: 45,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 16, "Dracula", maxHp: 180, damage: 190, armor: 45,
                     lifestealPercent: 100, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 18, "Elf dead-eye", currentHp: 110, damage: 133,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 18, "Elf dead-eye", maxHp: 110, damage: 133,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 35),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 10, "Treant", currentHp: 420, damage: 200, armor: 0,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 10, "Treant", maxHp: 420, damage: 200, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 13, "Cursed mage", currentHp: 130, damage: 222,
+                new Enemy(Tiers.Tier4, new ObservableCollection<Item>(), 13, "Cursed mage", maxHp: 130, damage: 222,
                     armor: 40, lifestealPercent: 0, criticalStrikeChance: 0),
 
                 #endregion
 
                 #region Tier5
 
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Dragon", currentHp: 700, damage: 325, armor: 0,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Dragon", maxHp: 700, damage: 325, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Troll warlord", currentHp: 400, damage: 200,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Troll warlord", maxHp: 400, damage: 200,
                     armor: 145, lifestealPercent: 50, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Aztec king", currentHp: 350, damage: 180,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Aztec king", maxHp: 350, damage: 180,
                     armor: 60, lifestealPercent: 25, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Ursa warrior", currentHp: 550, damage: 210,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Ursa warrior", maxHp: 550, damage: 210,
                     armor: 50, lifestealPercent: 35, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Treant protector", currentHp: 1000, damage: 300,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Treant protector", maxHp: 1000, damage: 300,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Wild dog's group", currentHp: 300, damage: 190,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Wild dog's group", maxHp: 300, damage: 190,
                     armor: 0, lifestealPercent: 10, criticalStrikeChance: 30),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Zeus", currentHp: 425, damage: 350, armor: 0,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Zeus", maxHp: 425, damage: 350, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Legolas", currentHp: 300, damage: 270, armor: 0,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Legolas", maxHp: 300, damage: 270, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Cursed Arthur", currentHp: 500, damage: 225,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Cursed Arthur", maxHp: 500, damage: 225,
                     armor: 200, lifestealPercent: 10, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Volcano", currentHp: 1500, damage: 400, armor: 0,
+                new Enemy(Tiers.Tier5, new ObservableCollection<Item>(), 100, "Volcano", maxHp: 1500, damage: 400, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
 
                 #endregion
@@ -812,5 +778,22 @@ namespace ConsoleRPG
                         ,Tiers.Tier5,3,ChancesConstants.ShopChances[Tiers.Tier5]))
             };
         }
+
+        public static void FillClasses()
+        {
+            Classes = new List<Player>()
+            {
+                new Player(new ObservableCollection<Item>(),StartGold,"Human",70,7,5,0,10 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Giant",100,17,0,0,0 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Elf",50,15,0,0,35 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Undead",90,7,2,15,0 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Troll",80,6,3,35,10 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Gnome",40,5,7,0,10 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Orc",85,7,5,0,5 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Ogre",120,25,0,0,- 40 ),
+                new Player(new ObservableCollection<Item>(),StartGold,"Cursed",25,10,10,25,25 )
+            };
+        }
+        
     }
 }

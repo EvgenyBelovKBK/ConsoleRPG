@@ -8,7 +8,7 @@ namespace ConsoleRPG.Classes
 {
     public class Campaign : IZone
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
         public const int LevelCount = 10;
         public List<Level> Levels { get; }

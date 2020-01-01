@@ -10,7 +10,7 @@ namespace ConsoleRPG.Classes
     {
         public Dictionary<string,int> Stats { get; }
         public int Cost { get; }
-        public string Name {get;}
+        public string Name {get; set; }
         public Tiers Tier { get; set; }
         public Item(Dictionary<string, int> stats, int cost, Tiers rarity, string name)
         {
