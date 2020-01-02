@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,6 +44,7 @@ namespace ConsoleRPG
             {
                 game.MoveToNextLevel(player);
             }
+            Player.ClearSave();
         }
 
         static Player CreateCharacter()
@@ -56,6 +58,26 @@ namespace ConsoleRPG
                   | (_( )( (_) )| ( ) |\__, \( (_) ) | | (  ___/   | |\ \ | |    | (_, )
                   (____/'`\___/'(_) (_)(____/`\___/'(___)`\____)   (_) (_)(_)    (____/  (версия 0.2)" + Environment.NewLine, MessageType.Info);
             Thread.Sleep(sleepTime);
+            MessageService.ShowMessage("Начать новую игру или загрузить?(н/з)",MessageType.Info);
+            var isNewGame = MessageService.ReadPlayerInput().Equals("н",StringComparison.OrdinalIgnoreCase);
+
+            if (!isNewGame && File.Exists("save.json"))
+            {
+                Player loadedPlayer = null;
+                try
+                {
+                    loadedPlayer = Player.LoadPlayerGame();
+                    if(loadedPlayer != null)
+                        return loadedPlayer;
+                    else
+                        MessageService.ShowMessage("Не удалось найти файл сохранения,либо он пустой!", MessageType.Error);
+                }
+                catch (Exception e)
+                {
+                    MessageService.ShowMessage("Не удалось найти файл сохранения,либо он пустой!",MessageType.Error);
+                }
+            }
+
             MessageService.ShowMessage("Назови себя,путник!", MessageType.Info);
             var name = MessageService.ReadPlayerInput();
             MessageService.ShowMessage($"{name},кто ты такой?",MessageType.Info);

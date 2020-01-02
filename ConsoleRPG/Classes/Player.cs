@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using ConsoleRPG.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 
 namespace ConsoleRPG.Classes
 {
@@ -18,6 +21,13 @@ namespace ConsoleRPG.Classes
             set
             {
                 mCurrentLevel = value;
+                try
+                {
+                    SavePlayerGame(this);
+                }
+                catch (Exception e)
+                {
+                }
                 Points += mCurrentLevel.Number;
                 if (CurrentLevel.Number % 10 == 0)
                     Points += mCurrentLevel.Number;
@@ -48,5 +58,29 @@ namespace ConsoleRPG.Classes
             }
         }
 
+        public static Player LoadPlayerGame()
+        {
+            using (var stream = File.OpenRead("save.json"))
+            {
+                var serializer = new JsonSerializer();
+                var player = serializer.Deserialize<Player>(new BsonReader(stream));
+                return player;
+            }
+        }
+
+        public static void SavePlayerGame(Player player)
+        {
+            ClearSave();
+            using (var stream = File.OpenWrite("save.json"))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(new BsonWriter(stream), player);
+            }
+        }
+
+        public static void ClearSave()
+        {
+            File.WriteAllText("save.json", string.Empty);
+        }
     }
 }
