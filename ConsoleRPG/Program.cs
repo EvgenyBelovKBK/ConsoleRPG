@@ -107,7 +107,7 @@ namespace ConsoleRPG
   ███          ███    ███     ███       ███    ███     ███        ███  ███   ███ ███    ███   ███    █▄  ▀███████████ 
   ███          ███    ███     ███       ███    ███     ███        ███  ███   ███ ███   ▄███   ███    ███   ███    ███ 
  ▄████▀        ███    █▀     ▄████▀     ███    █▀      ███        █▀    ▀█   █▀  ████████▀    ██████████   ███    ███ 
-                                                                                                           ███    ███   (версия 0.3)" + Environment.NewLine, MessageType.Info);
+                                                                                                           ███    ███    (версия 0.3)" + Environment.NewLine, MessageType.Info);
             Thread.Sleep(sleepTime);
 
             var best = JsonSerializingService<Player>.Load(BestScoreFileName);
