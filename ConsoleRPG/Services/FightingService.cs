@@ -32,6 +32,9 @@ namespace ConsoleRPG.Services
 
         private int CalculateLifesteal(int finalDamage, int lifestealPercent,int currentHp, int maxHp)
         {
+            //На данный момент негативного лайфстила решил не делать чтобы исправить баг,если он понадобится то переделать!
+            if (lifestealPercent < 0)
+                return 0;
             var onePercentOfDamage = (double)finalDamage / 100;
             var lifesteal = onePercentOfDamage * lifestealPercent;
             if (currentHp + lifesteal > maxHp)

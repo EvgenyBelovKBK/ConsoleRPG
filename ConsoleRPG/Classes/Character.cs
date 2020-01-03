@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using ConsoleRPG.Constants;
+using ConsoleRPG.Enums;
 
 namespace ConsoleRPG.Classes
 {
@@ -15,12 +16,14 @@ namespace ConsoleRPG.Classes
         public string Name { get; set; }
         public const int InventorySpace = 5;
         public Dictionary<string, int> BaseStats { get; }
+        public Race Race { get; set; }
 
-        protected Character(ObservableCollection<Item> items, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        protected Character(Race race,ObservableCollection<Item> items, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Items = items;
             Gold = gold;
             Name = name;
+            Race = race;
             Items.CollectionChanged += (sender, args) =>
             {
                 CalculateStatsFromItems(Items);
@@ -46,6 +49,9 @@ namespace ConsoleRPG.Classes
                     Stats[stat.Key] += stat.Value;
                 }
             }
+
+            if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
+                Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
         }
     }
 }

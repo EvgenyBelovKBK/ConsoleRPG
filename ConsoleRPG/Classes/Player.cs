@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ConsoleRPG.Enums;
+using ConsoleRPG.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 
@@ -21,20 +22,13 @@ namespace ConsoleRPG.Classes
             set
             {
                 mCurrentLevel = value;
-                try
-                {
-                    SavePlayerGame(this);
-                }
-                catch (Exception e)
-                {
-                }
                 Points += mCurrentLevel.Number;
                 if (CurrentLevel.Number % 10 == 0)
                     Points += mCurrentLevel.Number;
             }
         }
 
-        public Player(ObservableCollection<Item> items, int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(items, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        public Player(Race race,ObservableCollection<Item> items, int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(race,items, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Points = 0;
         }
@@ -56,31 +50,6 @@ namespace ConsoleRPG.Classes
                     Points += score / 10;
                     break;
             }
-        }
-
-        public static Player LoadPlayerGame()
-        {
-            using (var stream = File.OpenRead("save.json"))
-            {
-                var serializer = new JsonSerializer();
-                var player = serializer.Deserialize<Player>(new BsonReader(stream));
-                return player;
-            }
-        }
-
-        public static void SavePlayerGame(Player player)
-        {
-            ClearSave();
-            using (var stream = File.OpenWrite("save.json"))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(new BsonWriter(stream), player);
-            }
-        }
-
-        public static void ClearSave()
-        {
-            File.WriteAllText("save.json", string.Empty);
         }
     }
 }

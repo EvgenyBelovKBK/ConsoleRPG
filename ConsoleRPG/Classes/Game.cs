@@ -35,8 +35,6 @@ namespace ConsoleRPG.Classes
             ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             Thread.Sleep(1000);
             ShowConsolePlayerUi(player);
-            mMessageService.ShowMessage("Нажмите любую клавишу чтобы выйти...",MessageType.Info);
-            mMessageService.ReadPlayerInput();
         }
 
         public void Fight(Player player,Level level)
@@ -79,6 +77,10 @@ namespace ConsoleRPG.Classes
         }
         public void MoveToNextLevel(Player player)
         {
+            JsonSerializingService<Player>.Save(player, Program.SaveFileName, () =>
+            {
+                JsonSerializingService<Player>.ClearSave(Program.SaveFileName);
+            });
             mMessageService.ClearTextField();
             bool enterShop;
             var currentLevelNumber = player.CurrentLevel.Number;

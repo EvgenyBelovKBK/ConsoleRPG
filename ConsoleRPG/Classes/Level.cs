@@ -23,6 +23,7 @@ namespace ConsoleRPG.Classes
             foreach (var enemy in enemies)
             {
                 Enemies.Add(new Enemy(enemy.Tier,
+                    enemy.Race,
                     enemy.Items,
                     enemy.Gold,
                     enemy.Name,
