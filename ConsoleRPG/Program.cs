@@ -10,7 +10,6 @@ using ConsoleRPG.Constants;
 using ConsoleRPG.Enums;
 using ConsoleRPG.Interfaces;
 using ConsoleRPG.Services;
-using Practice;
 
 namespace ConsoleRPG
 {
@@ -40,7 +39,8 @@ namespace ConsoleRPG
                 Console.WindowHeight = 45;
                 var game = new Game(MessageService,FightingService);
 
-                var whenCompleted = FillGameInfo().Result;
+                FillGameInfo();
+
                 Level.mMessageService = MessageService;
                 Shop.mMessageService = MessageService;
                 var player = CreateCharacter();
@@ -172,24 +172,14 @@ namespace ConsoleRPG
         }
 
 
-        static async Task<int> FillGameInfo()
+        static void FillGameInfo()
         {
-            var progress = new ProgressHelper(30000000);
-            await Task.Run(() =>
-            {
-                for (int i = 0; i < 30000000; i++)
-                {
-                    progress.GetProgress(i);
-                }
-                MessageService.ClearTextField();
-            });
             FillItems();
             FillEnemies();
             FillLevels();
             FillCampaigns();
             FillShops();
             FillRaces();
-            return progress.CurrentPercent;
         }
 
 

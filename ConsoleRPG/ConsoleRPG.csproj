@@ -3,16 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ApplicationIcon>Icons8-Halloween-Skull-3.ico</ApplicationIcon>
+    <StartupObject>ConsoleRPG.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Practice">
-      <HintPath>..\..\Utils\Practice\bin\Debug\Practice.exe</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
