@@ -47,11 +47,12 @@ namespace ConsoleRPG
                 MessageService.ShowMessage("В путь!", MessageType.Info);
                 Thread.Sleep(1500);
                 MessageService.ClearTextField();
-                while (player.Stats[StatsConstants.HpStat] > 0)
+                while (player.Stats[StatsConstants.HpStat] > 0 && player.CurrentLevel.Number <= 50)
                 {
                     game.MoveToNextLevel(player);
                 }
-
+                if(player.CurrentLevel.Number == 50) 
+                    MessageService.ShowMessage("Чтож,в этот раз вам удалось победить!Но зло не дремлет!",MessageType.Error);
                 Player bestExplorer;
                 var oldTable = new Dictionary<string, string>();
                 oldTable = JsonSerializingService<Dictionary<string, string>>.Load(RatingFileName);
@@ -97,17 +98,7 @@ namespace ConsoleRPG
         static Player CreateCharacter()
         {
             int sleepTime = 3500;
-            MessageService.ShowMessage(@"
-                  
-   ▄███████▄    ▄████████     ███        ▄█    █▄       ▄████████  ▄█  ███▄▄▄▄   ████████▄     ▄████████    ▄████████ 
-  ███    ███   ███    ███ ▀█████████▄   ███    ███     ███    ███ ███  ███▀▀▀██▄ ███   ▀███   ███    ███   ███    ███ 
-  ███    ███   ███    ███    ▀███▀▀██   ███    ███     ███    █▀  ███▌ ███   ███ ███    ███   ███    █▀    ███    ███ 
-  ███    ███   ███    ███     ███   ▀  ▄███▄▄▄▄███▄▄  ▄███▄▄▄     ███▌ ███   ███ ███    ███  ▄███▄▄▄      ▄███▄▄▄▄██▀ 
-▀█████████▀  ▀███████████     ███     ▀▀███▀▀▀▀███▀  ▀▀███▀▀▀     ███▌ ███   ███ ███    ███ ▀▀███▀▀▀     ▀▀███▀▀▀▀▀   
-  ███          ███    ███     ███       ███    ███     ███        ███  ███   ███ ███    ███   ███    █▄  ▀███████████ 
-  ███          ███    ███     ███       ███    ███     ███        ███  ███   ███ ███   ▄███   ███    ███   ███    ███ 
- ▄████▀        ███    █▀     ▄████▀     ███    █▀      ███        █▀    ▀█   █▀  ████████▀    ██████████   ███    ███ 
-                                                                                                           ███    ███    (версия 0.3)" + Environment.NewLine, MessageType.Info);
+            MessageService.ShowMessage(AsciiArts.Header + Environment.NewLine, MessageType.Info);
             Thread.Sleep(sleepTime);
 
             var best = JsonSerializingService<Player>.Load(BestScoreFileName);
@@ -386,21 +377,21 @@ namespace ConsoleRPG
 
                 new Enemy(Tiers.Tier1,Race.Goblin, new ObservableCollection<Item>(), 3, "Small goblin", maxHp: 20, damage: 5, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 15, asciiArt: AsciiArts.SmallGoblin),
-                new Enemy(Tiers.Tier1,Race.Orc, new ObservableCollection<Item>(), 5, "Small orc", maxHp: 60, damage: 12, armor: 5,
-                    lifestealPercent: 0, criticalStrikeChance: 10),
+                new Enemy(Tiers.Tier1,Race.Orc, new ObservableCollection<Item>(), 5, "Small orc", maxHp: 60, damage: 13, armor: 5,
+                    lifestealPercent: 0, criticalStrikeChance: 5),
                 new Enemy(Tiers.Tier1,Race.Troll, new ObservableCollection<Item>(), 6, "Small troll", maxHp: 45, damage: 17, armor: 3,
-                    lifestealPercent: 10, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier1, Race.Gnome,new ObservableCollection<Item>(), 4, "Angry gnome", maxHp: 15, damage: 20, armor: 0,
+                    lifestealPercent: 45, criticalStrikeChance: 5),
+                new Enemy(Tiers.Tier1, Race.Gnome,new ObservableCollection<Item>(), 4, "Angry gnome", maxHp: 20, damage: 25, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, Race.MagicCreature,new ObservableCollection<Item>(), 3, "Fly-trap", maxHp: 15, damage: 10, armor: 0,
+                new Enemy(Tiers.Tier1, Race.MagicCreature,new ObservableCollection<Item>(), 3, "Fly-trap", maxHp: 18, damage: 8, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, Race.MagicCreature,new ObservableCollection<Item>(), 4, "Little swamp creature", maxHp: 60, damage: 10,
+                new Enemy(Tiers.Tier1, Race.MagicCreature,new ObservableCollection<Item>(), 4, "Little swamp creature", maxHp: 60, damage: 11,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 0),
                 new Enemy(Tiers.Tier1, Race.Animal,new ObservableCollection<Item>(), 5, "Wild wolf", maxHp: 35, damage: 13, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 20,asciiArt: AsciiArts.WildWolf),
-                new Enemy(Tiers.Tier1, Race.Animal,new ObservableCollection<Item>(), 4, "Small bat", maxHp: 10, damage: 10, armor: 0,
-                    lifestealPercent: 50, criticalStrikeChance: 10,asciiArt: AsciiArts.SmallBat),
-                new Enemy(Tiers.Tier1, Race.Undead,new ObservableCollection<Item>(), 3, "Zombie", maxHp: 30, damage: 10, armor: 2,
+                new Enemy(Tiers.Tier1, Race.Animal,new ObservableCollection<Item>(), 4, "Small bat", maxHp: 20, damage: 10, armor: 0,
+                    lifestealPercent: 65, criticalStrikeChance: 5,asciiArt: AsciiArts.SmallBat),
+                new Enemy(Tiers.Tier1, Race.Undead,new ObservableCollection<Item>(), 3, "Zombie", maxHp: 30, damage: 12, armor: 2,
                     lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Zombie),
                 new Enemy(Tiers.Tier1, Race.Cursed,new ObservableCollection<Item>(), 6, "Young Blackgate warrior", maxHp: 20,
                     damage: 15, armor: 5, lifestealPercent: 0, criticalStrikeChance: 15,asciiArt: AsciiArts.YoungBlackgateWarrior),
@@ -409,12 +400,12 @@ namespace ConsoleRPG
 
                 #region Tier2
 
-                new Enemy(Tiers.Tier2,Race.Animal, new ObservableCollection<Item>(), 9, "Small werewolf", maxHp: 80, damage: 22,
-                    armor: 0, lifestealPercent: 20, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier2,Race.Goblin, new ObservableCollection<Item>(), 6, "Goblin", maxHp: 35, damage: 15, armor: 5,
+                new Enemy(Tiers.Tier2,Race.Animal, new ObservableCollection<Item>(), 9, "Small werewolf", maxHp: 98, damage: 22,
+                    armor: 0, lifestealPercent: 35, criticalStrikeChance: 10),
+                new Enemy(Tiers.Tier2,Race.Goblin, new ObservableCollection<Item>(), 6, "Goblin", maxHp: 45, damage: 15, armor: 10,
                     lifestealPercent: 0, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier2,Race.Troll, new ObservableCollection<Item>(), 8, "Wounded troll", maxHp: 20, damage: 35,
-                    armor: 10, lifestealPercent: 35, criticalStrikeChance: 10),
+                new Enemy(Tiers.Tier2,Race.Troll, new ObservableCollection<Item>(), 8, "Wounded troll", maxHp: 45, damage: 35,
+                    armor: 15, lifestealPercent: 55, criticalStrikeChance: 7),
                 new Enemy(Tiers.Tier2,Race.Animal, new ObservableCollection<Item>(), 8, "Mediocre size bear", maxHp: 90, damage: 25,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 15),
                 new Enemy(Tiers.Tier2,Race.Elf, new ObservableCollection<Item>(), 8, "Cursed elf", maxHp: 50, damage: 30, armor: 10,
@@ -438,21 +429,21 @@ namespace ConsoleRPG
                 new Enemy(Tiers.Tier3,Race.Animal, new ObservableCollection<Item>(), 13, "Werewolf", maxHp: 200, damage: 55, armor: 0,
                     lifestealPercent: 35, criticalStrikeChance: 15),
                 new Enemy(Tiers.Tier3,Race.Gnome, new ObservableCollection<Item>(), 17, "Proffesional Goblin-assassin", maxHp: 65,
-                    damage: 70, armor: 15, lifestealPercent: 0, criticalStrikeChance: 80),
+                    damage: 50, armor: 10, lifestealPercent: 0, criticalStrikeChance: 80),
                 new Enemy(Tiers.Tier3,Race.Troll, new ObservableCollection<Item>(), 11, "Troll", maxHp: 120, damage: 47, armor: 15,
-                    lifestealPercent: 45, criticalStrikeChance: 15),
+                    lifestealPercent: 50, criticalStrikeChance: 10),
                 new Enemy(Tiers.Tier3,Race.Animal, new ObservableCollection<Item>(), 9, "Mother bear", maxHp: 165, damage: 50,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 20,asciiArt: AsciiArts.MotherBear),
                 new Enemy(Tiers.Tier3,Race.Orc, new ObservableCollection<Item>(), 11, "Orc-warrior", maxHp: 80, damage: 42,
                     armor: 40, lifestealPercent: 0, criticalStrikeChance: 20),
                 new Enemy(Tiers.Tier3,Race.MagicCreature, new ObservableCollection<Item>(), 10, "Swamp creature", maxHp: 300, damage: 45,
                     armor: 0, lifestealPercent: 20, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier3,Race.Undead, new ObservableCollection<Item>(), 10, "Vampire", maxHp: 90, damage: 50, armor: 20,
-                    lifestealPercent: 100, criticalStrikeChance: 20,asciiArt: AsciiArts.Vampire),
+                new Enemy(Tiers.Tier3,Race.Undead, new ObservableCollection<Item>(), 10, "Vampire", maxHp: 110, damage: 50, armor: 20,
+                    lifestealPercent: 100, criticalStrikeChance: 15,asciiArt: AsciiArts.Vampire),
                 new Enemy(Tiers.Tier3,Race.Cursed, new ObservableCollection<Item>(), 13, "Cursed Paladin", maxHp: 110, damage: 62,
                     armor: 50, lifestealPercent: 0, criticalStrikeChance: 21),
                 new Enemy(Tiers.Tier3,Race.Human, new ObservableCollection<Item>(), 15, "Aztec voodoo-warior", maxHp: 125, damage: 58,
-                    armor: 23, lifestealPercent: 40, criticalStrikeChance: 30),
+                    armor: 23, lifestealPercent: 25, criticalStrikeChance: 16),
                 new Enemy(Tiers.Tier3,Race.Ogre, new ObservableCollection<Item>(), 8, "Ogre", maxHp: 225, damage: 100, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Ogre),
 
@@ -463,9 +454,9 @@ namespace ConsoleRPG
                 new Enemy(Tiers.Tier4,Race.MagicCreature, new ObservableCollection<Item>(), 14, "Little dragon", maxHp: 350, damage: 200,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.LittleDragon),
                 new Enemy(Tiers.Tier4,Race.Goblin, new ObservableCollection<Item>(), 28, "Goblin back-stabber", maxHp: 100, damage: 110,
-                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 90),
+                    armor: 0, lifestealPercent: 0, criticalStrikeChance: 85),
                 new Enemy(Tiers.Tier4,Race.Troll, new ObservableCollection<Item>(), 13, "Angry troll", maxHp: 150, damage: 115,
-                    armor: 50, lifestealPercent: 65, criticalStrikeChance: 20),
+                    armor: 50, lifestealPercent: 65, criticalStrikeChance: 10),
                 new Enemy(Tiers.Tier4,Race.Animal, new ObservableCollection<Item>(), 15, "Ursa", maxHp: 280, damage: 150, armor: 0,
                     lifestealPercent: 35, criticalStrikeChance: 15),
                 new Enemy(Tiers.Tier4,Race.Cursed, new ObservableCollection<Item>(), 14, "Cursed Paladin's sword", maxHp: 110,
@@ -526,6 +517,10 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.DamageStat, 8}
                     }, 3, Tiers.Tier1, "Iron sword"),
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.DamageStat, 11}
+                    }, 4, Tiers.Tier1, "Bronze scythe"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -590,6 +585,11 @@ namespace ConsoleRPG
                         {StatsConstants.LifestealStat, 100},
                         {StatsConstants.DamageStat, 10}
                     }, 14, Tiers.Tier1, "Old Drakula's claw"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.DamageStat, 22}
+                    }, 11, Tiers.Tier1, "Golden Axe"),
 
                     #endregion
 
@@ -682,9 +682,9 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.LifestealStat, 20},
+                        {StatsConstants.LifestealStat, 10},
                         {StatsConstants.DamageStat, 70},
-                        {StatsConstants.CritChanceStat, 20}
+                        {StatsConstants.CritChanceStat, 15}
                     }, 53, Tiers.Tier3, "Assassin's knives"),
 
                     new Item(new Dictionary<string, int>()
@@ -700,7 +700,7 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat, 78},
+                        {StatsConstants.DamageStat, 85},
                         {StatsConstants.CritChanceStat, -40}
                     }, 40, Tiers.Tier3, "Eye Patch"),
 
@@ -717,8 +717,8 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat, 275},
-                        {StatsConstants.ArmorStat, -100},
+                        {StatsConstants.DamageStat, 250},
+                        {StatsConstants.ArmorStat, -70},
                     }, 63, Tiers.Tier4, "Void basher"),
 
                     new Item(new Dictionary<string, int>()
@@ -743,21 +743,21 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat, 200},
-                        {StatsConstants.CritChanceStat, -50}
+                        {StatsConstants.DamageStat, 220},
+                        {StatsConstants.CritChanceStat, -60}
                     }, 68, Tiers.Tier4, "Ogre club"),
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.LifestealStat, -100},
+                        {StatsConstants.LifestealStat, -65},
                         {StatsConstants.DamageStat, 100},
-                        {StatsConstants.MaxHpStat, 100},
+                        {StatsConstants.MaxHpStat, 150},
                     }, 80, Tiers.Tier4, "Mahogany staff"),
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.CritChanceStat, 45},
-                        {StatsConstants.DamageStat, 175}
+                        {StatsConstants.CritChanceStat, 25},
+                        {StatsConstants.DamageStat, 150}
                     }, 78, Tiers.Tier4, "Big old pirate sabre"),
 
                     new Item(new Dictionary<string, int>()
@@ -799,7 +799,7 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 150},
-                        {StatsConstants.ArmorStat, 150},
+                        {StatsConstants.ArmorStat, 180},
                         {StatsConstants.CritChanceStat, -30},
                     }, 86, Tiers.Tier5, "Volcano helmet"),
 
@@ -813,8 +813,8 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, -1000},
-                        {StatsConstants.DamageStat, 225},
-                        {StatsConstants.CritChanceStat, 70},
+                        {StatsConstants.DamageStat, 300},
+                        {StatsConstants.CritChanceStat, 50},
                     }, 93, Tiers.Tier5, "Mage staff"),
 
                     new Item(new Dictionary<string, int>()
@@ -833,14 +833,14 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 325},
-                        {StatsConstants.MaxHpStat, 275}
+                        {StatsConstants.ArmorStat, 250},
+                        {StatsConstants.MaxHpStat, 230}
                     }, 115, Tiers.Tier5, "Paladin's armor set"),
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.CritChanceStat, 75},
-                        {StatsConstants.DamageStat, 275}
+                        {StatsConstants.CritChanceStat, 45},
+                        {StatsConstants.DamageStat, 255},
                     }, 130, Tiers.Tier5, "Elven bow"),
 
                     #endregion
@@ -854,19 +854,19 @@ namespace ConsoleRPG
             {
                 new Shop(Tiers.Tier1,"Alakir's Blessings"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
-                        ,Tiers.Tier1,7,ChancesConstants.ShopChances[Tiers.Tier1])),
+                        ,Tiers.Tier1,8,ChancesConstants.ShopChances[Tiers.Tier1])),
                 new Shop(Tiers.Tier2,"Sashiri's Ornaments"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
-                        ,Tiers.Tier2,4,ChancesConstants.ShopChances[Tiers.Tier2])),
+                        ,Tiers.Tier2,5,ChancesConstants.ShopChances[Tiers.Tier2])),
                 new Shop(Tiers.Tier3,"Kitava's Courts"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
                         ,Tiers.Tier3,5,ChancesConstants.ShopChances[Tiers.Tier3])),
                 new Shop(Tiers.Tier4,"Far East Woods"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
-                        ,Tiers.Tier4,4,ChancesConstants.ShopChances[Tiers.Tier4])),
+                        ,Tiers.Tier4,5,ChancesConstants.ShopChances[Tiers.Tier4])),
                 new Shop(Tiers.Tier5,"Volcano's landscapes"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
-                        ,Tiers.Tier5,3,ChancesConstants.ShopChances[Tiers.Tier5]))
+                        ,Tiers.Tier5,5,ChancesConstants.ShopChances[Tiers.Tier5]))
             };
         }
 
