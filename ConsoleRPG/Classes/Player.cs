@@ -28,7 +28,7 @@ namespace ConsoleRPG.Classes
             }
         }
 
-        public Player(Race race,ObservableCollection<Item> items, int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(race,items, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        public Player(Race race,ObservableCollection<Item> items, int inventorySpace,int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(race,items, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance,inventorySpace)
         {
             Points = 0;
         }

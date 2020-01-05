@@ -11,7 +11,7 @@ namespace ConsoleRPG.Services
         public Random Random { get; set; } = new Random();
         public int GetRandomNumber(int minValue = 1, int maxValue = 100)
         {
-            return Random.Next(minValue, maxValue);
+            return Random.Next(minValue, maxValue + 1);
         }
 
         public bool IsRolled(int chance)

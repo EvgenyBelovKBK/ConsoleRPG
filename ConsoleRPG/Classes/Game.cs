@@ -85,7 +85,9 @@ namespace ConsoleRPG.Classes
             bool enterShop;
             var currentLevelNumber = player.CurrentLevel.Number;
 
-
+            Fight(player, player.CurrentLevel);
+            if (IsGameEnd(player.Stats[StatsConstants.HpStat],currentLevelNumber))
+                return;
             if (currentLevelNumber % 10 == 0)
             {
                 if (currentLevelNumber != 0)
@@ -111,12 +113,14 @@ namespace ConsoleRPG.Classes
                 else
                     player.Gold += 20;
             }
-            else
-                Fight(player,player.CurrentLevel);
-            if(player.Stats[StatsConstants.HpStat] < 0)
-                return;
+
             Thread.Sleep(1500);
             player.CurrentLevel = Program.Levels.ToArray()[currentLevelNumber + 1];
+        }
+
+        public static bool IsGameEnd(int hp,int levelNumber)
+        {
+            return hp <= 0 || levelNumber == Program.Levels.Length - 1;
         }
 
         public static void ShowConsolePlayerUi(Player player)

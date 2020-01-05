@@ -26,7 +26,7 @@ namespace ConsoleRPG.Classes
 
         public void BuyItem (Item item,Player player)
         {
-            if (player.Items.Count == Character.InventorySpace)
+            if (player.Items.Count == player.InventorySpace)
             {
                 mMessageService.ShowMessage("Инвентарь полон!", MessageType.Error);
                 Thread.Sleep(1000);

@@ -14,16 +14,17 @@ namespace ConsoleRPG.Classes
         public ObservableCollection<Item> Items { get;}
         public int Gold { get; set; }
         public string Name { get; set; }
-        public const int InventorySpace = 5;
+        public int InventorySpace = 5;
         public Dictionary<string, int> BaseStats { get; }
         public Race Race { get; set; }
 
-        protected Character(Race race,ObservableCollection<Item> items, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        protected Character(Race race,ObservableCollection<Item> items, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,int inventorySpace = 5) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Items = items;
             Gold = gold;
             Name = name;
             Race = race;
+            InventorySpace = inventorySpace;
             Items.CollectionChanged += (sender, args) =>
             {
                 CalculateStatsFromItems(Items);
