@@ -26,13 +26,22 @@ namespace ConsoleRPG.Classes
 
         public void BuyItem (Item item,Player player)
         {
-            if (player.Items.Count == player.InventorySpace)
+            var isAllowedToBuy = false;
+            if (StatsConstants.OneHandedWeapons.Contains(item.Type))
+                    isAllowedToBuy = player.Inventory.WeaponPower + 1 <= player.Inventory.MaxWeaponPower;
+            else if (StatsConstants.TwoHandedWeapons.Contains(item.Type))
+                isAllowedToBuy = player.Inventory.WeaponPower + 2 <= player.Inventory.MaxWeaponPower;
+            else
+                isAllowedToBuy = player.Inventory.Items.FirstOrDefault(x => x.Type == item.Type) == null;
+
+            if (!isAllowedToBuy)
             {
-                mMessageService.ShowMessage("Инвентарь полон!", MessageType.Error);
+                mMessageService.ShowMessage("Вы не можете это надеть!", MessageType.Error);
                 Thread.Sleep(1000);
                 return;
             }
-            else if (player.Gold < item.Cost)
+
+            if (player.Gold < item.Cost)
             {
                 mMessageService.ShowMessage("Не хватает денег!", MessageType.Error);
                 Thread.Sleep(1000);
@@ -40,14 +49,14 @@ namespace ConsoleRPG.Classes
             }
 
             player.Gold -= item.Cost;
-            player.Items.Add(item);
+            player.Inventory.Items.Add(item);
             Stock.Remove(item);
 
         }
         public void SellItem(Item item, Player player)
         {
             player.Gold += item.Cost;
-            player.Items.Remove(item);
+            player.Inventory.Items.Remove(item);
             Stock.Add(item);
         }
 
@@ -57,6 +66,7 @@ namespace ConsoleRPG.Classes
             {
                 var item = Stock[i];
                 mMessageService.ShowMessage($"{i+1}){item.Cost} золота - {item.Name}",MessageType.Info);
+                mMessageService.ShowMessage($"Тип:{item.Type}",MessageType.Info);
                 Game.ShowConsoleBoxedInfo(item.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             }
         }
@@ -87,7 +97,7 @@ namespace ConsoleRPG.Classes
                 var isValidNumber = int.TryParse(command.Split(' ')[1], out itemNumber);
                 itemNumber -= 1;
                 if (!isValidNumber || (isBuying && (itemNumber < 0  || itemNumber >= shop.Stock.Count)) ||
-                    (!isBuying && (itemNumber < 0 || itemNumber >= player.Items.Count)))
+                    (!isBuying && (itemNumber < 0 || itemNumber >= player.Inventory.Items.Count)))
                 {
                     mMessageService.ShowMessage("Предмета с таким номером не существует", MessageType.Error);
                     continue;
@@ -96,7 +106,7 @@ namespace ConsoleRPG.Classes
                 if (isBuying)
                     BuyItem(Stock[itemNumber], player);
                 else
-                    SellItem(player.Items[itemNumber], player);
+                    SellItem(player.Inventory.Items[itemNumber], player);
             }
             return true;
         }

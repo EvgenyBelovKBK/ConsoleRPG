@@ -11,23 +11,22 @@ namespace ConsoleRPG.Classes
 {
     public abstract class Character : Statistics,INameable
     {
-        public ObservableCollection<Item> Items { get;}
         public int Gold { get; set; }
         public string Name { get; set; }
-        public int InventorySpace = 5;
+        public Inventory Inventory { get; set; }
         public Dictionary<string, int> BaseStats { get; }
         public Race Race { get; set; }
 
-        protected Character(Race race,ObservableCollection<Item> items, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,int inventorySpace = 5) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        protected Character(Race race,Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
-            Items = items;
             Gold = gold;
             Name = name;
             Race = race;
-            InventorySpace = inventorySpace;
-            Items.CollectionChanged += (sender, args) =>
+            Inventory = inventory;
+            Inventory.Items.CollectionChanged += (sender, args) =>
             {
-                CalculateStatsFromItems(Items);
+                CalculateStatsFromItems(Inventory.Items);
+                Inventory.WeaponPower = CalculateWeaponPower(Inventory.Items);
             };
             BaseStats = new Dictionary<string, int>();
             BaseStats.Add(StatsConstants.MaxHpStat, maxHp);
@@ -50,9 +49,22 @@ namespace ConsoleRPG.Classes
                     Stats[stat.Key] += stat.Value;
                 }
             }
-
             if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
                 Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
+        }
+
+        public int CalculateWeaponPower(IEnumerable<Item> items)
+        {
+            var power = 0;
+            foreach (var item in items)
+            {
+                if (StatsConstants.OneHandedWeapons.Contains(item.Type))
+                    power += 1;
+                else if (StatsConstants.TwoHandedWeapons.Contains(item.Type))
+                    power += 2;
+            }
+
+            return power;
         }
     }
 }

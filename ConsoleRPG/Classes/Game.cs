@@ -127,10 +127,11 @@ namespace ConsoleRPG.Classes
         {
             mMessageService.ShowMessage($"Золото:{player.Gold}",MessageType.Info);
             mMessageService.ShowMessage($"Инвентарь:",MessageType.Info);
-            for (int i = 0; i < player.Items.Count; i++)
+            for (int i = 0; i < player.Inventory.Items.Count; i++)
             {
-                var playerItem = player.Items[i];
+                var playerItem = player.Inventory.Items[i];
                 mMessageService.ShowMessage($"{i+1}){playerItem.Name}",MessageType.Info);
+                mMessageService.ShowMessage($"Тип:{playerItem.Type}", MessageType.Info);
                 foreach (var stat in playerItem.Stats.Where(x => x.Value != 0))
                 {
                     mMessageService.ShowMessage($"{stat.Key}:{stat.Value},",MessageType.Info);
