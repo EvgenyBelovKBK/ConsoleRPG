@@ -26,6 +26,7 @@ namespace ConsoleRPG.Services
             {
                 var serializer = new JsonSerializer();
                 serializer.Serialize(new BsonWriter(stream), list);
+                JsonConvert.SerializeObject(list, new JsonSerializerSettings(){TypeNameHandling = TypeNameHandling.Auto});
             }
         }
 

@@ -27,23 +27,23 @@ namespace ConsoleRPG.Classes
         public void BuyItem (Item item,Player player)
         {
             var isAllowedToBuy = false;
-            if (StatsConstants.OneHandedWeapons.Contains(item.Type))
-                    isAllowedToBuy = player.Inventory.WeaponPower + 1 <= player.Inventory.MaxWeaponPower;
-            else if (StatsConstants.TwoHandedWeapons.Contains(item.Type))
-                isAllowedToBuy = player.Inventory.WeaponPower + 2 <= player.Inventory.MaxWeaponPower;
+            if (item.Type == ItemType.OneHandedWeapon || item.Type == ItemType.TwoHandedWeapon)
+            {
+                isAllowedToBuy = player.Inventory.Items.Count(x => x.Type == ItemType.OneHandedWeapon || x.Type == ItemType.TwoHandedWeapon) + 1 <= player.Inventory.ItemRestrictions[item.Type];
+            }
             else
-                isAllowedToBuy = player.Inventory.Items.FirstOrDefault(x => x.Type == item.Type) == null;
+                isAllowedToBuy = player.Inventory.Items.Count(x => x.Type == item.Type) + 1 <= player.Inventory.ItemRestrictions[item.Type];
 
             if (!isAllowedToBuy)
             {
-                mMessageService.ShowMessage("Вы не можете это надеть!", MessageType.Error);
+                mMessageService.ShowMessage(new Message("Вы не можете это надеть!", ConsoleColor.Red));
                 Thread.Sleep(1000);
                 return;
             }
 
             if (player.Gold < item.Cost)
             {
-                mMessageService.ShowMessage("Не хватает денег!", MessageType.Error);
+                mMessageService.ShowMessage(new Message("Нужно больше золота!", ConsoleColor.Red));
                 Thread.Sleep(1000);
                 return;
             }
@@ -65,25 +65,26 @@ namespace ConsoleRPG.Classes
             for (int i = 0; i < Stock.Count; i++)
             {
                 var item = Stock[i];
-                mMessageService.ShowMessage($"{i+1}){item.Cost} золота - {item.Name}",MessageType.Info);
-                mMessageService.ShowMessage($"Тип:{item.Type}",MessageType.Info);
-                Game.ShowConsoleBoxedInfo(item.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+                mMessageService.ShowMessage(new Message($"{i+1}){item.Cost} золота - {item.Name}",ConsoleColor.Yellow));
+                Game.ShowConsoleItemInfo(item);
             }
         }
 
         public bool Enter(Shop shop,Player player)
         {
             mMessageService.ClearTextField();
-            mMessageService.ShowMessage($"Добро пожаловать в {Name}", MessageType.Info);
+            mMessageService.ShowMessage(new Message($"Добро пожаловать в {Name}", ConsoleColor.Cyan));
             Thread.Sleep(2000);
             var command = "";
             while (true)
             {
                 mMessageService.ClearTextField();
-                mMessageService.ShowMessage("чтобы купить или продать предметы введите команду(b/s) и номер предмета!(b 2,s 1)", MessageType.Info);
-                mMessageService.ShowMessage($"Чтобы выйти из магазина введите q", MessageType.Info);
+                mMessageService.ShowMessage(new Message("чтобы купить или продать предметы введите команду(b/s) и номер предмета!(b 2,s 1)", ConsoleColor.Cyan));
+                mMessageService.ShowMessage(new Message($"Чтобы выйти из магазина введите q", ConsoleColor.Cyan));
+
                 Game.ShowConsolePlayerUi(player);
                 ShowStock();
+
                 command = mMessageService.ReadPlayerInput();
                 if(command == "q")
                     break;
@@ -91,7 +92,7 @@ namespace ConsoleRPG.Classes
                 var itemNumber = 0;
                 if(command.Split().Length < 2)
                 {
-                    mMessageService.ShowMessage("Неправильный ввод", MessageType.Error);
+                    mMessageService.ShowMessage(new Message("Неправильный ввод", ConsoleColor.Red));
                     continue;
                 }
                 var isValidNumber = int.TryParse(command.Split(' ')[1], out itemNumber);
@@ -99,7 +100,7 @@ namespace ConsoleRPG.Classes
                 if (!isValidNumber || (isBuying && (itemNumber < 0  || itemNumber >= shop.Stock.Count)) ||
                     (!isBuying && (itemNumber < 0 || itemNumber >= player.Inventory.Items.Count)))
                 {
-                    mMessageService.ShowMessage("Предмета с таким номером не существует", MessageType.Error);
+                    mMessageService.ShowMessage(new Message("Предмета с таким номером не существует", ConsoleColor.Red));
                     continue;
                 }
 
@@ -112,7 +113,7 @@ namespace ConsoleRPG.Classes
         }
         public void Leave(Shop shop)
         {
-            mMessageService.ShowMessage($"В добрый путь!", MessageType.Info);
+            mMessageService.ShowMessage(new Message($"В добрый путь!", ConsoleColor.Cyan));
         }
     }
 }

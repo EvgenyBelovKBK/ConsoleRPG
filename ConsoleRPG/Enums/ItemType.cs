@@ -6,15 +6,8 @@ namespace ConsoleRPG.Enums
 {
     public enum ItemType
     {
-        OneHandedSword,
-        OneHandedAxe,
-        Dagger,
-        TwoHandedSword,
-        TwoHandedAxe,
-        Bow,
-        Scythe,
-        Mace,
-        Shield,
+        OneHandedWeapon,
+        TwoHandedWeapon,
         Helmet,
         Armour,
         Gloves,

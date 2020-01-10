@@ -9,24 +9,21 @@ namespace ConsoleRPG.Services
 {
     public class ConsoleMessageService : IMessageService
     {
-        public Action<string> ShowMessageAction { get; set; } = Console.WriteLine;
-        public Action ClearTextAction { get; set; } = Console.Clear;
-        public Func<string> ReadInputAction { get; set; } = Console.ReadLine;
+        public Action<string> ShowMessageAction { get; set; }
+        public Action ClearTextAction { get; set; }
+        public Func<string> ReadInputAction { get; set; }
+
+        public ConsoleMessageService(Action<string> showMessageAction, Action clearTextAction, Func<string> readInputAction)
+        {
+            ShowMessageAction = showMessageAction;
+            ClearTextAction = clearTextAction;
+            ReadInputAction = readInputAction;
+        }
 
         public void ShowMessage(Message message)
         {
-            Console.ForegroundColor = message.Type == MessageType.Info
-                ? ConsoleColor.Cyan
-                : (message.Type == MessageType.Warning ? ConsoleColor.Yellow : ConsoleColor.Red);
-            ShowMessageAction.Invoke(message.Text);
-        }
-
-        public void ShowMessage(string messageText, MessageType type)
-        {
-            Console.ForegroundColor = type == MessageType.Info
-                ? ConsoleColor.Cyan
-                : (type == MessageType.Warning ? ConsoleColor.Yellow : ConsoleColor.Red);
-            ShowMessageAction.Invoke(new Message(messageText, type).Text);
+            Console.ForegroundColor = message.Color;
+            ShowMessageAction(message.Text);
         }
 
         public string ReadPlayerInput()

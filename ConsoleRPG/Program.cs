@@ -18,10 +18,10 @@ namespace ConsoleRPG
         public const string SaveFileName = "Save.json";
         public const string RatingFileName = "RatingTable.json";
         public const string BestScoreFileName = "BestScore.json";
-        static readonly IMessageService MessageService = new ConsoleMessageService();
+        static readonly IMessageService MessageService = new ConsoleMessageService(Console.WriteLine,Console.Clear,Console.ReadLine);
         static readonly ThingRandomGenerator<Item> ItemRandomGenerator = new ThingRandomGenerator<Item>();
         static readonly ThingRandomGenerator<Enemy> EnemyRandomGenerator = new ThingRandomGenerator<Enemy>();
-        static readonly FightingService FightingService = new FightingService(new NumbersRandomGenerator(),MessageService );
+        static readonly FightingService FightingService = new FightingService(new NumbersRandomGenerator(),MessageService);
         public static Level[] Levels = new Level[51];
         public static Campaign[] Campaigns = new Campaign[5];
         public static List<Enemy> Enemies = new List<Enemy>();
@@ -41,7 +41,7 @@ namespace ConsoleRPG
                 Level.mMessageService = MessageService;
                 Shop.mMessageService = MessageService;
                 var player = CreateCharacter();
-                MessageService.ShowMessage("В путь!", MessageType.Info);
+                MessageService.ShowMessage(new Message("В путь!", ConsoleColor.Cyan));
                 Thread.Sleep(1500);
                 MessageService.ClearTextField();
                 while (!Game.IsGameEnd(player.Stats[StatsConstants.HpStat],player.CurrentLevel.Number))
@@ -49,7 +49,7 @@ namespace ConsoleRPG
                     game.MoveToNextLevel(player);
                 }
                 if(player.CurrentLevel.Number == Levels.Length) 
-                    MessageService.ShowMessage("Поздравляю,ты лучший воин из ныне живущих!Пока что...",MessageType.Error);
+                    MessageService.ShowMessage(new Message("У тебя сердце воина,ты лучший из ныне живущих!Пока что...",ConsoleColor.Red));
                 Player bestExplorer;
                 var oldTable = new Dictionary<string, string>();
                 oldTable = JsonSerializingService<Dictionary<string, string>>.Load(RatingFileName);
@@ -87,7 +87,7 @@ namespace ConsoleRPG
 
 
 
-                MessageService.ShowMessage("Нажмите любую клавишу...",MessageType.Info);
+                MessageService.ShowMessage(new Message("Нажмите любую клавишу...",ConsoleColor.Cyan));
                 MessageService.ReadPlayerInput();
             }
         }
@@ -95,27 +95,27 @@ namespace ConsoleRPG
         static Player CreateCharacter()
         {
             int sleepTime = 3500;
-            MessageService.ShowMessage(AsciiArts.Header + Environment.NewLine, MessageType.Info);
+            MessageService.ShowMessage(new Message(AsciiArts.Header + Environment.NewLine, ConsoleColor.Cyan));
             Thread.Sleep(sleepTime);
 
             var best = JsonSerializingService<Player>.Load(BestScoreFileName);
             if (best != null)
             {
-                MessageService.ShowMessage("                   Лучший забег!", MessageType.Warning);
-                MessageService.ShowMessage("Набрано Очков:" + best.Points, MessageType.Error);
-                MessageService.ShowMessage("Имя:" + best.Name,MessageType.Info);
-                MessageService.ShowMessage("Раса:" + best.Race,MessageType.Info);
+                MessageService.ShowMessage(new Message("                   Лучший забег!", ConsoleColor.Yellow));
+                MessageService.ShowMessage(new Message("Набрано Очков:" + best.Points, ConsoleColor.Red));
+                MessageService.ShowMessage(new Message("Имя:" + best.Name,ConsoleColor.Cyan));
+                MessageService.ShowMessage(new Message("Раса:" + best.Race,ConsoleColor.Cyan));
                 Game.ShowConsolePlayerUi(best);
             }
 
             var rating = JsonSerializingService<Dictionary<string, string>>.Load(RatingFileName);
             if (rating != null)
             {
-                MessageService.ShowMessage("                   Таблица последних сыгранных игр", MessageType.Info);
+                MessageService.ShowMessage(new Message("                   Таблица последних сыгранных игр", ConsoleColor.Cyan));
                 Game.ShowConsoleBoxedInfo(rating);
             }
 
-            MessageService.ShowMessage("Начать новую игру или загрузить?(n/l)",MessageType.Info);
+            MessageService.ShowMessage(new Message("Начать новую игру или загрузить?(n/l)",ConsoleColor.Cyan));
             var isNewGame = MessageService.ReadPlayerInput().Equals("n",StringComparison.OrdinalIgnoreCase);
             if (!isNewGame && File.Exists("save.json"))
             {
@@ -126,23 +126,23 @@ namespace ConsoleRPG
                     if(loadedPlayer != null)
                         return loadedPlayer;
                     else
-                        MessageService.ShowMessage("Не удалось найти файл сохранения,либо он пустой!", MessageType.Error);
+                        MessageService.ShowMessage(new Message("Не удалось найти файл сохранения,либо он пустой!", ConsoleColor.Red));
                 }
                 catch (Exception e)
                 {
-                    MessageService.ShowMessage("Не удалось найти файл сохранения,либо он пустой!",MessageType.Error);
+                    MessageService.ShowMessage(new Message("Не удалось найти файл сохранения,либо он пустой!",ConsoleColor.Red));
                 }
             }
 
-            MessageService.ShowMessage("Назови себя,путник!", MessageType.Info);
+            MessageService.ShowMessage(new Message("Назови себя,путник!", ConsoleColor.Cyan));
             var name = MessageService.ReadPlayerInput();
-            MessageService.ShowMessage($"{name},кто ты такой?",MessageType.Info);
+            MessageService.ShowMessage(new Message($"{name},кто ты такой?",ConsoleColor.Cyan));
             Thread.Sleep(sleepTime);
             var i = 1;
             foreach (var playableClass in Races)
             {
-                MessageService.ShowMessage(i + ")" + playableClass.Name, MessageType.Warning);
-                MessageService.ShowMessage("Золото:" + playableClass.Gold,MessageType.Info);
+                MessageService.ShowMessage(new Message(i + ")" + playableClass.Name, ConsoleColor.Yellow));
+                MessageService.ShowMessage(new Message("Золото:" + playableClass.Gold,ConsoleColor.Cyan));
                 Game.ShowConsoleBoxedInfo(playableClass.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
                 i++;
             }
@@ -155,13 +155,13 @@ namespace ConsoleRPG
                 chosenClass = Races.ElementAtOrDefault(classNumber - 1);
                 if (!valid && chosenClass == null)
                 {
-                    MessageService.ShowMessage("Такого в списке нет!",MessageType.Error);
+                    MessageService.ShowMessage(new Message("Такого в списке нет!",ConsoleColor.Red));
                     Thread.Sleep(sleepTime);
                     continue;
                 }
                 break;
             }
-            MessageService.ShowMessage($"{chosenClass.Name} по имени {name},посмотрим на что ты годишься!",MessageType.Warning);
+            MessageService.ShowMessage(new Message($"{chosenClass.Name} по имени {name},посмотрим на что ты годишься!",ConsoleColor.Yellow));
             Thread.Sleep(sleepTime);
             chosenClass.Name = name;
             chosenClass.CurrentLevel = Levels.First();
@@ -500,26 +500,26 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 5}
                     }, ItemType.Armour,2, Tiers.Tier1, "Leather coat"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 10},
                         {StatsConstants.CritChanceStat, 7}
-                    },ItemType.Dagger, 8, Tiers.Tier1, "Silverstone dagger"),
+                    },ItemType.OneHandedWeapon,WeaponType.Dagger, 8, Tiers.Tier1, "Silverstone dagger"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 8}
-                    },ItemType.OneHandedSword, 3, Tiers.Tier1, "Iron sword"),
+                    },ItemType.OneHandedWeapon,WeaponType.OneHandedSword, 3, Tiers.Tier1, "Iron sword"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 13}
-                    }, ItemType.Scythe,5, Tiers.Tier1, "Bronze scythe"),
+                    }, ItemType.TwoHandedWeapon,WeaponType.Scythe,5, Tiers.Tier1, "Bronze scythe"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 15}
-                    }, ItemType.Mace,6, Tiers.Tier1, "Rusty mace"),
+                    }, ItemType.TwoHandedWeapon,WeaponType.Mace,6, Tiers.Tier1, "Rusty mace"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -551,10 +551,10 @@ namespace ConsoleRPG
                         {StatsConstants.MaxHpStat, 20}
                     },ItemType.Food, 1, Tiers.Tier1, "Piece of pie"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 17}
-                    },ItemType.TwoHandedSword, 7, Tiers.Tier1, "Father's sword"),
+                    },ItemType.TwoHandedWeapon,WeaponType.TwoHandedSword, 7, Tiers.Tier1, "Father's sword"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -589,16 +589,16 @@ namespace ConsoleRPG
                         {StatsConstants.CritChanceStat, 10}
                     },ItemType.Ring, 8, Tiers.Tier1, "Grandmother's ring"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 8},
                         {StatsConstants.DamageStat, 7}
-                    }, ItemType.Shield,9, Tiers.Tier1, "Silver shield"),
+                    }, ItemType.OneHandedWeapon,WeaponType.Shield,9, Tiers.Tier1, "Silver shield"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 7},
-                    }, ItemType.Shield,5, Tiers.Tier1, "Broken wooden shield"),
+                    }, ItemType.OneHandedWeapon,WeaponType.Shield,5, Tiers.Tier1, "Broken wooden shield"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -606,22 +606,22 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 11}
                     },ItemType.Armour, 11, Tiers.Tier1, "Paladin's plate"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 100},
                         {StatsConstants.DamageStat, 10}
-                    },ItemType.Dagger, 14, Tiers.Tier1, "Old Drakula's fang"),
+                    },ItemType.OneHandedWeapon,WeaponType.Dagger, 14, Tiers.Tier1, "Old Drakula's fang"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 24}
-                    },ItemType.TwoHandedAxe, 11, Tiers.Tier1, "Golden Axe"),
+                    },ItemType.TwoHandedWeapon,WeaponType.TwoHandedAxe, 11, Tiers.Tier1, "Golden Axe"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 5},
                         {StatsConstants.DamageStat, 12},
-                    }, ItemType.Bow,5, Tiers.Tier1, "Wooden bow"),
+                    }, ItemType.TwoHandedWeapon,WeaponType.Bow,5, Tiers.Tier1, "Wooden bow"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -639,17 +639,17 @@ namespace ConsoleRPG
 
                     #region Tier2
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 25},
                         {StatsConstants.DamageStat, 25},
-                    }, ItemType.Shield,17, Tiers.Tier2, "Broken orc shield"),
+                    }, ItemType.OneHandedWeapon,WeaponType.Shield,17, Tiers.Tier2, "Broken orc shield"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 37},
                         {StatsConstants.DamageStat, 26},
-                    }, ItemType.Shield,26, Tiers.Tier2, "Golden knight's shield"),
+                    }, ItemType.OneHandedWeapon,WeaponType.Shield,26, Tiers.Tier2, "Golden knight's shield"),
 
                      new Item(new Dictionary<string, int>()
                     {
@@ -664,18 +664,18 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 15}
                     }, ItemType.Belt,16, Tiers.Tier2, "dragon's hide belt"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 9},
                         {StatsConstants.DamageStat, 30},
-                    }, ItemType.Bow,18, Tiers.Tier2, "Palladium bow"),
+                    }, ItemType.TwoHandedWeapon,WeaponType.Bow,18, Tiers.Tier2, "Palladium bow"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 8},
                         {StatsConstants.DamageStat, 24},
                         {StatsConstants.CritChanceStat, 12}
-                    },ItemType.Scythe, 24, Tiers.Tier2, "Grim reaper's scythe"),
+                    },ItemType.TwoHandedWeapon,WeaponType.Scythe, 24, Tiers.Tier2, "Grim reaper's scythe"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -695,21 +695,21 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 31}
                     },ItemType.Armour, 19, Tiers.Tier2, "Assault cuirass"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 27},
                         {StatsConstants.CritChanceStat, 13}
-                    },ItemType.OneHandedSword, 21, Tiers.Tier2, "Katana"),
+                    },ItemType.OneHandedWeapon,WeaponType.OneHandedSword, 21, Tiers.Tier2, "Katana"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 29}
-                    },ItemType.TwoHandedSword, 13, Tiers.Tier2, "Paladin's sword"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedSword,13, Tiers.Tier2, "Paladin's sword"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 43}
-                    }, ItemType.Mace,18, Tiers.Tier2, "Blacksmith's hammer"),
+                    }, ItemType.TwoHandedWeapon, WeaponType.Mace,18, Tiers.Tier2, "Blacksmith's hammer"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -722,12 +722,12 @@ namespace ConsoleRPG
                         {StatsConstants.DamageStat, 10}
                     },ItemType.Food,9, Tiers.Tier2, "Mango"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 35},
                         {StatsConstants.DamageStat, 30},
                         {StatsConstants.CritChanceStat, 25}
-                    },ItemType.Dagger,24, Tiers.Tier2, "Alakyr's dagger"),
+                    },ItemType.OneHandedWeapon, WeaponType.Dagger,24, Tiers.Tier2, "Alakyr's dagger"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -737,11 +737,11 @@ namespace ConsoleRPG
                         {StatsConstants.DamageStat, 10},
                     },ItemType.Ring, 19, Tiers.Tier2, "Diamond ring"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 28},
                         {StatsConstants.MaxHpStat, 60}
-                    },ItemType.OneHandedAxe, 20, Tiers.Tier2, "Ogre axe"),
+                    },ItemType.OneHandedWeapon, WeaponType.OneHandedAxe, 20, Tiers.Tier2, "Ogre axe"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -774,18 +774,18 @@ namespace ConsoleRPG
 
                     #region Tier3
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 55},
                         {StatsConstants.DamageStat, 39},
-                    }, ItemType.Shield,39, Tiers.Tier3, "Orc warrior shield"),
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,39, Tiers.Tier3, "Orc warrior shield"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 60},
                         {StatsConstants.DamageStat, 35},
                         {StatsConstants.CritChanceStat, 15},
-                    }, ItemType.Shield,44, Tiers.Tier3, "Cobalt dust shield"),
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,44, Tiers.Tier3, "Cobalt dust shield"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -804,42 +804,42 @@ namespace ConsoleRPG
                         {StatsConstants.MaxHpStat, 85}
                     },ItemType.Food, 27, Tiers.Tier3, "Bear's heart"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 45},
                         {StatsConstants.DamageStat, 50}
-                    },ItemType.OneHandedAxe, 37, Tiers.Tier3, "Troll axe"),
+                    },ItemType.OneHandedWeapon, WeaponType.OneHandedAxe, 37, Tiers.Tier3, "Troll axe"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 17},
                         {StatsConstants.DamageStat, 68}
-                    },ItemType.TwoHandedAxe, 41, Tiers.Tier3, "Bitter axe"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedAxe, 41, Tiers.Tier3, "Bitter axe"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.MaxHpStat, 35},
                         {StatsConstants.DamageStat, 44}
-                    },ItemType.OneHandedSword, 33, Tiers.Tier3, "Adamantite sword"),
+                    },ItemType.OneHandedWeapon, WeaponType.OneHandedSword, 33, Tiers.Tier3, "Adamantite sword"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.MaxHpStat, 50},
                         {StatsConstants.DamageStat, 70}
-                    },ItemType.TwoHandedSword, 39, Tiers.Tier3, "Hellfire sword"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedSword, 39, Tiers.Tier3, "Hellfire sword"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 15},
                         {StatsConstants.DamageStat, 60},
-                    }, ItemType.Bow,35, Tiers.Tier3, "Mythril Longbow"),
+                    }, ItemType.TwoHandedWeapon, WeaponType.Bow,35, Tiers.Tier3, "Mythril Longbow"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 22},
                         {StatsConstants.DamageStat, 51},
                         {StatsConstants.CritChanceStat, 15}
-                    },ItemType.Scythe, 39, Tiers.Tier3, "Brutal reaper"),
+                    },ItemType.TwoHandedWeapon,  WeaponType.Scythe,39, Tiers.Tier3, "Brutal reaper"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -871,17 +871,17 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 81},
                     },ItemType.Helmet, 41, Tiers.Tier3, "Paladin's helmet"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 10},
                         {StatsConstants.DamageStat, 70},
                         {StatsConstants.CritChanceStat, 15}
-                    },ItemType.Dagger, 53, Tiers.Tier3, "Assassin's dagger"),
+                    },ItemType.OneHandedWeapon,  WeaponType.Dagger,53, Tiers.Tier3, "Assassin's dagger"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 90},
-                    },ItemType.Mace, 35, Tiers.Tier3, "Spiked mace"),
+                    },ItemType.TwoHandedWeapon,  WeaponType.Mace,35, Tiers.Tier3, "Spiked mace"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -889,10 +889,10 @@ namespace ConsoleRPG
                         {StatsConstants.CritChanceStat, 20}
                     },ItemType.Belt, 50, Tiers.Tier3, "Charming belt"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 120}
-                    }, ItemType.TwoHandedAxe,42, Tiers.Tier3, "Magic wood axe"),
+                    }, ItemType.TwoHandedWeapon, WeaponType.TwoHandedAxe,42, Tiers.Tier3, "Magic wood axe"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -929,19 +929,19 @@ namespace ConsoleRPG
 
                     #region Tier4
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 100},
                         {StatsConstants.DamageStat, 175},
                         {StatsConstants.CritChanceStat, 12},
-                    }, ItemType.Shield,78, Tiers.Tier4, "Olymp defender"),
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,78, Tiers.Tier4, "Olymp defender"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 120},
                         {StatsConstants.DamageStat, 110},
                         {StatsConstants.LifestealStat, 20},
-                    }, ItemType.Shield,61, Tiers.Tier4, "Wallbreaker"),
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,61, Tiers.Tier4, "Wallbreaker"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -950,37 +950,37 @@ namespace ConsoleRPG
                         {StatsConstants.LifestealStat, 10}
                     }, ItemType.Belt,55, Tiers.Tier4, "Yormungur's scale belt"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 32},
                         {StatsConstants.DamageStat, 90},
                         {StatsConstants.CritChanceStat, 20}
-                    },ItemType.Scythe, 70, Tiers.Tier4, "Cutthroat"),
+                    },ItemType.TwoHandedWeapon, WeaponType.Scythe, 70, Tiers.Tier4, "Cutthroat"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 250},
                         {StatsConstants.ArmorStat, -70},
-                    }, ItemType.Mace,63, Tiers.Tier4, "Void basher"),
+                    }, ItemType.TwoHandedWeapon, WeaponType.Mace,63, Tiers.Tier4, "Void basher"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 80},
                         {StatsConstants.MaxHpStat, 40},
                         {StatsConstants.CritChanceStat, 25},
-                    },ItemType.TwoHandedSword, 65, Tiers.Tier4, "Arthur's sword"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedSword, 65, Tiers.Tier4, "Arthur's sword"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 200},
                         {StatsConstants.DamageStat, 66}
-                    },ItemType.Dagger, 83, Tiers.Tier4, "New? Drakula's claw"),
+                    },ItemType.OneHandedWeapon, WeaponType.Dagger, 83, Tiers.Tier4, "New? Drakula's claw"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 21},
                         {StatsConstants.DamageStat, 77}
-                    },ItemType.Dagger, 57, Tiers.Tier4, "Vanguard dagger"),
+                    },ItemType.OneHandedWeapon, WeaponType.Dagger, 57, Tiers.Tier4, "Vanguard dagger"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -989,41 +989,41 @@ namespace ConsoleRPG
                         {StatsConstants.CritChanceStat, -20}
                     },ItemType.Armour, 77, Tiers.Tier4, "Werewolf skin"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 220},
                         {StatsConstants.CritChanceStat, -60}
-                    }, ItemType.Mace,68, Tiers.Tier4, "Ogre club"),
+                    }, ItemType.TwoHandedWeapon, WeaponType.Mace,68, Tiers.Tier4, "Ogre club"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 150},
-                    }, ItemType.Mace,66, Tiers.Tier4, "Magnus hammer"),
+                    }, ItemType.TwoHandedWeapon, WeaponType.Mace,66, Tiers.Tier4, "Magnus hammer"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, -65},
                         {StatsConstants.DamageStat, 100},
                         {StatsConstants.MaxHpStat, 150},
-                    }, ItemType.Bow,80, Tiers.Tier4, "Mahogany wood bow"),
+                    }, ItemType.TwoHandedWeapon, WeaponType.Bow,80, Tiers.Tier4, "Mahogany wood bow"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 25},
                         {StatsConstants.DamageStat, 150}
-                    },ItemType.OneHandedSword, 78, Tiers.Tier4, "Pirate sabre"),
+                    },ItemType.OneHandedWeapon,  WeaponType.OneHandedSword,78, Tiers.Tier4, "Pirate sabre"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.MaxHpStat, 50},
                         {StatsConstants.DamageStat, 120}
-                    },ItemType.OneHandedAxe, 71, Tiers.Tier4, "Leviathan axe"),
+                    },ItemType.OneHandedWeapon, WeaponType.OneHandedAxe, 71, Tiers.Tier4, "Leviathan axe"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 25},
                         {StatsConstants.DamageStat, 130}
-                    },ItemType.TwoHandedAxe, 66, Tiers.Tier4, "Crimson slaughter"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedAxe, 66, Tiers.Tier4, "Crimson slaughter"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1084,20 +1084,20 @@ namespace ConsoleRPG
 
                     #region Tier5
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 80},
                         {StatsConstants.DamageStat, 200},
                         {StatsConstants.CritChanceStat, 8},
                         {StatsConstants.LifestealStat, 25},
-                    }, ItemType.Shield,97, Tiers.Tier5, "Aegis aurora"),
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,97, Tiers.Tier5, "Aegis aurora"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 160},
                         {StatsConstants.DamageStat, 193},
                         {StatsConstants.CritChanceStat, 23},
-                    }, ItemType.Shield,110, Tiers.Tier5, "God's rebuke"),
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,110, Tiers.Tier5, "God's rebuke"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1106,17 +1106,17 @@ namespace ConsoleRPG
                         {StatsConstants.DamageStat, 50}
                     }, ItemType.Belt,81, Tiers.Tier5, "Old Ogre's belt"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.MaxHpStat, 35},
                         {StatsConstants.DamageStat, 180},
                         {StatsConstants.CritChanceStat, 34}
-                    },ItemType.Scythe, 98, Tiers.Tier5, "Bloodseeker"),
+                    },ItemType.TwoHandedWeapon, WeaponType.Scythe, 98, Tiers.Tier5, "Bloodseeker"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 300}
-                    },ItemType.OneHandedSword, 90, Tiers.Tier5, "Aragorn's sword"),
+                    },ItemType.OneHandedWeapon, WeaponType.OneHandedSword, 90, Tiers.Tier5, "Aragorn's sword"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1131,25 +1131,25 @@ namespace ConsoleRPG
                         {StatsConstants.CritChanceStat, 20},
                     },ItemType.Helmet, 83, Tiers.Tier5, "Clarity"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 225},
                         {StatsConstants.CritChanceStat, 15},
-                    },ItemType.TwoHandedSword, 87, Tiers.Tier5, "Cleaver"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedSword, 87, Tiers.Tier5, "Cleaver"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 60},
                         {StatsConstants.DamageStat, 220},
                         {StatsConstants.CritChanceStat, 10},
-                    },ItemType.TwoHandedAxe, 105, Tiers.Tier5, "Wild bear claws Axe"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedAxe, 105, Tiers.Tier5, "Wild bear claws Axe"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, -1000},
                         {StatsConstants.DamageStat, 300},
                         {StatsConstants.CritChanceStat, 50},
-                    },ItemType.Mace, 93, Tiers.Tier5, "Yrimir's mace"),
+                    },ItemType.TwoHandedWeapon, WeaponType.Mace, 93, Tiers.Tier5, "Yrimir's mace"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1176,11 +1176,11 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 245},
                     },ItemType.Armour, 89, Tiers.Tier5, "Platinum plate"),
 
-                    new Item(new Dictionary<string, int>()
+                    new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 45},
                         {StatsConstants.DamageStat, 255},
-                    },ItemType.Bow, 130, Tiers.Tier5, "Elven bow"),
+                    },ItemType.TwoHandedWeapon,  WeaponType.Bow,130, Tiers.Tier5, "Elven bow"),
 
                     new Item(new Dictionary<string, int>()
                     {

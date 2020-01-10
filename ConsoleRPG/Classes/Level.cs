@@ -41,8 +41,8 @@ namespace ConsoleRPG.Classes
             var i = 1;
             foreach (var enemy in Enemies)
             {
-                mMessageService.ShowMessage(i + ")" + enemy.Name,MessageType.Warning);
-                mMessageService.ShowMessage(enemy.AsciiArt,MessageType.Info);
+                mMessageService.ShowMessage(new Message(i + ")" + enemy.Name,ConsoleColor.Yellow));
+                mMessageService.ShowMessage(new Message(enemy.AsciiArt,ConsoleColor.Cyan));
                 Game.ShowConsoleBoxedInfo(enemy.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
                 i++;
             }

@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
+using ConsoleRPG.Constants;
 using ConsoleRPG.Enums;
+using Newtonsoft.Json;
 
 namespace ConsoleRPG.Classes
 {
     public class Inventory
     {
         public ObservableCollection<Item> Items { get; set; }
-        public int WeaponPower { get; set; }
-        public int MaxWeaponPower { get; }
+        public Dictionary<ItemType, int> ItemRestrictions { get;}
 
-        public Inventory(ObservableCollection<Item> items, int maxWeaponPower = 2)
+        public Inventory(ObservableCollection<Item> items, Dictionary<ItemType, int> itemRestrictions = null)
         {
             Items = items;
-            MaxWeaponPower = maxWeaponPower;
+            ItemRestrictions = itemRestrictions;
+            if(ItemRestrictions == null)
+                ItemRestrictions = new Dictionary<ItemType, int>(ItemConstants.DefaultItemRestrictions);
         }
     }
 }

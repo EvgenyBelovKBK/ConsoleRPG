@@ -24,14 +24,14 @@ namespace ConsoleRPG.Classes
         public void ShowPlayerDeathScreen(Player player,Enemy killerEnemy)
         {
             mMessageService.ClearTextField();
-            mMessageService.ShowMessage("В следующий раз вам повезет больше!",MessageType.Info);
+            mMessageService.ShowMessage(new Message("В следующий раз вам повезет больше!", ConsoleColor.Cyan));
             Thread.Sleep(3000);
-            mMessageService.ShowMessage($"Вы дошли до {player.CurrentLevel.Number} уровня!",MessageType.Info);
+            mMessageService.ShowMessage(new Message($"Вы дошли до {player.CurrentLevel.Number} уровня!",ConsoleColor.Cyan));
             Thread.Sleep(1000);
-            mMessageService.ShowMessage($"Вы набрали {player.Points} очков!",MessageType.Warning);
+            mMessageService.ShowMessage(new Message($"Вы набрали {player.Points} очков!",ConsoleColor.Yellow));
             Thread.Sleep(1000);
-            mMessageService.ShowMessage($"Вы погибли от:",MessageType.Info);
-            mMessageService.ShowMessage(killerEnemy.Name,MessageType.Error);
+            mMessageService.ShowMessage(new Message($"Вы погибли от:",ConsoleColor.Cyan));
+            mMessageService.ShowMessage(new Message(killerEnemy.Name,ConsoleColor.Red));
             ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             Thread.Sleep(1000);
             ShowConsolePlayerUi(player);
@@ -40,20 +40,20 @@ namespace ConsoleRPG.Classes
         public void Fight(Player player,Level level)
         {
             mMessageService.ClearTextAction();
-            mMessageService.ShowMessage($"Уровень {level.LevelName}", MessageType.Warning);
-            mMessageService.ShowMessage("Вы вошли в битву",MessageType.Warning);
-            mMessageService.ShowMessage("Чтобы начать драку с противником введите его номер",MessageType.Info);
+            mMessageService.ShowMessage(new Message($"Уровень {level.LevelName}", ConsoleColor.Yellow));
+            mMessageService.ShowMessage(new Message("Вы вошли в битву",ConsoleColor.Yellow));
+            mMessageService.ShowMessage(new Message("Чтобы начать драку с противником введите его номер",ConsoleColor.Cyan));
             var isPlayerTurn = false;
             var playerDied = false;
             var enemyDied = false;
             while (level.Enemies.Count > 0 && !playerDied)
             {
-                mMessageService.ShowMessage(player.Name, MessageType.Info);
+                mMessageService.ShowMessage(new Message(player.Name, ConsoleColor.Cyan));
                 ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
                 level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;
-                var turn = isPlayerTurn ? "Вы бьете первым" : "Противник бьет первым";
-                mMessageService.ShowMessage(turn, MessageType.Info);
+                var turn = isPlayerTurn ? "Ваш ход" : "Ход противника";
+                mMessageService.ShowMessage(new Message(turn,isPlayerTurn ? ConsoleColor.Green : ConsoleColor.Red));
                 var enemyNumber = 0;
                 while (true)
                 {
@@ -61,11 +61,10 @@ namespace ConsoleRPG.Classes
                     enemyNumber -= 1;
 
                     if (!isValidEnemy || enemyNumber < 0 || enemyNumber >= level.Enemies.Count)
-                        mMessageService.ShowMessage("Такого противника нет!", MessageType.Error);
+                        mMessageService.ShowMessage(new Message("Такого противника нет!", ConsoleColor.Red));
                     else
                         break;
                 }
-
 
                 mMessageService.ClearTextAction();
                 mFightingService.CalculateFight(player, level.Enemies[enemyNumber],isPlayerTurn,out enemyDied,out playerDied);
@@ -92,10 +91,10 @@ namespace ConsoleRPG.Classes
             {
                 if (currentLevelNumber != 0)
                 {
-                    mMessageService.ShowMessage(
+                    mMessageService.ShowMessage(new Message(
                         "Поздравляю,вы прошли одну из кампаний,у вас есть возможность зайти в магазин или продолжить(+20 золота)",
-                        MessageType.Info);
-                    mMessageService.ShowMessage("Войти в магазин(y/n)", MessageType.Warning);
+                        ConsoleColor.Cyan));
+                    mMessageService.ShowMessage(new Message("Войти в магазин(y/n)", ConsoleColor.Yellow));
                     enterShop = mMessageService.ReadInputAction().ToLowerInvariant() == "y";
                 }
                 else
@@ -125,20 +124,54 @@ namespace ConsoleRPG.Classes
 
         public static void ShowConsolePlayerUi(Player player)
         {
-            mMessageService.ShowMessage($"Золото:{player.Gold}",MessageType.Info);
-            mMessageService.ShowMessage($"Инвентарь:",MessageType.Info);
+            mMessageService.ShowMessage(new Message($"Золото:{player.Gold}",ConsoleColor.Cyan));
+            mMessageService.ShowMessage(new Message($"Инвентарь:",ConsoleColor.Cyan));
             for (int i = 0; i < player.Inventory.Items.Count; i++)
             {
                 var playerItem = player.Inventory.Items[i];
-                mMessageService.ShowMessage($"{i+1}){playerItem.Name}",MessageType.Info);
-                mMessageService.ShowMessage($"Тип:{playerItem.Type}", MessageType.Info);
-                foreach (var stat in playerItem.Stats.Where(x => x.Value != 0))
-                {
-                    mMessageService.ShowMessage($"{stat.Key}:{stat.Value},",MessageType.Info);
-                }
+                mMessageService.ShowMessage(new Message($"{i+1}){playerItem.Name}",ConsoleColor.Cyan));
+                ShowConsoleItemInfo(playerItem);
             }
-            mMessageService.ShowMessage($"Характеристики:", MessageType.Info);
+            mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Cyan));
             ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
+        }
+
+        public static void ShowConsoleItemInfo(Item item)
+        {
+            mMessageService.ShowMessage(new Message($"Тип:{EnumToString(item.Type)}", ConsoleColor.DarkCyan));
+            var isWeapon = item.Type < (ItemType)2;
+            if (isWeapon)
+            {
+                ShowConsolePlayerWeaponType((Weapon)item);
+            }
+            mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Cyan));
+            ShowConsoleBoxedInfo(item.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+        }
+
+        public static void ShowConsolePlayerWeaponType(Weapon weapon)
+        {
+            mMessageService.ShowMessage(new Message($"{EnumToString(weapon.WeaponType)}", ConsoleColor.Magenta));
+        }
+
+        public static string EnumToString(Enum enumString)
+        {
+            var str = enumString.ToString();
+            var words = new List<string>();
+            string word = string.Empty;
+            for (int i = 0; i < str.Length; i++)
+            {
+                var ch = str[i];
+                if (char.IsUpper(ch) && i != 0)
+                {
+                    words.Add(word);
+                    word = string.Empty;
+                }
+                word += ch;
+                if(i + 1 == str.Length)
+                    words.Add(word);
+            }
+
+            return string.Join(" ",words);
         }
 
         public static void ShowConsoleBoxedInfo(Dictionary<string, string> data)

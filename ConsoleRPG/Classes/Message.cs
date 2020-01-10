@@ -8,12 +8,12 @@ namespace ConsoleRPG.Classes
     public class Message
     {
         public string Text { get; set; }
-        public MessageType Type { get; set; }
+        public ConsoleColor Color { get; }
 
-        public Message(string text, MessageType type)
+        public Message(string text, ConsoleColor color = default)
         {
             Text = text;
-            Type = type;
+            Color = color;
         }
     }
 }

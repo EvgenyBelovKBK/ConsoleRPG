@@ -32,7 +32,7 @@ namespace ConsoleRPG.Services
 
         private int CalculateLifesteal(int finalDamage, int lifestealPercent,int currentHp, int maxHp)
         {
-            //На данный момент негативного лайфстила решил не делать чтобы исправить баг,если он понадобится то переделать!
+            //На данный момент негативного лайфстила решил не делать,если он понадобится то переделать!
             if (lifestealPercent < 0)
                 return 0;
             var onePercentOfDamage = (double)finalDamage / 100;
@@ -128,19 +128,19 @@ namespace ConsoleRPG.Services
             switch (action)
             {
                 case FightAction.Damage:
-                    mMessageService.ShowMessage($"{subjectName} наносит {actionNumber} урона {objectName}",MessageType.Info);
+                    mMessageService.ShowMessage(new Message($"{subjectName} наносит {actionNumber} урона {objectName}",ConsoleColor.Cyan));
                     break;
                 case FightAction.CriticalStrike:
-                    mMessageService.ShowMessage($"{subjectName} наносит {actionNumber} урона сокрушительным ударом по {objectName}!", MessageType.Warning);
+                    mMessageService.ShowMessage(new Message($"{subjectName} наносит {actionNumber} урона сокрушительным ударом по {objectName}!", ConsoleColor.Yellow));
                     break;
                 case FightAction.Lifesteal:
-                    mMessageService.ShowMessage($"{subjectName} восстанавливает {actionNumber} здоровья от вампиризма", MessageType.Info);
+                    mMessageService.ShowMessage(new Message($"{subjectName} восстанавливает {actionNumber} здоровья от вампиризма", ConsoleColor.Cyan));
                     break;
                 case FightAction.EnemyDeath:
-                    mMessageService.ShowMessage($"{subjectName} поражен!", MessageType.Warning);
+                    mMessageService.ShowMessage(new Message($"{subjectName} поражен!", ConsoleColor.Yellow));
                     break;
                 case FightAction.PlayerDeath:
-                    mMessageService.ShowMessage($"{subjectName} погиб!", MessageType.Error);
+                    mMessageService.ShowMessage(new Message($"{subjectName} погиб!", ConsoleColor.Red));
                     Thread.Sleep(3000);
                     break;
             }

@@ -26,7 +26,6 @@ namespace ConsoleRPG.Classes
             Inventory.Items.CollectionChanged += (sender, args) =>
             {
                 CalculateStatsFromItems(Inventory.Items);
-                Inventory.WeaponPower = CalculateWeaponPower(Inventory.Items);
             };
             BaseStats = new Dictionary<string, int>();
             BaseStats.Add(StatsConstants.MaxHpStat, maxHp);
@@ -51,20 +50,6 @@ namespace ConsoleRPG.Classes
             }
             if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
                 Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
-        }
-
-        public int CalculateWeaponPower(IEnumerable<Item> items)
-        {
-            var power = 0;
-            foreach (var item in items)
-            {
-                if (StatsConstants.OneHandedWeapons.Contains(item.Type))
-                    power += 1;
-                else if (StatsConstants.TwoHandedWeapons.Contains(item.Type))
-                    power += 2;
-            }
-
-            return power;
         }
     }
 }
