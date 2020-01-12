@@ -52,16 +52,14 @@ namespace ConsoleRPG.Services
             var enemyDamageToPlayer = CalculateFinalDamage(enemy.Stats[StatsConstants.DamageStat],
                 enemy.Stats[StatsConstants.CritChanceStat], player.Stats[StatsConstants.ArmorStat],out var enemyCrit);
 
-            //Todo: придумать способ сделать без условия(в зависимости от хода делать действия в определенном порядке)
+            //Todo: придумать способ сделать без условия
             if (isPlayerTurn)
             {
                 PlayerAction(player,playerDamageToEnemy,playerCrit,enemy);
                 if (CheckIfSomeoneDied(enemy.Stats[StatsConstants.HpStat]))
                 {
-                    player.Gold += enemy.Gold;
-                    player.AddPointsToPlayer(FightAction.EnemyDeath,enemy.BaseStats.Values.Sum());
+                    EnemyDiedInFight(enemy,player);
                     isEnemyDied = true;
-                    DisplayFightAction(enemy.Name, FightAction.EnemyDeath);
                     return;
                 }
 
@@ -69,7 +67,7 @@ namespace ConsoleRPG.Services
                 if (CheckIfSomeoneDied(player.Stats[StatsConstants.HpStat]))
                 {
                     isPlayerDied = true;
-                    DisplayFightAction(player.Name, FightAction.PlayerDeath);
+                    PlayerDiedInFight(player,enemy);
                 }
             }
             else
@@ -78,18 +76,34 @@ namespace ConsoleRPG.Services
                 if (CheckIfSomeoneDied(player.Stats[StatsConstants.HpStat]))
                 {
                     isPlayerDied = true;
-                    DisplayFightAction(player.Name,FightAction.PlayerDeath);
+                    PlayerDiedInFight(player,enemy);
                     return;
                 }
 
                 PlayerAction(player, playerDamageToEnemy, playerCrit, enemy);
                 if (CheckIfSomeoneDied(enemy.Stats[StatsConstants.HpStat]))
                 {
-                    player.Gold += enemy.Gold;
                     isEnemyDied = true;
-                    DisplayFightAction(enemy.Name, FightAction.EnemyDeath);
+                    EnemyDiedInFight(enemy,player);
                 }
             }
+        }
+
+        public void EnemyDiedInFight(Enemy enemy, Player player)
+        {
+            player.Gold += enemy.Gold;
+            player.AddPointsToPlayer(FightAction.EnemyDeath, enemy.BaseStats.Values.Sum());
+            DisplayFightAction(enemy.Name, FightAction.EnemyDeath);
+            foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.EnemyKill))
+            {
+                activeTalent.Activate(player);
+                activeTalent.DeActivate(player);
+            }
+        }
+
+        public void PlayerDiedInFight(Player player, Enemy enemy)
+        {
+            DisplayFightAction(player.Name, FightAction.PlayerDeath);
         }
 
         private void PlayerAction(Player player,int playerDamageToEnemy,bool playerCrit, Enemy enemy)
@@ -97,11 +111,27 @@ namespace ConsoleRPG.Services
             enemy.Stats[StatsConstants.HpStat] -= playerDamageToEnemy;
             DisplayFightAction(player.Name, playerCrit ? FightAction.CriticalStrike : FightAction.Damage, playerDamageToEnemy, enemy.Name);
             player.AddPointsToPlayer(playerCrit ? FightAction.CriticalStrike : FightAction.Damage, playerDamageToEnemy);
+            if (playerCrit)
+            {
+                foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.PlayerCrit))
+                {
+                    activeTalent.Activate(player);
+                    activeTalent.DeActivate(player);
+                }
+            }
             var playerLifesteal = CalculateLifesteal(playerDamageToEnemy,
                 player.Stats[StatsConstants.LifestealStat],
                 player.Stats[StatsConstants.HpStat],
                 player.Stats[StatsConstants.MaxHpStat]);
             player.Stats[StatsConstants.HpStat] += playerLifesteal;
+            if (playerLifesteal > 0)
+            {
+                foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.PlayerLifesteal))
+                {
+                    activeTalent.Activate(player);
+                    activeTalent.DeActivate(player);
+                }
+            }
             DisplayFightAction(player.Name, FightAction.Lifesteal, playerLifesteal);
             player.AddPointsToPlayer(FightAction.Lifesteal, playerLifesteal);
         }
@@ -110,6 +140,14 @@ namespace ConsoleRPG.Services
         {
             player.Stats[StatsConstants.HpStat] -= enemyDamageToPlayer;
             DisplayFightAction(enemy.Name, enemyCrit ? FightAction.CriticalStrike : FightAction.Damage, enemyDamageToPlayer, player.Name);
+            if (enemyCrit)
+            {
+                foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.EnemyCrit))
+                {
+                    activeTalent.Activate(player);
+                    activeTalent.DeActivate(player);
+                }
+            }
             var enemyLifesteal = CalculateLifesteal(enemyDamageToPlayer,
                 enemy.Stats[StatsConstants.LifestealStat],
                 enemy.Stats[StatsConstants.HpStat],
@@ -134,6 +172,8 @@ namespace ConsoleRPG.Services
                     mMessageService.ShowMessage(new Message($"{subjectName} наносит {actionNumber} урона сокрушительным ударом по {objectName}!", ConsoleColor.Yellow));
                     break;
                 case FightAction.Lifesteal:
+                    if(actionNumber < 1)
+                        break;
                     mMessageService.ShowMessage(new Message($"{subjectName} восстанавливает {actionNumber} здоровья от вампиризма", ConsoleColor.Cyan));
                     break;
                 case FightAction.EnemyDeath:

@@ -16,16 +16,24 @@ namespace ConsoleRPG.Classes
         public Inventory Inventory { get; set; }
         public Dictionary<string, int> BaseStats { get; }
         public Race Race { get; set; }
+        public List<Talent> Talents { get; }
 
-        protected Character(Race race,Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        public List<ActiveTalent> ActiveTalents =>
+            Talents.Where(x => x.IsActiveType).Cast<ActiveTalent>().ToList();
+
+        public List<PassiveTalent> PassiveTalents =>
+            Talents.Where(x => !x.IsActiveType).Cast<PassiveTalent>().ToList();
+
+        protected Character(Race race, List<Talent> talents, Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Gold = gold;
             Name = name;
+            Talents = talents;
             Race = race;
             Inventory = inventory;
             Inventory.Items.CollectionChanged += (sender, args) =>
             {
-                CalculateStatsFromItems(Inventory.Items);
+                CalculateStatsFromItemsAndTalents(Inventory.Items);
             };
             BaseStats = new Dictionary<string, int>();
             BaseStats.Add(StatsConstants.MaxHpStat, maxHp);
@@ -36,7 +44,7 @@ namespace ConsoleRPG.Classes
             BaseStats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
         }
 
-        public override void CalculateStatsFromItems(IEnumerable<Item> items)
+        public override void CalculateStatsFromItemsAndTalents(IEnumerable<Item> items)
         {
             var currentHp = Stats[StatsConstants.HpStat];
             Stats = new Dictionary<string, int>(BaseStats);
@@ -50,6 +58,11 @@ namespace ConsoleRPG.Classes
             }
             if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
                 Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
+            foreach (var talent in Talents)
+            {
+                talent.Activate(this); //после смены предметов пробуем активировать таланты которые в теории должны быть активны
+                talent.DeActivate(this);//после смены предметов пробуем деактивировать таланты которые в теории не должны быть активны 
+            }
         }
     }
 }

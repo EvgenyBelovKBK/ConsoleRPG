@@ -22,13 +22,13 @@ namespace ConsoleRPG.Classes
             set
             {
                 mCurrentLevel = value;
-                Points += mCurrentLevel.Number;
+                Points += mCurrentLevel.Number * 2;
                 if (CurrentLevel.Number % 10 == 0)
-                    Points += mCurrentLevel.Number;
+                    Points += mCurrentLevel.Number * 2;
             }
         }
 
-        public Player(Race race,Inventory inventory,int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(race,inventory, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        public Player(Race race,List<Talent> talents,Inventory inventory,int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(race, talents, inventory, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Points = 0;
         }
@@ -38,13 +38,13 @@ namespace ConsoleRPG.Classes
             switch (action)
             {
                 case FightAction.Damage:
-                    Points += score / 5;
+                    Points += score / 10;
                     break;
                 case FightAction.CriticalStrike:
-                    Points += score / 2;
+                    Points += score / 8;
                     break;
                 case FightAction.Lifesteal:
-                    Points += score;
+                    Points += score / 2;
                     break;
                 case FightAction.EnemyDeath:
                     Points += score / 10;

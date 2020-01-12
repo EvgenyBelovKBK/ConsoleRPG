@@ -12,7 +12,7 @@ namespace ConsoleRPG.Classes
         public Tiers Tier { get; set; }
         public string AsciiArt { get; set; }
 
-        public Enemy(Tiers tier,Race race,Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,string asciiArt = "") : base(race,inventory, gold, name,maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        public Enemy(Tiers tier,Race race,List<Talent> talents,Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,string asciiArt = "") : base(race, talents, inventory, gold, name,maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Inventory = inventory;
             Tier = tier;

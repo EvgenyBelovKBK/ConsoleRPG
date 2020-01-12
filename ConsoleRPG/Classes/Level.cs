@@ -5,6 +5,7 @@ using System.Text;
 using ConsoleRPG.Constants;
 using ConsoleRPG.Enums;
 using ConsoleRPG.Interfaces;
+using ConsoleRPG.Services;
 
 namespace ConsoleRPG.Classes
 {
@@ -24,6 +25,7 @@ namespace ConsoleRPG.Classes
             {
                 Enemies.Add(new Enemy(enemy.Tier,
                     enemy.Race,
+                    enemy.Talents,
                     enemy.Inventory,
                     enemy.Gold,
                     enemy.Name,
@@ -43,7 +45,7 @@ namespace ConsoleRPG.Classes
             {
                 mMessageService.ShowMessage(new Message(i + ")" + enemy.Name,ConsoleColor.Yellow));
                 mMessageService.ShowMessage(new Message(enemy.AsciiArt,ConsoleColor.Cyan));
-                Game.ShowConsoleBoxedInfo(enemy.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
+                ConsoleMessageService.ShowConsoleBoxedInfo(enemy.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
                 i++;
             }
         }

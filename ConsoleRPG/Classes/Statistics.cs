@@ -33,6 +33,6 @@ namespace ConsoleRPG.Interfaces
             Stats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
         }
 
-        public abstract void CalculateStatsFromItems(IEnumerable<Item> items);
+        public abstract void CalculateStatsFromItemsAndTalents(IEnumerable<Item> items);
     }
 }

@@ -10,24 +10,18 @@ namespace ConsoleRPG.Services
 {
     public static class JsonSerializingService<T>
     {
+        private static readonly JsonSerializerSettings JsonSettings= new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto ,ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
         public static void Save(T objectToSave,string fileName,Action actionBeforeSave = null)
         {
             actionBeforeSave?.Invoke();
-            using (var stream = File.OpenWrite(fileName))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(new BsonWriter(stream), objectToSave);
-            }
+            var json = JsonConvert.SerializeObject(objectToSave, JsonSettings);
+                File.WriteAllText(fileName, json);
         }
 
         public static void SaveEntryInDictionary<TDict>(TDict list, string fileName) where TDict : IDictionary
         {
-            using (var stream = File.OpenWrite(fileName))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(new BsonWriter(stream), list);
-                JsonConvert.SerializeObject(list, new JsonSerializerSettings(){TypeNameHandling = TypeNameHandling.Auto});
-            }
+            var json = JsonConvert.SerializeObject(list, JsonSettings);
+            File.WriteAllText(fileName,json);
         }
 
 
@@ -35,12 +29,8 @@ namespace ConsoleRPG.Services
         {
             try
             {
-                using (var stream = File.OpenRead(fileName))
-                {
-                    var serializer = new JsonSerializer();
-                    var loadedObject = serializer.Deserialize<T>(new BsonReader(stream));
-                    return loadedObject;
-                }
+                var jsonObject = JsonConvert.DeserializeObject<T>(File.ReadAllText(fileName), JsonSettings);
+                return (T)jsonObject;
             }
             catch (Exception e)
             {

@@ -32,7 +32,7 @@ namespace ConsoleRPG.Classes
             Thread.Sleep(1000);
             mMessageService.ShowMessage(new Message($"Вы погибли от:",ConsoleColor.Cyan));
             mMessageService.ShowMessage(new Message(killerEnemy.Name,ConsoleColor.Red));
-            ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            ConsoleMessageService.ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             Thread.Sleep(1000);
             ShowConsolePlayerUi(player);
         }
@@ -49,7 +49,7 @@ namespace ConsoleRPG.Classes
             while (level.Enemies.Count > 0 && !playerDied)
             {
                 mMessageService.ShowMessage(new Message(player.Name, ConsoleColor.Cyan));
-                ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+                ConsoleMessageService.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
                 level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;
                 var turn = isPlayerTurn ? "Ваш ход" : "Ход противника";
@@ -132,8 +132,9 @@ namespace ConsoleRPG.Classes
                 mMessageService.ShowMessage(new Message($"{i+1}){playerItem.Name}",ConsoleColor.Cyan));
                 ShowConsoleItemInfo(playerItem);
             }
-            mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Cyan));
-            ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
+            mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Blue));
+            ConsoleMessageService.ShowConsoleBoxedInfo(player.Talents.ToDictionary(x => x.Name,x => x.Description));
+            ConsoleMessageService.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
         }
 
         public static void ShowConsoleItemInfo(Item item)
@@ -142,13 +143,13 @@ namespace ConsoleRPG.Classes
             var isWeapon = item.Type < (ItemType)2;
             if (isWeapon)
             {
-                ShowConsolePlayerWeaponType((Weapon)item);
+                ShowWeaponType((Weapon)item);
             }
             mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Cyan));
-            ShowConsoleBoxedInfo(item.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            ConsoleMessageService.ShowConsoleBoxedInfo(item.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
         }
 
-        public static void ShowConsolePlayerWeaponType(Weapon weapon)
+        public static void ShowWeaponType(Weapon weapon)
         {
             mMessageService.ShowMessage(new Message($"{EnumToString(weapon.WeaponType)}", ConsoleColor.Magenta));
         }
@@ -172,57 +173,6 @@ namespace ConsoleRPG.Classes
             }
 
             return string.Join(" ",words);
-        }
-
-        public static void ShowConsoleBoxedInfo(Dictionary<string, string> data)
-        {
-            int maxValueLength = 0;
-            foreach (var item in data)
-            {
-                if (item.Value.ToString().Length > maxValueLength)
-                    maxValueLength = item.Value.ToString().Length;
-            }
-
-            var sumOfLengths = maxValueLength + 24;
-            for (int i = 0; i <= sumOfLengths + 16; i++)
-            {
-                if (i == 0)
-                    Console.Write("╔");
-                else if (i < sumOfLengths)
-                    Console.Write("=");
-                else if (i == sumOfLengths)
-                    Console.Write("╗");
-
-            }
-
-            Console.WriteLine();
-            foreach (var item in data)
-            {
-                var side = "║";
-                Console.Write("║ ");
-                Console.Write($"{item.Key.PadRight(20)}: {item.Value}");
-                for (int i = 0; i < maxValueLength - item.Value.ToString().Length; i++)
-                {
-                    Console.Write(" ");
-                }
-
-                Console.Write(side);
-                Console.WriteLine();
-
-            }
-
-            for (int i = 0; i <= sumOfLengths; i++)
-            {
-                if (i == 0)
-                    Console.Write("╚");
-                else if (i < sumOfLengths)
-                    Console.Write("=");
-                else if (i == sumOfLengths)
-                    Console.Write("╝");
-
-            }
-
-            Console.WriteLine();
         }
     }
 }
