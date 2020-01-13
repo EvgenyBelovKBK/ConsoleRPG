@@ -48,8 +48,7 @@ namespace ConsoleRPG.Classes
             var enemyDied = false;
             while (level.Enemies.Count > 0 && !playerDied)
             {
-                mMessageService.ShowMessage(new Message(player.Name, ConsoleColor.Cyan));
-                ConsoleMessageService.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
+                ShowConsolePlayerUi(player,false,false,true,true,(item) => { return item.Type == ItemType.Potion;});
                 level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;
                 var turn = isPlayerTurn ? "Ваш ход" : "Ход противника";
@@ -122,18 +121,30 @@ namespace ConsoleRPG.Classes
             return hp <= 0 || levelNumber == Program.Levels.Length - 1;
         }
 
-        public static void ShowConsolePlayerUi(Player player)
+        public static void ShowConsolePlayerUi(Player player,bool withGold = true,bool withTalents = true,bool withInventory = true,bool withName = true,Func<Item,bool> inventoryFilter = null)
         {
-            mMessageService.ShowMessage(new Message($"Золото:{player.Gold}",ConsoleColor.Cyan));
+            if(withName)
+                mMessageService.ShowMessage(new Message($"{player.Name}", ConsoleColor.Cyan));
+            if(withGold)
+                mMessageService.ShowMessage(new Message($"Золото:{player.Gold}",ConsoleColor.Cyan));
             mMessageService.ShowMessage(new Message($"Инвентарь:",ConsoleColor.Cyan));
-            for (int i = 0; i < player.Inventory.Items.Count; i++)
+            var inventory = new List<Item>(player.Inventory.Items);
+            if (inventoryFilter != null)
+                inventory = inventory.Where(inventoryFilter).ToList();
+
+            if (withInventory)
             {
-                var playerItem = player.Inventory.Items[i];
-                mMessageService.ShowMessage(new Message($"{i+1}){playerItem.Name}",ConsoleColor.Cyan));
-                ShowConsoleItemInfo(playerItem);
+                for (int i = 0; i < inventory.Count; i++)
+                {
+                    var playerItem = inventory[i];
+                    mMessageService.ShowMessage(new Message($"{i + 1}){playerItem.Name}", ConsoleColor.Cyan));
+                    ShowConsoleItemInfo(playerItem);
+                }
             }
+
             mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Blue));
-            ConsoleMessageService.ShowConsoleBoxedInfo(player.Talents.ToDictionary(x => x.Name,x => x.Description));
+            if(withTalents)
+                ConsoleMessageService.ShowConsoleBoxedInfo(player.Talents.ToDictionary(x => x.Name,x => x.Description));
             ConsoleMessageService.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
         }
 

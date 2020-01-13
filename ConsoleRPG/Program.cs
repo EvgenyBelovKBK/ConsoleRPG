@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleRPG.Classes;
@@ -33,6 +34,7 @@ namespace ConsoleRPG
         private const int StartGold = 15;
         static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.Unicode;
             while (true)
             {
                 Console.WindowHeight = 45;
@@ -143,10 +145,8 @@ namespace ConsoleRPG
             var i = 1;
             foreach (var playableClass in Races)
             {
-                MessageService.ShowMessage(new Message(i + ")" + playableClass.Name, ConsoleColor.Yellow));
-                MessageService.ShowMessage(new Message("Золото:" + playableClass.Gold,ConsoleColor.Cyan));
-                ConsoleMessageService.ShowConsoleBoxedInfo(playableClass.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
-                ConsoleMessageService.ShowConsoleBoxedInfo(playableClass.Talents.ToDictionary(x => x.Name, x => x.Description));
+                MessageService.ShowMessage(new Message($"{i}){playableClass.Name}",ConsoleColor.Cyan));
+                Game.ShowConsolePlayerUi(playableClass,withInventory:false,withName:false);
                 i++;
             }
 
@@ -436,7 +436,7 @@ namespace ConsoleRPG
                     armor: 70, lifestealPercent: 0, criticalStrikeChance: 21),
                 new Enemy(Tiers.Tier3,Race.Human,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 11, "Aztec voodoo-warior", maxHp: 115, damage: 66,
                     armor: 43, lifestealPercent: 25, criticalStrikeChance: 16),
-                new Enemy(Tiers.Tier3,Race.Ogre,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 7, "Ogre", maxHp: 365, damage: 160, armor: 0,
+                new Enemy(Tiers.Tier3,Race.Ogre,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 7, "Ogre", maxHp: 365, damage: 130, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Ogre),
 
                 #endregion
@@ -639,10 +639,29 @@ namespace ConsoleRPG
                         {StatsConstants.LifestealStat, 10}
                     },ItemType.Rune, 4, Tiers.Tier1, "Nature's rune"),
 
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.HpStat, 40},
+                    },ItemType.Potion, 2, Tiers.Tier1, "Small life flask"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.HpStat, 80},
+                    },ItemType.Potion, 4, Tiers.Tier1, "Mediocre life flask"),
+
 
                     #endregion
 
                     #region Tier2
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.HpStat, 150},
+                    },ItemType.Potion, 10, Tiers.Tier1, "Big life flask"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.HpStat, 220},
+                    },ItemType.Potion, 16, Tiers.Tier1, "Giant life flask"),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -1231,16 +1250,23 @@ namespace ConsoleRPG
             Races = new List<Player>()
             {
                 new Player(Race.Human,new List<Talent>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,              "Human",70,7,5,0,15 ),
-                new Player(Race.Giant,new List<Talent>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",115,19,-4,0,0 ),
+                new Player(Race.Giant,new List<Talent>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",115,21,-4,0,0 ),
                 new Player(Race.Elf,new List<Talent>(Talents.Where(x => x.Name == "Precision")),new Inventory(new ObservableCollection<Item>()),StartGold,                    "Elf",50,16,2,0,45 ),
                 new Player(Race.Undead,new List<Talent>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold,             "Undead",90,12,-2,40,-5 ),
                 new Player(Race.Troll,new List<Talent>(Talents.Where(x => x.Name == "Dual wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,           "Troll",76,7,3,60,5 ),
                 new Player(Race.Gnome,new List<Talent>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold + 3, "Gnome",45,5,8,0,10),
                 new Player(Race.Orc,new List<Talent>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,                  "Orc",85,7,5,-7,5 ),
-                new Player(Race.Ogre,new List<Talent>(Talents.Where(x => x.Name == "Two handed wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,       "Ogre",140,35,- 10,-15,-15 ),
+                new Player(Race.Ogre,new List<Talent>(Talents.Where(x => x.Name == "Two handed wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,       "Ogre",140,38,- 10,-15,-15 ),
                 new Player(Race.Cursed,new List<Talent>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold - 6,     "Cursed",20,20,20,20,20 ),
-                new Player(Race.Goblin,new List<Talent>(Talents.Where(x => x.Name == "Sneaky")),new Inventory(new ObservableCollection<Item>()),StartGold + 9,       "Goblin",32,5,2,0,5 )
+                new Player(Race.Goblin,new List<Talent>(Talents.Where(x => x.Name == "Sneaky")),new Inventory(new ObservableCollection<Item>()),StartGold + 9,       "Goblin",32,5,2,0,12 )
             };
+            foreach (var race in Races)
+            {
+                for (int i = 1; i < 2; i++)
+                {
+                    race.Inventory.Items.Add(Items.First(x => x.Name == "Small life flask"));
+                }
+            }
         }
 
         public static void FillTalents()
