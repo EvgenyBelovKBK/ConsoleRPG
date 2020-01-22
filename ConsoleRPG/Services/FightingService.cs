@@ -44,6 +44,13 @@ namespace ConsoleRPG.Services
 
         public void CalculateFight(Player player,Enemy enemy,bool isPlayerTurn,out bool isEnemyDied,out bool isPlayerDied)
         {
+            foreach (var activeAbility in player.ActiveAbilities.Where(x => x.IsAffecting && !x.IsPermanent))
+            {
+                if (activeAbility.CurrentTurnCount == activeAbility.AffectingTurnCount)
+                    activeAbility.DeActivate(player);
+                activeAbility.CurrentTurnCount++;
+            }
+
             isEnemyDied = false;
             isPlayerDied = false;
 
@@ -58,8 +65,8 @@ namespace ConsoleRPG.Services
                 PlayerAction(player,playerDamageToEnemy,playerCrit,enemy);
                 if (CheckIfSomeoneDied(enemy.Stats[StatsConstants.HpStat]))
                 {
-                    EnemyDiedInFight(enemy,player);
                     isEnemyDied = true;
+                    EnemyDiedInFight(enemy,player);
                     return;
                 }
 
@@ -94,10 +101,9 @@ namespace ConsoleRPG.Services
             player.Gold += enemy.Gold;
             player.AddPointsToPlayer(FightAction.EnemyDeath, enemy.BaseStats.Values.Sum());
             DisplayFightAction(enemy.Name, FightAction.EnemyDeath);
-            foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.EnemyKill))
+            foreach (var activeAbility in player.ActiveAbilities.Where(x => x.AbilityType == ActiveAbilityType.EnemyKill))
             {
-                activeTalent.Activate(player);
-                activeTalent.DeActivate(player);
+                activeAbility.Activate(player);
             }
         }
 
@@ -113,10 +119,9 @@ namespace ConsoleRPG.Services
             player.AddPointsToPlayer(playerCrit ? FightAction.CriticalStrike : FightAction.Damage, playerDamageToEnemy);
             if (playerCrit)
             {
-                foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.PlayerCrit))
+                foreach (var activeAbility in player.ActiveAbilities.Where(x => x.AbilityType == ActiveAbilityType.PlayerCrit))
                 {
-                    activeTalent.Activate(player);
-                    activeTalent.DeActivate(player);
+                    activeAbility.Activate(player);
                 }
             }
             var playerLifesteal = CalculateLifesteal(playerDamageToEnemy,
@@ -126,10 +131,9 @@ namespace ConsoleRPG.Services
             player.Stats[StatsConstants.HpStat] += playerLifesteal;
             if (playerLifesteal > 0)
             {
-                foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.PlayerLifesteal))
+                foreach (var activeAbility in player.ActiveAbilities.Where(x => x.AbilityType == ActiveAbilityType.PlayerLifesteal))
                 {
-                    activeTalent.Activate(player);
-                    activeTalent.DeActivate(player);
+                    activeAbility.Activate(player);
                 }
             }
             DisplayFightAction(player.Name, FightAction.Lifesteal, playerLifesteal);
@@ -142,10 +146,9 @@ namespace ConsoleRPG.Services
             DisplayFightAction(enemy.Name, enemyCrit ? FightAction.CriticalStrike : FightAction.Damage, enemyDamageToPlayer, player.Name);
             if (enemyCrit)
             {
-                foreach (var activeTalent in player.ActiveTalents.Where(x => x.TalentType == ActiveTalentType.EnemyCrit))
+                foreach (var activeAbility in player.ActiveAbilities.Where(x => x.AbilityType == ActiveAbilityType.EnemyCrit))
                 {
-                    activeTalent.Activate(player);
-                    activeTalent.DeActivate(player);
+                    activeAbility.Activate(player);
                 }
             }
             var enemyLifesteal = CalculateLifesteal(enemyDamageToPlayer,

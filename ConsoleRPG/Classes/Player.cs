@@ -28,7 +28,7 @@ namespace ConsoleRPG.Classes
             }
         }
 
-        public Player(Race race,List<Talent> talents,Inventory inventory,int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(race, talents, inventory, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        public Player(Race race,List<Ability> abilities,Inventory inventory,int gold, string name, int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(race, abilities, inventory, gold, name, maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Points = 0;
         }

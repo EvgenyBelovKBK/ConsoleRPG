@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ConsoleRPG.Enums
 {
-    public enum PassiveTalentType
+    public enum PassiveAbilityType
     {
         WithWeapon,
         AgainstEnemy

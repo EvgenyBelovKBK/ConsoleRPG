@@ -16,23 +16,38 @@ namespace ConsoleRPG.Classes
         public Inventory Inventory { get; set; }
         public Dictionary<string, int> BaseStats { get; }
         public Race Race { get; set; }
-        public List<Talent> Talents { get; }
+        public List<Ability> Abilities { get; }
 
-        public List<ActiveTalent> ActiveTalents =>
-            Talents.Where(x => x.IsActiveType).Cast<ActiveTalent>().ToList();
+        public List<ActiveAbility> ActiveAbilities =>
+            Abilities.Where(x => x.IsActiveType).Cast<ActiveAbility>().ToList();
 
-        public List<PassiveTalent> PassiveTalents =>
-            Talents.Where(x => !x.IsActiveType).Cast<PassiveTalent>().ToList();
+        public List<PassiveAbility> PassiveAbilities =>
+            Abilities.Where(x => !x.IsActiveType).Cast<PassiveAbility>().ToList();
 
-        protected Character(Race race, List<Talent> talents, Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        protected Character(Race race, List<Ability> abilities, Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
             Gold = gold;
             Name = name;
-            Talents = talents;
+            Abilities = abilities;
             Race = race;
             Inventory = inventory;
             Inventory.Items.CollectionChanged += (sender, args) =>
             {
+                if (Inventory.Items.Any(x => x.Type == ItemType.TwoHandedWeapon))
+                {
+                    Inventory.ItemRestrictions[ItemType.OneHandedWeapon] = 0;
+                    Inventory.ItemRestrictions[ItemType.TwoHandedWeapon] = 1;
+                }
+
+                else if (Inventory.Items.Any(x => x.Type == ItemType.OneHandedWeapon))
+                {
+                    Inventory.ItemRestrictions[ItemType.TwoHandedWeapon] = 0;
+                    Inventory.ItemRestrictions[ItemType.OneHandedWeapon] = 2;
+                }
+                else
+                {
+                    Inventory.ItemRestrictions = new Dictionary<ItemType, int>(ItemConstants.DefaultItemRestrictions);
+                }
                 CalculateStatsFromItemsAndTalents(Inventory.Items);
             };
             BaseStats = new Dictionary<string, int>();
@@ -44,7 +59,7 @@ namespace ConsoleRPG.Classes
             BaseStats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
         }
 
-        public override void CalculateStatsFromItemsAndTalents(IEnumerable<Item> items)
+        public void CalculateStatsFromItemsAndTalents(IEnumerable<Item> items)
         {
             var currentHp = Stats[StatsConstants.HpStat];
             Stats = new Dictionary<string, int>(BaseStats);
@@ -58,10 +73,10 @@ namespace ConsoleRPG.Classes
             }
             if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
                 Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
-            foreach (var talent in Talents)
+            foreach (var ability in PassiveAbilities)
             {
-                talent.Activate(this); //после смены предметов пробуем активировать таланты которые в теории должны быть активны
-                talent.DeActivate(this);//после смены предметов пробуем деактивировать таланты которые в теории не должны быть активны 
+                ability.Activate(this); //после смены предметов пробуем активировать таланты которые в теории должны быть активны
+                ability.DeActivate(this);//после смены предметов пробуем деактивировать таланты которые в теории не должны быть активны 
             }
         }
     }

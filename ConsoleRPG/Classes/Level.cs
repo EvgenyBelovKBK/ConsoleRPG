@@ -25,7 +25,7 @@ namespace ConsoleRPG.Classes
             {
                 Enemies.Add(new Enemy(enemy.Tier,
                     enemy.Race,
-                    enemy.Talents,
+                    enemy.Abilities,
                     enemy.Inventory,
                     enemy.Gold,
                     enemy.Name,

@@ -12,14 +12,12 @@ namespace ConsoleRPG.Classes
     public class Inventory
     {
         public ObservableCollection<Item> Items { get; set; }
-        public Dictionary<ItemType, int> ItemRestrictions { get;}
+        public Dictionary<ItemType, int> ItemRestrictions { get; set; }
 
-        public Inventory(ObservableCollection<Item> items, Dictionary<ItemType, int> itemRestrictions = null)
+        public Inventory(ObservableCollection<Item> items)
         {
             Items = items;
-            ItemRestrictions = itemRestrictions;
-            if(ItemRestrictions == null)
-                ItemRestrictions = new Dictionary<ItemType, int>(ItemConstants.DefaultItemRestrictions);
+            ItemRestrictions = new Dictionary<ItemType, int>(ItemConstants.DefaultItemRestrictions);
         }
     }
 }

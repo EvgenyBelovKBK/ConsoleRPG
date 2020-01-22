@@ -27,12 +27,7 @@ namespace ConsoleRPG.Classes
         public void BuyItem (Item item,Player player)
         {
             var isAllowedToBuy = false;
-            if (item.Type == ItemType.OneHandedWeapon || item.Type == ItemType.TwoHandedWeapon)
-            {
-                isAllowedToBuy = player.Inventory.Items.Count(x => x.Type == ItemType.OneHandedWeapon || x.Type == ItemType.TwoHandedWeapon) + 1 <= player.Inventory.ItemRestrictions[item.Type];
-            }
-            else
-                isAllowedToBuy = player.Inventory.Items.Count(x => x.Type == item.Type) + 1 <= player.Inventory.ItemRestrictions[item.Type];
+            isAllowedToBuy = player.Inventory.Items.Count(x => x.Type == item.Type) + 1 <= player.Inventory.ItemRestrictions[item.Type];
 
             if (!isAllowedToBuy)
             {

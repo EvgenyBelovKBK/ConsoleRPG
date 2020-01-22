@@ -23,13 +23,12 @@ namespace ConsoleRPG
         static readonly ThingRandomGenerator<Item> ItemRandomGenerator = new ThingRandomGenerator<Item>();
         static readonly ThingRandomGenerator<Enemy> EnemyRandomGenerator = new ThingRandomGenerator<Enemy>();
         static readonly FightingService FightingService = new FightingService(new NumbersRandomGenerator(),MessageService);
-        public static Level[] Levels = new Level[51];
-        public static Campaign[] Campaigns = new Campaign[5];
+        public static List<Level> Levels =new List<Level>();
         public static List<Enemy> Enemies = new List<Enemy>();
         public static List<Item> Items = new List<Item>();
         public static List<Shop> Shops = new List<Shop>();
         private static List<Player> Races = new List<Player>();
-        private static List<Talent> Talents = new List<Talent>();
+        private static List<Ability> Talents = new List<Ability>();
         public static Dictionary<string,Func<Item, bool>> ItemCommands = new Dictionary<string, Func<Item, bool>>();
         private const int StartGold = 15;
         static void Main(string[] args)
@@ -52,7 +51,7 @@ namespace ConsoleRPG
                 {
                     game.MoveToNextLevel(player);
                 }
-                if(player.CurrentLevel.Number == Levels.Length) 
+                if(player.CurrentLevel.Number == Levels.Count) 
                     MessageService.ShowMessage(new Message("У тебя сердце воина,ты лучший из ныне живущих!Пока что...",ConsoleColor.Red));
                 Player bestExplorer;
                 var oldTable = new Dictionary<string, string>();
@@ -96,28 +95,37 @@ namespace ConsoleRPG
             }
         }
 
-        static Player CreateCharacter()
+        static void ShowBestScore()
         {
-            int sleepTime = 3500;
-            MessageService.ShowMessage(new Message(AsciiArts.Header + Environment.NewLine, ConsoleColor.Cyan));
-            Thread.Sleep(sleepTime);
-
             var best = JsonSerializingService<Player>.Load(BestScoreFileName);
             if (best != null)
             {
                 MessageService.ShowMessage(new Message("                   Лучший забег!", ConsoleColor.Yellow));
                 MessageService.ShowMessage(new Message("Набрано Очков:" + best.Points, ConsoleColor.Red));
-                MessageService.ShowMessage(new Message("Имя:" + best.Name,ConsoleColor.Cyan));
-                MessageService.ShowMessage(new Message("Раса:" + best.Race,ConsoleColor.Cyan));
+                MessageService.ShowMessage(new Message("Имя:" + best.Name, ConsoleColor.Cyan));
+                MessageService.ShowMessage(new Message("Раса:" + best.Race, ConsoleColor.Cyan));
                 Game.ShowConsolePlayerUi(best);
             }
+        }
 
+        static void ShowRecentRuns()
+        {
             var rating = JsonSerializingService<Dictionary<string, string>>.Load(RatingFileName);
             if (rating != null)
             {
                 MessageService.ShowMessage(new Message("                   Таблица последних сыгранных игр", ConsoleColor.Cyan));
                 ConsoleMessageService.ShowConsoleBoxedInfo(rating);
             }
+        }
+
+        static Player CreateCharacter()
+        {
+            int sleepTime = 3500;
+            MessageService.ShowMessage(new Message(AsciiArts.Header + Environment.NewLine, ConsoleColor.Cyan));
+            Thread.Sleep(sleepTime);
+
+            ShowBestScore();
+            ShowRecentRuns();
 
             MessageService.ShowMessage(new Message("Начать новую игру или загрузить?(n/l)",ConsoleColor.Cyan));
             var isNewGame = MessageService.ReadPlayerInput().Equals("n",StringComparison.OrdinalIgnoreCase);
@@ -179,7 +187,6 @@ namespace ConsoleRPG
             FillTalents();
             FillEnemies();
             FillLevels();
-            FillCampaigns();
             FillShops();
             FillRaces();
         }
@@ -187,7 +194,7 @@ namespace ConsoleRPG
 
         public static void FillLevels()
         {
-            Levels = new[]
+            Levels = new List<Level>()
             {
                 new Level(0, "Start of the Journey",
                     EnemyRandomGenerator.GenerateRandomThings(Enemies.ToArray(), Tiers.Tier1, 0,
@@ -345,72 +352,56 @@ namespace ConsoleRPG
             };
         }
 
-        public static void FillCampaigns()
-        {
-            Campaigns = new[]
-            {
-                new Campaign(Tiers.Tier1, "Alakyr's forests", Levels.Where(x => x.Number < 11).ToList()),
-                new Campaign(Tiers.Tier2, "Old broken village",
-                    Levels.Where(x => x.Number > 10 && x.Number < 21).ToList()),
-                new Campaign(Tiers.Tier3, "Forgotten plains",
-                    Levels.Where(x => x.Number > 20 && x.Number < 31).ToList()),
-                new Campaign(Tiers.Tier4, "Crystal cave deeps",
-                    Levels.Where(x => x.Number > 30 && x.Number < 41).ToList()),
-                new Campaign(Tiers.Tier5, "Volcano's road",
-                    Levels.Where(x => x.Number > 40 && x.Number < 51).ToList())
-            };
-        }
-
         public static void FillEnemies()
         {
             Enemies = new List<Enemy>()
             {
                 #region Tier1
 
-                new Enemy(Tiers.Tier1,Race.Goblin,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 1, "Small goblin", maxHp: 25, damage: 7, armor: 5,
+                new Enemy(Tiers.Tier1,Race.Goblin,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 2, "Small goblin", maxHp: 25, damage: 7, armor: 5,
                     lifestealPercent: 0, criticalStrikeChance: 15, asciiArt: AsciiArts.SmallGoblin),
-                new Enemy(Tiers.Tier1,Race.Orc,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 3, "Small orc", maxHp: 80, damage: 15, armor: 7,
+                new Enemy(Tiers.Tier1,Race.Orc,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 4, "Small orc", maxHp: 80, damage: 15, armor: 7,
                     lifestealPercent: 0, criticalStrikeChance: 5),
-                new Enemy(Tiers.Tier1,Race.Troll,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 3, "Small troll", maxHp: 55, damage: 17, armor: 5,
+                new Enemy(Tiers.Tier1,Race.Troll,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 4, "Small troll", maxHp: 55, damage: 17, armor: 5,
                     lifestealPercent: 45, criticalStrikeChance: 5),
-                new Enemy(Tiers.Tier1, Race.Gnome,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 2, "Angry gnome", maxHp: 25, damage: 25, armor: 0,
+                new Enemy(Tiers.Tier1, Race.Gnome,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 3, "Angry gnome", maxHp: 25, damage: 25, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, Race.MagicCreature,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 1, "Fly-trap", maxHp: 20, damage: 8, armor: 0,
+                new Enemy(Tiers.Tier1, Race.MagicCreature,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 2, "Fly-trap", maxHp: 20, damage: 8, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, Race.MagicCreature,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 2, "Little swamp creature", maxHp: 80, damage: 16,
+                new Enemy(Tiers.Tier1, Race.MagicCreature,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 3, "Little swamp creature", maxHp: 80, damage: 16,
                     armor: 0, lifestealPercent: 35, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier1, Race.Animal,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 3, "Wild wolf", maxHp: 40, damage: 13, armor: 0,
+                new Enemy(Tiers.Tier1, Race.Animal,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 4, "Wild wolf", maxHp: 40, damage: 13, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 23,asciiArt: AsciiArts.WildWolf),
-                new Enemy(Tiers.Tier1, Race.Animal,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 2, "Small bat", maxHp: 26, damage: 14, armor: 0,
+                new Enemy(Tiers.Tier1, Race.Animal,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 3, "Small bat", maxHp: 26, damage: 14, armor: 0,
                     lifestealPercent: 65, criticalStrikeChance: 5,asciiArt: AsciiArts.SmallBat),
-                new Enemy(Tiers.Tier1, Race.Undead,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 1, "Zombie", maxHp: 40, damage: 18, armor: 2,
+                new Enemy(Tiers.Tier1, Race.Undead,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 3, "Zombie", maxHp: 40, damage: 18, armor: 2,
                     lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Zombie),
-                new Enemy(Tiers.Tier1, Race.Cursed,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 4, "Young Blackgate warrior", maxHp: 68,
+                new Enemy(Tiers.Tier1, Race.Cursed,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 6, "Young Blackgate warrior", maxHp: 68,
                     damage: 22, armor: 10, lifestealPercent: 0, criticalStrikeChance: 7,asciiArt: AsciiArts.YoungBlackgateWarrior),
 
                 #endregion
 
                 #region Tier2
 
-                new Enemy(Tiers.Tier2,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 7, "Small werewolf", maxHp: 120, damage: 32,
+                new Enemy(Tiers.Tier2,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 7, "Small werewolf", maxHp: 120, damage: 32,
                     armor: 0, lifestealPercent: 35, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier2,Race.Goblin,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 4, "Goblin", maxHp: 55, damage: 22, armor: 15,
+                new Enemy(Tiers.Tier2,Race.Goblin,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 4, "Goblin", maxHp: 55, damage: 22, armor: 15,
                     lifestealPercent: 0, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier2,Race.Troll,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 5, "Wounded troll", maxHp: 75, damage: 44,
+                new Enemy(Tiers.Tier2,Race.Troll,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 5, "Wounded troll", maxHp: 75, damage: 44,
                     armor: 35, lifestealPercent: 55, criticalStrikeChance: 7),
-                new Enemy(Tiers.Tier2,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 5, "Mediocre size bear", maxHp: 140, damage: 45,
+                new Enemy(Tiers.Tier2,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 5, "Mediocre size bear", maxHp: 140, damage: 45,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier2,Race.Elf,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 8, "Cursed elf", maxHp: 55, damage: 39, armor: 22,
+                new Enemy(Tiers.Tier2,Race.Elf,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 8, "Cursed elf", maxHp: 55, damage: 39, armor: 22,
                     lifestealPercent: 0, criticalStrikeChance: 35),
-                new Enemy(Tiers.Tier2,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 5, "Big hungry boar", maxHp: 180, damage: 41,
+                new Enemy(Tiers.Tier2,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 5, "Big hungry boar", maxHp: 180, damage: 41,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 10,asciiArt: AsciiArts.BigHungryBoar),
-                new Enemy(Tiers.Tier2,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 4, "Bat swarm", maxHp: 150, damage: 40, armor: 0,
+                new Enemy(Tiers.Tier2,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 4, "Bat swarm", maxHp: 150, damage: 40, armor: 0,
                     lifestealPercent: 65, criticalStrikeChance: 0,asciiArt: AsciiArts.BatSwarm),
-                new Enemy(Tiers.Tier2,Race.Cursed,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 7, "Cursed Iron knight", maxHp: 90, damage: 37,
+                new Enemy(Tiers.Tier2,Race.Cursed,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 7, "Cursed Iron knight", maxHp: 90, damage: 37,
                     armor: 25, lifestealPercent: 0, criticalStrikeChance: 17),
-                new Enemy(Tiers.Tier2,Race.Human,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 8, "Aztec warrior", maxHp: 65, damage: 50,
+                new Enemy(Tiers.Tier2,Race.Human,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 8, "Aztec warrior", maxHp: 65, damage: 50,
                     armor: 15, lifestealPercent: 20, criticalStrikeChance: 20),
-                new Enemy(Tiers.Tier2,Race.Goblin,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 10, "Goblin-assassin", maxHp: 60, damage: 65,
+                new Enemy(Tiers.Tier2,Race.Goblin,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 10, "Goblin-assassin", maxHp: 60, damage: 65,
                     armor: 15, lifestealPercent: 0, criticalStrikeChance: 70),
 
 
@@ -418,75 +409,75 @@ namespace ConsoleRPG
 
                 #region Tier3
 
-                new Enemy(Tiers.Tier3,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 10, "Werewolf", maxHp: 260, damage: 78, armor: 0,
+                new Enemy(Tiers.Tier3,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 10, "Werewolf", maxHp: 260, damage: 78, armor: 0,
                     lifestealPercent: 41, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier3,Race.Gnome,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 15, "Proffesional Goblin-assassin", maxHp: 85,
+                new Enemy(Tiers.Tier3,Race.Gnome,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 15, "Proffesional Goblin-assassin", maxHp: 85,
                     damage: 70, armor: 20, lifestealPercent: 0, criticalStrikeChance: 80),
-                new Enemy(Tiers.Tier3,Race.Troll,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 8, "Troll", maxHp: 130, damage: 62, armor: 40,
+                new Enemy(Tiers.Tier3,Race.Troll,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 8, "Troll", maxHp: 130, damage: 62, armor: 40,
                     lifestealPercent: 50, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier3,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 7, "Mother bear", maxHp: 205, damage: 68,
+                new Enemy(Tiers.Tier3,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 7, "Mother bear", maxHp: 205, damage: 68,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 20,asciiArt: AsciiArts.MotherBear),
-                new Enemy(Tiers.Tier3,Race.Orc,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 9, "Orc-warrior", maxHp: 110, damage: 55,
+                new Enemy(Tiers.Tier3,Race.Orc,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 9, "Orc-warrior", maxHp: 110, damage: 55,
                     armor: 55, lifestealPercent: 0, criticalStrikeChance: 20),
-                new Enemy(Tiers.Tier3,Race.MagicCreature,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 8, "Swamp creature", maxHp: 400, damage: 60,
+                new Enemy(Tiers.Tier3,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 8, "Swamp creature", maxHp: 400, damage: 60,
                     armor: 0, lifestealPercent: 40, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier3,Race.Undead,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 9, "Vampire", maxHp: 135, damage: 66, armor: 32,
+                new Enemy(Tiers.Tier3,Race.Undead,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 9, "Vampire", maxHp: 135, damage: 66, armor: 32,
                     lifestealPercent: 100, criticalStrikeChance: 15,asciiArt: AsciiArts.Vampire),
-                new Enemy(Tiers.Tier3,Race.Cursed,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 9, "Cursed Paladin", maxHp: 140, damage: 82,
+                new Enemy(Tiers.Tier3,Race.Cursed,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 9, "Cursed Paladin", maxHp: 140, damage: 82,
                     armor: 70, lifestealPercent: 0, criticalStrikeChance: 21),
-                new Enemy(Tiers.Tier3,Race.Human,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 11, "Aztec voodoo-warior", maxHp: 115, damage: 66,
+                new Enemy(Tiers.Tier3,Race.Human,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 11, "Aztec voodoo-warior", maxHp: 115, damage: 66,
                     armor: 43, lifestealPercent: 25, criticalStrikeChance: 16),
-                new Enemy(Tiers.Tier3,Race.Ogre,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 7, "Ogre", maxHp: 365, damage: 130, armor: 0,
+                new Enemy(Tiers.Tier3,Race.Ogre,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 7, "Ogre", maxHp: 365, damage: 130, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.Ogre),
 
                 #endregion
 
                 #region Tier4
 
-                new Enemy(Tiers.Tier4,Race.MagicCreature,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 10, "Little dragon", maxHp: 450, damage: 220,
+                new Enemy(Tiers.Tier4,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 10, "Little dragon", maxHp: 450, damage: 220,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 0,asciiArt: AsciiArts.LittleDragon),
-                new Enemy(Tiers.Tier4,Race.Goblin,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 21, "Goblin back-stabber", maxHp: 150, damage: 135,
+                new Enemy(Tiers.Tier4,Race.Goblin,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 21, "Goblin back-stabber", maxHp: 150, damage: 135,
                     armor: 55, lifestealPercent: 0, criticalStrikeChance: 85),
-                new Enemy(Tiers.Tier4,Race.Troll,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 11, "Angry troll", maxHp: 200, damage: 150,
+                new Enemy(Tiers.Tier4,Race.Troll,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 11, "Angry troll", maxHp: 200, damage: 150,
                     armor: 80, lifestealPercent: 65, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier4,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 12, "Ursa", maxHp: 380, damage: 170, armor: 0,
+                new Enemy(Tiers.Tier4,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 12, "Ursa", maxHp: 380, damage: 170, armor: 0,
                     lifestealPercent: 35, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier4,Race.Cursed,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 10, "Cursed Paladin's sword", maxHp: 210,
+                new Enemy(Tiers.Tier4,Race.Cursed,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 10, "Cursed Paladin's sword", maxHp: 210,
                     damage: 180, armor: 0, lifestealPercent: 0, criticalStrikeChance: 22),
-                new Enemy(Tiers.Tier4,Race.MagicCreature,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 8, "Big Swamp thing", maxHp: 520, damage: 160,
+                new Enemy(Tiers.Tier4,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 8, "Big Swamp thing", maxHp: 520, damage: 160,
                     armor: 0, lifestealPercent: 30, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier4,Race.Undead,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 13, "Dracula", maxHp: 220, damage: 195, armor: 80,
+                new Enemy(Tiers.Tier4,Race.Undead,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 13, "Dracula", maxHp: 220, damage: 195, armor: 80,
                     lifestealPercent: 100, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier4,Race.Elf,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 14, "Elf dead-eye", maxHp: 120, damage: 177,
+                new Enemy(Tiers.Tier4,Race.Elf,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 14, "Elf dead-eye", maxHp: 120, damage: 177,
                     armor: 60, lifestealPercent: 0, criticalStrikeChance: 59),
-                new Enemy(Tiers.Tier4,Race.MagicCreature,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 9, "Big Treant", maxHp: 600, damage: 250, armor: 0,
+                new Enemy(Tiers.Tier4,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 9, "Big Treant", maxHp: 600, damage: 250, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier4,Race.Cursed,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 11, "Cursed mage", maxHp: 140, damage: 225,
+                new Enemy(Tiers.Tier4,Race.Cursed,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 11, "Cursed mage", maxHp: 140, damage: 225,
                     armor: 90, lifestealPercent: 0, criticalStrikeChance: 0),
 
                 #endregion
 
                 #region Tier5
 
-                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Dragon", maxHp: 900, damage: 425, armor: 0,
+                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Dragon", maxHp: 900, damage: 425, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier5,Race.Troll,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Troll warlord", maxHp: 600, damage: 300,
+                new Enemy(Tiers.Tier5,Race.Troll,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Troll warlord", maxHp: 600, damage: 300,
                     armor: 190, lifestealPercent: 60, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier5,Race.Human,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Aztec king", maxHp: 450, damage: 235,
+                new Enemy(Tiers.Tier5,Race.Human,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Aztec king", maxHp: 450, damage: 235,
                     armor: 150, lifestealPercent: 25, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier5,Race.Animal,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Ursa warrior", maxHp: 670, damage: 400,
+                new Enemy(Tiers.Tier5,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Ursa warrior", maxHp: 670, damage: 400,
                     armor: 90, lifestealPercent: 35, criticalStrikeChance: 8),
-                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Treant protector", maxHp: 1400, damage: 390,
+                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Treant protector", maxHp: 1400, damage: 390,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 0),
-                new Enemy(Tiers.Tier5, Race.Animal,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 100, "Wild dog's group", maxHp: 600, damage: 270,
+                new Enemy(Tiers.Tier5, Race.Animal,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 100, "Wild dog's group", maxHp: 600, damage: 270,
                     armor: 0, lifestealPercent: 10, criticalStrikeChance: 30),
-                new Enemy(Tiers.Tier5,Race.Human,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Zeus", maxHp: 525, damage: 390, armor: 200,
+                new Enemy(Tiers.Tier5,Race.Human,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Zeus", maxHp: 525, damage: 390, armor: 200,
                     lifestealPercent: 0, criticalStrikeChance: 15),
-                new Enemy(Tiers.Tier5,Race.Elf,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Legolas", maxHp: 400, damage: 300, armor: 150,
+                new Enemy(Tiers.Tier5,Race.Elf,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Legolas", maxHp: 400, damage: 300, armor: 150,
                     lifestealPercent: 0, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier5, Race.Human,new List<Talent>(),new Inventory(new ObservableCollection<Item>()), 100, "Cursed Arthur", maxHp: 675, damage: 325,
+                new Enemy(Tiers.Tier5, Race.Human,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 100, "Cursed Arthur", maxHp: 675, damage: 325,
                     armor: 350, lifestealPercent: 10, criticalStrikeChance: 16),
-                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Talent>(), new Inventory(new ObservableCollection<Item>()), 100, "Volcano", maxHp: 1800, damage: 500, armor: 0,
+                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Volcano", maxHp: 1800, damage: 500, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
 
                 #endregion
@@ -639,29 +630,33 @@ namespace ConsoleRPG
                         {StatsConstants.LifestealStat, 10}
                     },ItemType.Rune, 4, Tiers.Tier1, "Nature's rune"),
 
-                    new Item(new Dictionary<string, int>()
-                    {
-                        {StatsConstants.HpStat, 40},
-                    },ItemType.Potion, 2, Tiers.Tier1, "Small life flask"),
+                    new Item(new Dictionary<string, int>(),ItemType.Potion, 2, Tiers.Tier1, "Small life flask",
+                        new ActiveAbility("Take a sip","Отпить зелье",new Dictionary<string, int>()
+                        {
+                            {StatsConstants.HpStat,40 }
+                        },new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,isPermanent:true )),
 
-                    new Item(new Dictionary<string, int>()
-                    {
-                        {StatsConstants.HpStat, 80},
-                    },ItemType.Potion, 4, Tiers.Tier1, "Mediocre life flask"),
+                    new Item(new Dictionary<string, int>(),ItemType.Potion, 4, Tiers.Tier1, "Mediocre life flask",
+                        new ActiveAbility("Take a swig","Выпить фласку",new Dictionary<string, int>()
+                        {
+                            {StatsConstants.HpStat,85 }
+                        },new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,isPermanent:true )),
 
 
                     #endregion
 
                     #region Tier2
-                    new Item(new Dictionary<string, int>()
-                    {
-                        {StatsConstants.HpStat, 150},
-                    },ItemType.Potion, 10, Tiers.Tier1, "Big life flask"),
+                    new Item(new Dictionary<string, int>(),ItemType.Potion, 10, Tiers.Tier1, "Big life flask",
+                        new ActiveAbility("Take a glass","Выпить большую фласку",new Dictionary<string, int>()
+                        {
+                            {StatsConstants.HpStat,130 }
+                        },new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,isPermanent:true )),
 
-                    new Item(new Dictionary<string, int>()
-                    {
-                        {StatsConstants.HpStat, 220},
-                    },ItemType.Potion, 16, Tiers.Tier1, "Giant life flask"),
+                    new Item(new Dictionary<string, int>(),ItemType.Potion, 16, Tiers.Tier1, "Giant life flask",
+                        new ActiveAbility("Take a bottle","Выпить полный бутыль зелья",new Dictionary<string, int>()
+                        {
+                            {StatsConstants.HpStat,200 }
+                        },new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,isPermanent:true )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -1232,16 +1227,16 @@ namespace ConsoleRPG
                         ,Tiers.Tier1,8,ChancesConstants.ShopChances[Tiers.Tier1])),
                 new Shop(Tiers.Tier2,"Sashiri's Ornaments"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
-                        ,Tiers.Tier2,5,ChancesConstants.ShopChances[Tiers.Tier2])),
+                        ,Tiers.Tier2,7,ChancesConstants.ShopChances[Tiers.Tier2])),
                 new Shop(Tiers.Tier3,"Kitava's Courts"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
-                        ,Tiers.Tier3,5,ChancesConstants.ShopChances[Tiers.Tier3])),
+                        ,Tiers.Tier3,6,ChancesConstants.ShopChances[Tiers.Tier3])),
                 new Shop(Tiers.Tier4,"Far East Woods"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
                         ,Tiers.Tier4,5,ChancesConstants.ShopChances[Tiers.Tier4])),
                 new Shop(Tiers.Tier5,"Volcano's landscapes"
                     ,ItemRandomGenerator.GenerateRandomThings(Items.ToArray()
-                        ,Tiers.Tier5,5,ChancesConstants.ShopChances[Tiers.Tier5]))
+                        ,Tiers.Tier5,4,ChancesConstants.ShopChances[Tiers.Tier5]))
             };
         }
 
@@ -1249,20 +1244,20 @@ namespace ConsoleRPG
         {
             Races = new List<Player>()
             {
-                new Player(Race.Human,new List<Talent>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,              "Human",70,7,5,0,15 ),
-                new Player(Race.Giant,new List<Talent>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",115,21,-4,0,0 ),
-                new Player(Race.Elf,new List<Talent>(Talents.Where(x => x.Name == "Precision")),new Inventory(new ObservableCollection<Item>()),StartGold,                    "Elf",50,16,2,0,45 ),
-                new Player(Race.Undead,new List<Talent>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold,             "Undead",90,12,-2,40,-5 ),
-                new Player(Race.Troll,new List<Talent>(Talents.Where(x => x.Name == "Dual wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,           "Troll",76,7,3,60,5 ),
-                new Player(Race.Gnome,new List<Talent>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold + 3, "Gnome",45,5,8,0,10),
-                new Player(Race.Orc,new List<Talent>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,                  "Orc",85,7,5,-7,5 ),
-                new Player(Race.Ogre,new List<Talent>(Talents.Where(x => x.Name == "Two handed wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,       "Ogre",140,38,- 10,-15,-15 ),
-                new Player(Race.Cursed,new List<Talent>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold - 6,     "Cursed",20,20,20,20,20 ),
-                new Player(Race.Goblin,new List<Talent>(Talents.Where(x => x.Name == "Sneaky")),new Inventory(new ObservableCollection<Item>()),StartGold + 9,       "Goblin",32,5,2,0,12 )
+                new Player(Race.Human,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,              "Human",70,7,5,0,15 ),
+                new Player(Race.Giant,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",115,21,-4,0,0 ),
+                new Player(Race.Elf,new List<Ability>(Talents.Where(x => x.Name == "Precision")),new Inventory(new ObservableCollection<Item>()),StartGold,                    "Elf",50,16,2,0,45 ),
+                new Player(Race.Undead,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold,             "Undead",90,12,-2,40,-5 ),
+                new Player(Race.Troll,new List<Ability>(Talents.Where(x => x.Name == "Dual wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,           "Troll",76,7,3,60,5 ),
+                new Player(Race.Gnome,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold + 3, "Gnome",45,5,8,0,10),
+                new Player(Race.Orc,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,                  "Orc",85,7,5,-7,5 ),
+                new Player(Race.Ogre,new List<Ability>(Talents.Where(x => x.Name == "Two handed wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,       "Ogre",170,48,- 10,-15,-15 ),
+                new Player(Race.Cursed,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold - 6,     "Cursed",20,20,20,20,20 ),
+                new Player(Race.Goblin,new List<Ability>(Talents.Where(x => x.Name == "Sneaky")),new Inventory(new ObservableCollection<Item>()),StartGold + 9,       "Goblin",32,5,2,0,12 )
             };
             foreach (var race in Races)
             {
-                for (int i = 1; i < 2; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     race.Inventory.Items.Add(Items.First(x => x.Name == "Small life flask"));
                 }
@@ -1271,66 +1266,66 @@ namespace ConsoleRPG
 
         public static void FillTalents()
         {
-            Talents = new List<Talent>()
+            Talents = new List<Ability>()
             {
-                new PassiveTalent("Endurance","Умение обращаться с щитами",new Dictionary<string, int>()
+                new PassiveAbility("Endurance","Умение обращаться с щитами",new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat,10 }
                     },new Dictionary<string, double>()
                     {
                         {StatsConstants.ArmorStat,0.25 }
-                    },PassiveTalentType.WithWeapon,"Endurance"),
+                    },PassiveAbilityType.WithWeapon,"Endurance"),
 
-                new PassiveTalent("Precision","Умение обращаться с луками",new Dictionary<string, int>()
+                new PassiveAbility("Precision","Умение обращаться с луками",new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat,12 }
                     },new Dictionary<string, double>()
                     {
                         {StatsConstants.CritChanceStat,0.15 }
-                    },PassiveTalentType.WithWeapon,"Precision"),
+                    },PassiveAbilityType.WithWeapon,"Precision"),
 
-                new PassiveTalent("Inner strength","Умение обращаться с дубинами",new Dictionary<string, int>()
+                new PassiveAbility("Inner strength","Умение обращаться с дубинами",new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat,8 }
                     },new Dictionary<string, double>()
                     {
                         {StatsConstants.DamageStat,0.40 },
                         {StatsConstants.MaxHpStat,0.20 },
-                    },PassiveTalentType.WithWeapon,"Inner strength"),
+                    },PassiveAbilityType.WithWeapon,"Inner strength"),
 
-                new PassiveTalent("Savagery","Умение обращаться с косами",new Dictionary<string, int>()
+                new PassiveAbility("Savagery","Умение обращаться с косами",new Dictionary<string, int>()
                     {
                         {StatsConstants.MaxHpStat,30 }
                     },new Dictionary<string, double>()
                     {
                         {StatsConstants.LifestealStat,0.50 }
-                    },PassiveTalentType.WithWeapon,"Savagery"),
+                    },PassiveAbilityType.WithWeapon,"Savagery"),
 
-                new PassiveTalent("Sneaky","Умение обращаться с кинжалами",new Dictionary<string, int>()
+                new PassiveAbility("Sneaky","Умение обращаться с кинжалами",new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat,15 }
                     },new Dictionary<string, double>()
                     {
                         {StatsConstants.DamageStat,0.15 },
                         {StatsConstants.CritChanceStat,0.10 },
-                    },PassiveTalentType.WithWeapon,"Sneaky"),
+                    },PassiveAbilityType.WithWeapon,"Sneaky"),
 
-                new PassiveTalent("Dual wielder","Умение обращаться с оружиями в двух руках",new Dictionary<string, int>()
+                new PassiveAbility("Dual wielder","Умение обращаться с оружиями в двух руках",new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat,10 }
                     },new Dictionary<string, double>()
                     {
                         {StatsConstants.DamageStat,0.22 },
-                    },PassiveTalentType.WithWeapon, "Dual wielder"),
+                    },PassiveAbilityType.WithWeapon, "Dual wielder"),
 
-                new PassiveTalent("Two handed wielder","Умение обращаться с двуручными оружиями",new Dictionary<string, int>()
+                new PassiveAbility("Two handed wielder","Умение обращаться с двуручными оружиями",new Dictionary<string, int>()
                     {
                         {StatsConstants.MaxHpStat,20 }
                     },new Dictionary<string, double>()
                     {
                         {StatsConstants.DamageStat,0.15 },
                         {StatsConstants.CritChanceStat,0.8 },
-                    },PassiveTalentType.WithWeapon,"Two handed wielder"),
+                    },PassiveAbilityType.WithWeapon,"Two handed wielder"),
             };
         }
 

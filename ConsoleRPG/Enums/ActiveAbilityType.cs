@@ -4,11 +4,12 @@ using System.Text;
 
 namespace ConsoleRPG.Enums
 {
-    public enum ActiveTalentType
+    public enum ActiveAbilityType
     {
         EnemyKill,
         PlayerCrit,
         EnemyCrit,
-        PlayerLifesteal
+        PlayerLifesteal,
+        PlayerUseAbility
     }
 }

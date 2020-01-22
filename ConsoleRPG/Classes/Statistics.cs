@@ -9,7 +9,19 @@ namespace ConsoleRPG.Interfaces
     public abstract class Statistics
     {
         private int MaxHp { get; set; }
-        private int CurrentHp { get; set; }
+
+        private int mCurrentHp;
+        private int CurrentHp
+        {
+            get { return mCurrentHp; }
+            set
+            {
+                if (mCurrentHp + value > MaxHp)
+                    mCurrentHp = MaxHp;
+                else
+                    mCurrentHp = value;
+            }
+        }
         private int Damage { get; set; }
         private int Armor{ get; set; }
         private int LifestealPercent { get; set; }
@@ -32,7 +44,5 @@ namespace ConsoleRPG.Interfaces
             Stats.Add(StatsConstants.LifestealStat, lifestealPercent);
             Stats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
         }
-
-        public abstract void CalculateStatsFromItemsAndTalents(IEnumerable<Item> items);
     }
 }

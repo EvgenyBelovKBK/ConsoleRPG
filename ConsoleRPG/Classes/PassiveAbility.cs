@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace ConsoleRPG.Classes
 {
-    public class PassiveTalent : Talent
+    public class PassiveAbility : Ability
     {
-        public PassiveTalentType TalentType {get;}
+        public PassiveAbilityType AbilityType {get;}
         public string ActivateConditionName{ get; }
 
         public override void Activate(Character character)
@@ -50,9 +50,9 @@ namespace ConsoleRPG.Classes
         }
 
 
-        public PassiveTalent(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, PassiveTalentType talentType, string activateConditionName) : base(name, description,valueIncreases,percentIncreases,false)
+        public PassiveAbility(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, PassiveAbilityType abilityType, string activateConditionName) : base(name, description,valueIncreases,percentIncreases,false)
         {
-            TalentType = talentType;
+            AbilityType = abilityType;
             ActivateConditionName = activateConditionName;
         }
     }

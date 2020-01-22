@@ -5,9 +5,12 @@ using ConsoleRPG.Enums;
 
 namespace ConsoleRPG.Classes
 {
-    public class ActiveTalent : Talent
+    public class ActiveAbility : Ability
     {
-        public ActiveTalentType TalentType { get; }
+        public ActiveAbilityType AbilityType { get; }
+        public int CurrentTurnCount { get; set; }
+        public int AffectingTurnCount { get; }
+        public bool IsPermanent { get; }
 
         public override void Activate(Character character)
         {
@@ -26,8 +29,9 @@ namespace ConsoleRPG.Classes
 
         public override void DeActivate(Character character)
         {
-            if(!IsAffecting)
+            if(!IsAffecting || IsPermanent)
                 return;
+            CurrentTurnCount = 0;
             foreach (var value in ValueIncreases)
             {
                 character.Stats[value.Key] -= value.Value;
@@ -39,9 +43,12 @@ namespace ConsoleRPG.Classes
             IsAffecting = false;
         }
 
-        public ActiveTalent(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, ActiveTalentType talentType) : base(name, description,valueIncreases,percentIncreases,true)
+        public ActiveAbility(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, ActiveAbilityType abilityType, int affectingTurnCount = 0, bool isPermanent = false) : base(name, description,valueIncreases,percentIncreases,true)
         {
-            TalentType = talentType;
+            AbilityType = abilityType;
+            AffectingTurnCount = affectingTurnCount;
+            this.IsPermanent = isPermanent;
+            CurrentTurnCount = 0;
         }
     }
 }

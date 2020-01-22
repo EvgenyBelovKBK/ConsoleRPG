@@ -5,7 +5,7 @@ using ConsoleRPG.Interfaces;
 
 namespace ConsoleRPG.Classes
 {
-    public abstract class Talent : INameable
+    public abstract class Ability : INameable
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -14,7 +14,7 @@ namespace ConsoleRPG.Classes
         public Dictionary<string, double> PercentIncreases { get; }
         public bool IsActiveType { get; }
 
-        protected Talent(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, bool isActiveType) 
+        protected Ability(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, bool isActiveType) 
         {
             Name = name;
             Description = description;
