@@ -25,11 +25,11 @@ namespace ConsoleRPG.Classes
         {
             mMessageService.ClearTextField();
             mMessageService.ShowMessage(new Message("В следующий раз вам повезет больше!", ConsoleColor.Cyan));
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             mMessageService.ShowMessage(new Message($"Вы дошли до {player.CurrentLevel.Number} уровня!",ConsoleColor.Cyan));
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             mMessageService.ShowMessage(new Message($"Вы набрали {player.Points} очков!",ConsoleColor.Yellow));
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             mMessageService.ShowMessage(new Message($"Вы погибли от:",ConsoleColor.Cyan));
             mMessageService.ShowMessage(new Message(killerEnemy.Name,ConsoleColor.Red));
             ConsoleMessageService.ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
@@ -196,8 +196,19 @@ namespace ConsoleRPG.Classes
             if (item.ItemAbility != null)
             {
                 mMessageService.ShowMessage(new Message("Способность:",ConsoleColor.DarkCyan));
+                if (item.ItemAbility.IsActiveType)
+                {
+                    var active = item.ItemAbility as ActiveAbility;
+                    mMessageService.ShowMessage(new Message("Ходы:", ConsoleColor.DarkCyan));
+                    ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{"Дейсвует",active.AffectingTurnCount.ToString()},{"Перезарядка",active.CooldownTurnCount.ToString()}});
+                }
                 ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{item.ItemAbility.Name,item.ItemAbility.Description}});
                 ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.ValueIncreases.ToDictionary(x => x.Key,x => x.Value.ToString()));
+                if (item.ItemAbility.PercentIncreases.Count > 0)
+                {
+                    mMessageService.ShowMessage(new Message("Усиления в процентах:", ConsoleColor.DarkCyan));
+                    ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.ValueIncreases.ToDictionary(x => x.Key, x => x.Value.ToString()));
+                }
             }
         }
 

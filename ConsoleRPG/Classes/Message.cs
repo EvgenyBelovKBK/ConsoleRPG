@@ -10,7 +10,7 @@ namespace ConsoleRPG.Classes
         public string Text { get; set; }
         public ConsoleColor Color { get; }
 
-        public Message(string text, ConsoleColor color = default)
+        public Message(string text, ConsoleColor color = ConsoleColor.White)
         {
             Text = text;
             Color = color;

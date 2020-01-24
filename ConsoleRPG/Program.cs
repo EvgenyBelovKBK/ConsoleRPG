@@ -459,13 +459,13 @@ namespace ConsoleRPG
 
                 #region Tier5
 
-                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Dragon", maxHp: 900, damage: 425, armor: 0,
+                new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Mediocre dragon", maxHp: 1100, damage: 425, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
                 new Enemy(Tiers.Tier5,Race.Troll,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Troll warlord", maxHp: 600, damage: 300,
                     armor: 190, lifestealPercent: 60, criticalStrikeChance: 10),
-                new Enemy(Tiers.Tier5,Race.Human,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Aztec king", maxHp: 450, damage: 235,
+                new Enemy(Tiers.Tier5,Race.Human,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Aztec king", maxHp: 525, damage: 235,
                     armor: 150, lifestealPercent: 25, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier5,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Ursa warrior", maxHp: 670, damage: 400,
+                new Enemy(Tiers.Tier5,Race.Animal,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Ursa warrior", maxHp: 780, damage: 400,
                     armor: 90, lifestealPercent: 35, criticalStrikeChance: 8),
                 new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Treant protector", maxHp: 1400, damage: 390,
                     armor: 0, lifestealPercent: 0, criticalStrikeChance: 0),
@@ -476,7 +476,7 @@ namespace ConsoleRPG
                 new Enemy(Tiers.Tier5,Race.Elf,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Legolas", maxHp: 400, damage: 300, armor: 150,
                     lifestealPercent: 0, criticalStrikeChance: 25),
                 new Enemy(Tiers.Tier5, Race.Human,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 100, "Cursed Arthur", maxHp: 675, damage: 325,
-                    armor: 350, lifestealPercent: 10, criticalStrikeChance: 16),
+                    armor: 325, lifestealPercent: 10, criticalStrikeChance: 14),
                 new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Volcano", maxHp: 1800, damage: 500, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
 
