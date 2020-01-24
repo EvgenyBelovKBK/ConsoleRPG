@@ -18,11 +18,35 @@ namespace ConsoleRPG.Classes
         public Race Race { get; set; }
         public List<Ability> Abilities { get; }
 
-        public List<ActiveAbility> ActiveAbilities =>
-            Abilities.Where(x => x.IsActiveType).Cast<ActiveAbility>().ToList();
+        public List<ActiveAbility> GetActiveAbilities()
+        {
+            var abilites = new List<ActiveAbility>();
+            var characterAbilities = Abilities.Where(x => x.IsActiveType).Cast<ActiveAbility>().ToList();
+            var itemAbilities = new List<ActiveAbility>();
+            foreach (var itemAbility in Inventory.Items.Where(x => x.ItemAbility != null && x.ItemAbility.IsActiveType))
+            {
+                itemAbilities.Add(itemAbility.ItemAbility as ActiveAbility);
+            }
 
-        public List<PassiveAbility> PassiveAbilities =>
-            Abilities.Where(x => !x.IsActiveType).Cast<PassiveAbility>().ToList();
+            abilites.AddRange(itemAbilities);
+            abilites.AddRange(characterAbilities);
+            return abilites;
+        }
+
+        public List<PassiveAbility> GetPassiveAbilities()
+        {
+            var abilites = new List<PassiveAbility>();
+            var characterAbilities = Abilities.Where(x => x.IsActiveType).Cast<PassiveAbility>().ToList();
+            var itemAbilities = new List<PassiveAbility>();
+            foreach (var itemAbility in Inventory.Items.Where(x => x.ItemAbility != null && !x.ItemAbility.IsActiveType))
+            {
+                itemAbilities.Add(itemAbility.ItemAbility as PassiveAbility);
+            }
+
+            abilites.AddRange(itemAbilities);
+            abilites.AddRange(characterAbilities);
+            return abilites;
+        }
 
         protected Character(Race race, List<Ability> abilities, Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
         {
@@ -73,7 +97,7 @@ namespace ConsoleRPG.Classes
             }
             if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
                 Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
-            foreach (var ability in PassiveAbilities)
+            foreach (var ability in GetPassiveAbilities())
             {
                 ability.Activate(this); //после смены предметов пробуем активировать таланты которые в теории должны быть активны
                 ability.DeActivate(this);//после смены предметов пробуем деактивировать таланты которые в теории не должны быть активны 

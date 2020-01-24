@@ -50,6 +50,17 @@ namespace ConsoleRPG.Classes
             while (level.Enemies.Count > 0 && !playerDied)
             {
                 var itemsWithAbilities = player.Inventory.Items.Where(x => x.ItemAbility != null).ToList();
+                foreach (var activeAbility in player.GetActiveAbilities().Where(x => !x.IsPermanent))
+                {
+                    if (activeAbility.IsAffecting)
+                    {
+                        if (activeAbility.CurrentTurnCount == activeAbility.AffectingTurnCount)
+                            activeAbility.DeActivate(player);
+                        activeAbility.CurrentTurnCount++;
+                    }
+                    if(activeAbility.CurrentCooldownTurnCount > 0)
+                        activeAbility.CurrentCooldownTurnCount--;
+                }
                 ShowConsolePlayerUi(player,false,false,true,true,(item) => { return item.ItemAbility != null;});
                 level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;

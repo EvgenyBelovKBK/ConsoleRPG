@@ -10,12 +10,15 @@ namespace ConsoleRPG.Classes
         public ActiveAbilityType AbilityType { get; }
         public int CurrentTurnCount { get; set; }
         public int AffectingTurnCount { get; }
+        public int CooldownTurnCount { get;}
+        public int CurrentCooldownTurnCount { get; set; }
         public bool IsPermanent { get; }
 
         public override void Activate(Character character)
         {
-            if(IsAffecting)
+            if(IsAffecting || CurrentCooldownTurnCount > 0)
                 return;
+            CurrentCooldownTurnCount = CooldownTurnCount;
             foreach (var value in ValueIncreases)
             {
                 character.Stats[value.Key] += value.Value;
@@ -43,12 +46,14 @@ namespace ConsoleRPG.Classes
             IsAffecting = false;
         }
 
-        public ActiveAbility(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, ActiveAbilityType abilityType, int affectingTurnCount = 0, bool isPermanent = false) : base(name, description,valueIncreases,percentIncreases,true)
+        public ActiveAbility(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, ActiveAbilityType abilityType, int cooldownTurnCount, int affectingTurnCount = 0, bool isPermanent = false) : base(name, description,valueIncreases,percentIncreases,true)
         {
             AbilityType = abilityType;
+            CooldownTurnCount = cooldownTurnCount;
             AffectingTurnCount = affectingTurnCount;
-            this.IsPermanent = isPermanent;
+            IsPermanent = isPermanent;
             CurrentTurnCount = 0;
+            CurrentCooldownTurnCount = 0;
         }
     }
 }
