@@ -475,8 +475,8 @@ namespace ConsoleRPG
                     lifestealPercent: 0, criticalStrikeChance: 15),
                 new Enemy(Tiers.Tier5,Race.Elf,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Legolas", maxHp: 400, damage: 300, armor: 150,
                     lifestealPercent: 0, criticalStrikeChance: 25),
-                new Enemy(Tiers.Tier5, Race.Human,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 100, "Cursed Arthur", maxHp: 675, damage: 325,
-                    armor: 325, lifestealPercent: 10, criticalStrikeChance: 14),
+                new Enemy(Tiers.Tier5, Race.Human,new List<Ability>(),new Inventory(new ObservableCollection<Item>()), 100, "Cursed Arthur", maxHp: 675, damage: 275,
+                    armor: 325, lifestealPercent: 10, criticalStrikeChance: 10),
                 new Enemy(Tiers.Tier5,Race.MagicCreature,new List<Ability>(), new Inventory(new ObservableCollection<Item>()), 100, "Volcano", maxHp: 1800, damage: 500, armor: 0,
                     lifestealPercent: 0, criticalStrikeChance: 0),
 
@@ -695,7 +695,7 @@ namespace ConsoleRPG
                     }, ItemType.Ring,15, Tiers.Tier2, "Golden ring",
                          new ActiveAbility("Ancient call","Оказалось что это кольцо не простое",
                              new Dictionary<string, int>(){{StatsConstants.CritChanceStat,40},{StatsConstants.MaxHpStat,40}},
-                             new Dictionary<string, double>(){{StatsConstants.LifestealStat,50},{StatsConstants.DamageStat,50}},ActiveAbilityType.PlayerUseAbility,17,2  )),
+                             new Dictionary<string, double>(){{StatsConstants.LifestealStat,0.50},{StatsConstants.DamageStat,0.50}},ActiveAbilityType.PlayerUseAbility,17,2  )),
 
 
                     new Item(new Dictionary<string, int>()
@@ -809,7 +809,7 @@ namespace ConsoleRPG
                     },ItemType.Helmet, 27, Tiers.Tier2, "Resonance helmet",
                         new ActiveAbility("Vibration block","Атаки ваших противников отбрасывают их",
                             new Dictionary<string, int>(){{StatsConstants.ArmorStat,40}},
-                            new Dictionary<string, double>(){{StatsConstants.ArmorStat,20}},ActiveAbilityType.PlayerUseAbility,12,3)),
+                            new Dictionary<string, double>(){{StatsConstants.ArmorStat, 0.20 } },ActiveAbilityType.PlayerUseAbility,12,3)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -857,7 +857,7 @@ namespace ConsoleRPG
                     },ItemType.Food, 27, Tiers.Tier3, "Bear's heart",
                         new ActiveAbility("Wild rage","Животна ярость просыпается внутри вас",
                             new Dictionary<string, int>(){{StatsConstants.LifestealStat,40},{StatsConstants.DamageStat,25}},
-                            new Dictionary<string, double>(){{StatsConstants.DamageStat,10}},ActiveAbilityType.PlayerUseAbility,25,10)),
+                            new Dictionary<string, double>(){{StatsConstants.DamageStat, 0.10 } },ActiveAbilityType.PlayerUseAbility,25,10)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -893,7 +893,7 @@ namespace ConsoleRPG
                     }, ItemType.TwoHandedWeapon, WeaponType.Bow,35, Tiers.Tier3, "Mythril Longbow",
                         new ActiveAbility("Mythril protection","Мифрил ненадолго окутывает вас защитным полем",
                             new Dictionary<string, int>(){{StatsConstants.ArmorStat,20}},
-                            new Dictionary<string, double>(){{StatsConstants.ArmorStat,100}},ActiveAbilityType.PlayerUseAbility,13,3)),
+                            new Dictionary<string, double>(){{StatsConstants.ArmorStat,1.00}},ActiveAbilityType.PlayerUseAbility,13,3)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -916,7 +916,7 @@ namespace ConsoleRPG
                     },ItemType.Armour, 48, Tiers.Tier3, "Nature armour",
                         new ActiveAbility("Nature's help","Сила природы оберегает вас на некоторое время",
                             new Dictionary<string, int>(){{StatsConstants.MaxHpStat,50},{StatsConstants.ArmorStat,45}},
-                            new Dictionary<string, double>(){{StatsConstants.MaxHpStat,40}},ActiveAbilityType.PlayerUseAbility,18,4)),
+                            new Dictionary<string, double>(){{StatsConstants.MaxHpStat, 0.40 } },ActiveAbilityType.PlayerUseAbility,18,4)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1004,7 +1004,7 @@ namespace ConsoleRPG
                     }, ItemType.OneHandedWeapon, WeaponType.Shield,78, Tiers.Tier4, "Olymp defender",
                         new ActiveAbility("God's rage","Ярось богов охватывает вас на мгновения",
                             new Dictionary<string, int>(),
-                            new Dictionary<string, double>(){{StatsConstants.DamageStat,100},{StatsConstants.ArmorStat,100}},ActiveAbilityType.PlayerUseAbility,10,2)),
+                            new Dictionary<string, double>(){{StatsConstants.DamageStat,1.00},{StatsConstants.ArmorStat,100}},ActiveAbilityType.PlayerUseAbility,10,2)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -1037,7 +1037,7 @@ namespace ConsoleRPG
                     }, ItemType.TwoHandedWeapon, WeaponType.Mace,63, Tiers.Tier4, "Void basher",
                         new ActiveAbility("Heavy crush","Вы бьете врага настолько сильно,что его физическая форма отправляется в другое измерение",
                             new Dictionary<string, int>(){{StatsConstants.DamageStat,100}},
-                            new Dictionary<string, double>(){{StatsConstants.DamageStat,50}},ActiveAbilityType.PlayerUseAbility,11,1)),
+                            new Dictionary<string, double>(){{StatsConstants.DamageStat, 0.50 } },ActiveAbilityType.PlayerUseAbility,11,1)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -1066,7 +1066,7 @@ namespace ConsoleRPG
                     },ItemType.Armour, 77, Tiers.Tier4, "Werewolf skin",
                         new ActiveAbility("Shapeshift","Вы на некоторое время становитесь огромным волком",
                             new Dictionary<string, int>(){{StatsConstants.DamageStat,80},{StatsConstants.HpStat,200}},
-                            new Dictionary<string, double>(){{StatsConstants.LifestealStat,25},{StatsConstants.MaxHpStat,100}},ActiveAbilityType.PlayerUseAbility,16,4)),
+                            new Dictionary<string, double>(){{StatsConstants.LifestealStat, 0.25 },{StatsConstants.MaxHpStat,1.00}},ActiveAbilityType.PlayerUseAbility,16,4)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -1191,7 +1191,7 @@ namespace ConsoleRPG
                     }, ItemType.OneHandedWeapon, WeaponType.Shield,110, Tiers.Tier5, "God's rebuke",
                         new ActiveAbility("Mars might","Бог войны дарует вам победу в битве",
                             new Dictionary<string, int>(),
-                            new Dictionary<string, double>(){{StatsConstants.ArmorStat,200},{StatsConstants.DamageStat,200}},ActiveAbilityType.PlayerUseAbility,8,1)),
+                            new Dictionary<string, double>(){{StatsConstants.ArmorStat,2.00},{StatsConstants.DamageStat,2.00}},ActiveAbilityType.PlayerUseAbility,8,1)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1208,7 +1208,7 @@ namespace ConsoleRPG
                     },ItemType.TwoHandedWeapon, WeaponType.Scythe, 98, Tiers.Tier5, "Bloodseeker",
                         new ActiveAbility("Bloodlust","Жажда крови берет над вами контроль",
                             new Dictionary<string, int>(){{StatsConstants.DamageStat,150},{StatsConstants.CritChanceStat,10}},
-                            new Dictionary<string, double>(){{StatsConstants.LifestealStat,200},{StatsConstants.CritChanceStat,45}},ActiveAbilityType.PlayerUseAbility,15,3)),
+                            new Dictionary<string, double>(){{StatsConstants.LifestealStat,2.00},{StatsConstants.CritChanceStat, 0.45 } },ActiveAbilityType.PlayerUseAbility,15,3)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -1250,7 +1250,7 @@ namespace ConsoleRPG
                     },ItemType.TwoHandedWeapon, WeaponType.Mace, 93, Tiers.Tier5, "Yrimir's mace",
                         new ActiveAbility("Disembowel","Удар настолько сильный что погружает врага в землю",
                             new Dictionary<string, int>(){{StatsConstants.CritChanceStat,30}},
-                            new Dictionary<string, double>(){{StatsConstants.DamageStat,50}},ActiveAbilityType.PlayerUseAbility,28,1)),
+                            new Dictionary<string, double>(){{StatsConstants.DamageStat, 0.50 } },ActiveAbilityType.PlayerUseAbility,28,1)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1259,7 +1259,7 @@ namespace ConsoleRPG
                     }, ItemType.Belt,98, Tiers.Tier5, "Obelisk belt",
                         new ActiveAbility("Runic power","Рунические символы загораются,вы почти покидаете свою материальную форму",
                             new Dictionary<string, int>(),
-                            new Dictionary<string, double>(){{StatsConstants.HpStat,100}},ActiveAbilityType.PlayerUseAbility,10,2)),
+                            new Dictionary<string, double>(){{StatsConstants.HpStat,1.00}},ActiveAbilityType.PlayerUseAbility,10,2)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1290,7 +1290,7 @@ namespace ConsoleRPG
                     },ItemType.TwoHandedWeapon,  WeaponType.Bow,130, Tiers.Tier5, "Elven bow",
                         new ActiveAbility("Precise shot","Меткий выстрел прямо в сердце",
                             new Dictionary<string, int>(),
-                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,100}},ActiveAbilityType.PlayerUseAbility,14,1)),
+                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,1.00}},ActiveAbilityType.PlayerUseAbility,14,1)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1337,12 +1337,12 @@ namespace ConsoleRPG
             Races = new List<Player>()
             {
                 new Player(Race.Human,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,              "Human",70,7,5,0,15 ),
-                new Player(Race.Giant,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",115,21,-4,0,0 ),
+                new Player(Race.Giant,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",125,26,-4,0,0 ),
                 new Player(Race.Elf,new List<Ability>(Talents.Where(x => x.Name == "Precision")),new Inventory(new ObservableCollection<Item>()),StartGold,                    "Elf",50,16,2,0,45 ),
                 new Player(Race.Undead,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold,             "Undead",90,12,-2,40,-5 ),
-                new Player(Race.Troll,new List<Ability>(Talents.Where(x => x.Name == "Dual wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,           "Troll",76,7,3,60,5 ),
+                new Player(Race.Troll,new List<Ability>(Talents.Where(x => x.Name == "Dual wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,           "Troll",76,7,2,50,5 ),
                 new Player(Race.Gnome,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold + 3, "Gnome",45,5,8,0,10),
-                new Player(Race.Orc,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,                  "Orc",85,7,5,-7,5 ),
+                new Player(Race.Orc,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,                  "Orc",85,9,6,-7,5 ),
                 new Player(Race.Ogre,new List<Ability>(Talents.Where(x => x.Name == "Two handed wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,       "Ogre",170,48,- 10,-15,-15 ),
                 new Player(Race.Cursed,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold - 6,     "Cursed",20,20,20,20,20 ),
                 new Player(Race.Goblin,new List<Ability>(Talents.Where(x => x.Name == "Sneaky")),new Inventory(new ObservableCollection<Item>()),StartGold + 9,       "Goblin",32,5,2,0,12 )
@@ -1378,11 +1378,10 @@ namespace ConsoleRPG
 
                 new PassiveAbility("Inner strength","Умение обращаться с дубинами",new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat,8 }
+                        {StatsConstants.DamageStat,15 }
                     },new Dictionary<string, double>()
                     {
-                        {StatsConstants.DamageStat,0.40 },
-                        {StatsConstants.MaxHpStat,0.20 },
+                        {StatsConstants.DamageStat,0.60 },
                     },PassiveAbilityType.WithWeapon,"Inner strength"),
 
                 new PassiveAbility("Savagery","Умение обращаться с косами",new Dictionary<string, int>()

@@ -14,7 +14,7 @@ namespace ConsoleRPG.Classes
         public string Name {get; set; }
         public Tiers Tier { get; set; }
         public ItemType Type { get; }
-        public Ability ItemAbility { get; }
+        public Ability ItemAbility { get; set; }
         public Item(Dictionary<string, int> stats, ItemType type, int cost, Tiers rarity, string name, Ability itemAbility = null)
         {
             Type = type;

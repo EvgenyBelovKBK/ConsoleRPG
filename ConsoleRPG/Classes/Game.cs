@@ -54,12 +54,13 @@ namespace ConsoleRPG.Classes
                 {
                     if (activeAbility.IsAffecting)
                     {
-                        if (activeAbility.CurrentTurnCount == activeAbility.AffectingTurnCount)
+                        activeAbility.CurrentDuration++;
+                        if (activeAbility.CurrentDuration == activeAbility.TurnDuration)
                             activeAbility.DeActivate(player);
-                        activeAbility.CurrentTurnCount++;
+
                     }
-                    if(activeAbility.CurrentCooldownTurnCount > 0)
-                        activeAbility.CurrentCooldownTurnCount--;
+                    if(activeAbility.CurrentCooldown > 0)
+                        activeAbility.CurrentCooldown--;
                 }
                 ShowConsolePlayerUi(player,false,false,true,true,(item) => { return item.ItemAbility != null;});
                 level.ShowEnemies();
@@ -200,7 +201,7 @@ namespace ConsoleRPG.Classes
                 {
                     var active = item.ItemAbility as ActiveAbility;
                     mMessageService.ShowMessage(new Message("Ходы:", ConsoleColor.DarkCyan));
-                    ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{"Дейсвует",active.AffectingTurnCount.ToString()},{"Перезарядка",active.CooldownTurnCount.ToString()}});
+                    ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{"Дейсвует",active.TurnDuration.ToString()},{"Перезарядка",active.Cooldown.ToString()}});
                 }
                 ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{item.ItemAbility.Name,item.ItemAbility.Description}});
                 ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.ValueIncreases.ToDictionary(x => x.Key,x => x.Value.ToString()));

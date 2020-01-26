@@ -10,7 +10,7 @@ namespace ConsoleRPG.Services
 {
     public static class JsonSerializingService<T>
     {
-        private static readonly JsonSerializerSettings JsonSettings= new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto ,ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto ,ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
         public static void Save(T objectToSave,string fileName,Action actionBeforeSave = null)
         {
             actionBeforeSave?.Invoke();
@@ -30,7 +30,7 @@ namespace ConsoleRPG.Services
             try
             {
                 var jsonObject = JsonConvert.DeserializeObject<T>(File.ReadAllText(fileName), JsonSettings);
-                return (T)jsonObject;
+                return jsonObject;
             }
             catch (Exception e)
             {

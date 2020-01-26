@@ -8,24 +8,24 @@ namespace ConsoleRPG.Classes
     public class ActiveAbility : Ability
     {
         public ActiveAbilityType AbilityType { get; }
-        public int CurrentTurnCount { get; set; }
-        public int AffectingTurnCount { get; }
-        public int CooldownTurnCount { get;}
-        public int CurrentCooldownTurnCount { get; set; }
+        public int CurrentDuration { get; set; }
+        public int TurnDuration { get; }
+        public int Cooldown { get;}
+        public int CurrentCooldown { get; set; }
         public bool IsPermanent { get; }
 
         public override void Activate(Character character)
         {
-            if(IsAffecting || CurrentCooldownTurnCount > 0)
+            if(IsAffecting || CurrentCooldown > 0)
                 return;
-            CurrentCooldownTurnCount = CooldownTurnCount;
+            CurrentCooldown = Cooldown;
             foreach (var value in ValueIncreases)
             {
                 character.Stats[value.Key] += value.Value;
             }
             foreach (var percent in PercentIncreases)
             {
-                character.Stats[percent.Key] = int.Parse((character.Stats[percent.Key] * percent.Value).ToString());
+                character.Stats[percent.Key] = int.Parse(Math.Round(character.Stats[percent.Key] * (1 + percent.Value)).ToString());
             }
             IsAffecting = true;
         }
@@ -34,26 +34,24 @@ namespace ConsoleRPG.Classes
         {
             if(!IsAffecting || IsPermanent)
                 return;
-            CurrentTurnCount = 0;
+            CurrentDuration = 0;
             foreach (var value in ValueIncreases)
             {
                 character.Stats[value.Key] -= value.Value;
             }
             foreach (var percent in PercentIncreases)
             {
-                character.Stats[percent.Key] = int.Parse((character.Stats[percent.Key] / (1 + percent.Value)).ToString());
+                character.Stats[percent.Key] = int.Parse(Math.Round(character.Stats[percent.Key] / (1 + percent.Value)).ToString());
             }
             IsAffecting = false;
         }
 
-        public ActiveAbility(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, ActiveAbilityType abilityType, int cooldownTurnCount, int affectingTurnCount = 0, bool isPermanent = false) : base(name, description,valueIncreases,percentIncreases,true)
+        public ActiveAbility(string name, string description, Dictionary<string, int> valueIncreases, Dictionary<string, double> percentIncreases, ActiveAbilityType abilityType, int cooldown, int turnDuration = 0, bool isPermanent = false) : base(name, description,valueIncreases,percentIncreases,true)
         {
             AbilityType = abilityType;
-            CooldownTurnCount = cooldownTurnCount;
-            AffectingTurnCount = affectingTurnCount;
+            Cooldown = cooldown;
+            TurnDuration = turnDuration;
             IsPermanent = isPermanent;
-            CurrentTurnCount = 0;
-            CurrentCooldownTurnCount = 0;
         }
     }
 }
