@@ -37,6 +37,22 @@ namespace ConsoleRPG.Classes
             ShowConsolePlayerUi(player);
         }
 
+        public void ProcessAbilities(Player player)
+        {
+            foreach (var activeAbility in player.GetActiveAbilities().Where(x => !x.IsPermanent))
+            {
+                if (activeAbility.IsAffecting)
+                {
+                    activeAbility.CurrentDuration++;
+                    if (activeAbility.CurrentDuration == activeAbility.TurnDuration)
+                        activeAbility.DeActivate(player);
+
+                }
+                if (activeAbility.CurrentCooldown > 0)
+                    activeAbility.CurrentCooldown--;
+            }
+        }
+
         public void Fight(Player player,Level level)
         {
             mMessageService.ClearTextAction();
@@ -50,18 +66,7 @@ namespace ConsoleRPG.Classes
             while (level.Enemies.Count > 0 && !playerDied)
             {
                 var itemsWithAbilities = player.Inventory.Items.Where(x => x.ItemAbility != null).ToList();
-                foreach (var activeAbility in player.GetActiveAbilities().Where(x => !x.IsPermanent))
-                {
-                    if (activeAbility.IsAffecting)
-                    {
-                        activeAbility.CurrentDuration++;
-                        if (activeAbility.CurrentDuration == activeAbility.TurnDuration)
-                            activeAbility.DeActivate(player);
-
-                    }
-                    if(activeAbility.CurrentCooldown > 0)
-                        activeAbility.CurrentCooldown--;
-                }
+                ProcessAbilities(player);
                 ShowConsolePlayerUi(player,false,false,true,true,(item) => { return item.ItemAbility != null;});
                 level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;

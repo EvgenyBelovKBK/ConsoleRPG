@@ -6,7 +6,7 @@ namespace ConsoleRPG.Enums
 {
     public enum ActiveAbilityType
     {
-        EnemyKill,
+        EnemyDeath,
         PlayerCrit,
         EnemyCrit,
         PlayerLifesteal,

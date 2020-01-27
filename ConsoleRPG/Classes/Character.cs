@@ -97,10 +97,25 @@ namespace ConsoleRPG.Classes
             }
             if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
                 Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
-            foreach (var ability in GetPassiveAbilities())
+            foreach (var passiveAbility in GetPassiveAbilities())
             {
-                ability.Activate(this); //после смены предметов пробуем активировать таланты которые в теории должны быть активны
-                ability.DeActivate(this);//после смены предметов пробуем деактивировать таланты которые в теории не должны быть активны 
+                passiveAbility.Activate(this); //после смены предметов пробуем активировать таланты которые в теории должны быть активны
+                passiveAbility.DeActivate(this);//после смены предметов пробуем деактивировать таланты которые в теории не должны быть активны 
+            }
+
+            foreach (var activeAbility in GetActiveAbilities())
+            {
+                activeAbility.CurrentCooldown = 0;
+                activeAbility.CurrentDuration = 0;
+                activeAbility.IsAffecting = false;
+            }
+        }
+
+        public void ActivateAbilities(ActiveAbilityType type)
+        {
+            foreach (var activeAbility in GetActiveAbilities().Where(x => x.AbilityType == type))
+            {
+                activeAbility.Activate(this);
             }
         }
     }

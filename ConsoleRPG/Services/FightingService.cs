@@ -94,10 +94,7 @@ namespace ConsoleRPG.Services
             player.Gold += enemy.Gold;
             player.AddPointsToPlayer(FightAction.EnemyDeath, enemy.BaseStats.Values.Sum());
             DisplayFightAction(enemy.Name, FightAction.EnemyDeath);
-            foreach (var activeAbility in player.GetActiveAbilities().Where(x => x.AbilityType == ActiveAbilityType.EnemyKill))
-            {
-                activeAbility.Activate(player);
-            }
+            player.ActivateAbilities(ActiveAbilityType.EnemyDeath);
         }
 
         public void PlayerDiedInFight(Player player, Enemy enemy)
@@ -112,10 +109,7 @@ namespace ConsoleRPG.Services
             player.AddPointsToPlayer(playerCrit ? FightAction.CriticalStrike : FightAction.Damage, playerDamageToEnemy);
             if (playerCrit)
             {
-                foreach (var activeAbility in player.GetActiveAbilities().Where(x => x.AbilityType == ActiveAbilityType.PlayerCrit))
-                {
-                    activeAbility.Activate(player);
-                }
+                player.ActivateAbilities(ActiveAbilityType.PlayerCrit);
             }
             var playerLifesteal = CalculateLifesteal(playerDamageToEnemy,
                 player.Stats[StatsConstants.LifestealStat],
@@ -124,10 +118,7 @@ namespace ConsoleRPG.Services
             player.Stats[StatsConstants.HpStat] += playerLifesteal;
             if (playerLifesteal > 0)
             {
-                foreach (var activeAbility in player.GetActiveAbilities().Where(x => x.AbilityType == ActiveAbilityType.PlayerLifesteal))
-                {
-                    activeAbility.Activate(player);
-                }
+                player.ActivateAbilities(ActiveAbilityType.PlayerLifesteal);
             }
             DisplayFightAction(player.Name, FightAction.Lifesteal, playerLifesteal);
             player.AddPointsToPlayer(FightAction.Lifesteal, playerLifesteal);
@@ -139,10 +130,7 @@ namespace ConsoleRPG.Services
             DisplayFightAction(enemy.Name, enemyCrit ? FightAction.CriticalStrike : FightAction.Damage, enemyDamageToPlayer, player.Name);
             if (enemyCrit)
             {
-                foreach (var activeAbility in player.GetActiveAbilities().Where(x => x.AbilityType == ActiveAbilityType.EnemyCrit))
-                {
-                    activeAbility.Activate(player);
-                }
+                player.ActivateAbilities(ActiveAbilityType.EnemyCrit);
             }
             var enemyLifesteal = CalculateLifesteal(enemyDamageToPlayer,
                 enemy.Stats[StatsConstants.LifestealStat],

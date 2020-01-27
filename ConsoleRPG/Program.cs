@@ -532,7 +532,7 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.LifestealStat, 25}
+                        {StatsConstants.LifestealStat, 16}
                     }, ItemType.Amulet,4, Tiers.Tier1, "Bat amulet"),
 
                     new Item(new Dictionary<string, int>()
@@ -571,7 +571,7 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 5},
-                        {StatsConstants.CritChanceStat, 10}
+                        {StatsConstants.CritChanceStat, 7}
                     },ItemType.Boots, 6, Tiers.Tier1, "Elf slippers"),
 
                     new Item(new Dictionary<string, int>()
@@ -592,7 +592,10 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.LifestealStat, 15},
                         {StatsConstants.CritChanceStat, 7}
-                    },ItemType.Ring, 8, Tiers.Tier1, "Grandmother's ring"),
+                    },ItemType.Ring, 8, Tiers.Tier1, "Grandmother's ring",
+                        new ActiveAbility("Soul assumption","Когда вы наносите критический удар,вы поглощаете часть души врага на время",
+                            new Dictionary<string, int>(){{StatsConstants.MaxHpStat,40},{StatsConstants.HpStat,40}},
+                            new Dictionary<string, double>(),ActiveAbilityType.PlayerCrit,8,3  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -626,7 +629,10 @@ namespace ConsoleRPG
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 24}
-                    },ItemType.TwoHandedWeapon,WeaponType.TwoHandedAxe, 11, Tiers.Tier1, "Golden Axe"),
+                    },ItemType.TwoHandedWeapon,WeaponType.TwoHandedAxe, 11, Tiers.Tier1, "Golden Axe",
+                        new ActiveAbility("Bloody tip","После убийства врага,вы наносите больший урон",
+                            new Dictionary<string, int>(){{StatsConstants.DamageStat,11}},
+                            new Dictionary<string, double>(),ActiveAbilityType.EnemyDeath,10,2  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -702,7 +708,10 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.MaxHpStat, 15},
                         {StatsConstants.ArmorStat, 15}
-                    }, ItemType.Belt,16, Tiers.Tier2, "Dragon's hide belt"),
+                    }, ItemType.Belt,16, Tiers.Tier2, "Dragon's hide belt",
+                        new ActiveAbility("Fiery skin","Когда враг наносит вам критический удар,ваше оружие загорается огнем на время",
+                            new Dictionary<string, int>(){{StatsConstants.DamageStat,20}},
+                            new Dictionary<string, double>(),ActiveAbilityType.EnemyCrit,15,5  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -781,8 +790,7 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 8},
-                        {StatsConstants.MaxHpStat, 10},
-                        {StatsConstants.LifestealStat, 10},
+                        {StatsConstants.MaxHpStat, 20},
                         {StatsConstants.DamageStat, 10},
                     },ItemType.Ring, 19, Tiers.Tier2, "Diamond ring"),
 
@@ -790,7 +798,10 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.DamageStat, 28},
                         {StatsConstants.MaxHpStat, 60}
-                    },ItemType.OneHandedWeapon, WeaponType.OneHandedAxe, 20, Tiers.Tier2, "Ogre axe"),
+                    },ItemType.OneHandedWeapon, WeaponType.OneHandedAxe, 20, Tiers.Tier2, "Ogre axe",
+                        new ActiveAbility("Ogre's thickskin","После того как вы нанесли критический удар,ваша кожа утолщается на время",
+                            new Dictionary<string, int>(),
+                            new Dictionary<string, double>(){{StatsConstants.ArmorStat,0.25}},ActiveAbilityType.PlayerCrit,20,2  )),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -828,9 +839,12 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 55},
-                        {StatsConstants.DamageStat, 39},
-                    }, ItemType.OneHandedWeapon, WeaponType.Shield,39, Tiers.Tier3, "Orc warrior shield"),
+                        {StatsConstants.ArmorStat, 40},
+                        {StatsConstants.DamageStat, 37},
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,39, Tiers.Tier3, "Orc warrior shield",
+                        new ActiveAbility("Battle-born","Смерть противника вдохновляет вас",
+                            new Dictionary<string, int>(),
+                            new Dictionary<string, double>(){{StatsConstants.DamageStat,0.15},{StatsConstants.ArmorStat,0.15}},ActiveAbilityType.EnemyDeath,10,3  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -844,7 +858,10 @@ namespace ConsoleRPG
                         {StatsConstants.MaxHpStat, 30},
                         {StatsConstants.ArmorStat, 30},
                         {StatsConstants.CritChanceStat, 9}
-                    }, ItemType.Belt,28, Tiers.Tier3, "Goblin king's belt"),
+                    }, ItemType.Belt,28, Tiers.Tier3, "Goblin king's belt",
+                        new ActiveAbility("Stealing nature","После вашего вампиризма,вы бьете сильнее",
+                            new Dictionary<string, int>(){{StatsConstants.DamageStat,100}},
+                            new Dictionary<string, double>(),ActiveAbilityType.PlayerLifesteal,22,1  )),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -884,7 +901,10 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.MaxHpStat, 50},
                         {StatsConstants.DamageStat, 70}
-                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedSword, 39, Tiers.Tier3, "Hellfire sword"),
+                    },ItemType.TwoHandedWeapon, WeaponType.TwoHandedSword, 39, Tiers.Tier3, "Hellfire sword",
+                        new ActiveAbility("Hellish curse","После критического удара, в мече загорается адское пламя",
+                            new Dictionary<string, int>(){{StatsConstants.DamageStat,200}},
+                            new Dictionary<string, double>(),ActiveAbilityType.PlayerCrit,16,2  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -928,7 +948,10 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.ArmorStat, 71},
                         {StatsConstants.DamageStat, 20}
-                    },ItemType.Gloves, 39, Tiers.Tier3, "Battle-born gloves"),
+                    },ItemType.Gloves, 39, Tiers.Tier3, "Battle-born gloves",
+                        new ActiveAbility("Fighting advance","Если вы получаете критический удар в бою,ваша стойкость увеличивается",
+                            new Dictionary<string, int>(){{StatsConstants.ArmorStat,50}},
+                            new Dictionary<string, double>(),ActiveAbilityType.EnemyCrit,5,1  )),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -951,7 +974,10 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.MaxHpStat, 100},
                         {StatsConstants.CritChanceStat, 15}
-                    },ItemType.Belt, 50, Tiers.Tier3, "Charming belt"),
+                    },ItemType.Belt, 50, Tiers.Tier3, "Charming belt",
+                        new ActiveAbility("Curse charm","Смерть ваших врагов проклинает вас",
+                            new Dictionary<string, int>(){{StatsConstants.ArmorStat,- 100},{StatsConstants.DamageStat,150}},
+                            new Dictionary<string, double>(),ActiveAbilityType.EnemyDeath,15,4  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -983,7 +1009,7 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.MaxHpStat, 50},
-                        {StatsConstants.LifestealStat, 35},
+                        {StatsConstants.LifestealStat, 27},
                     },ItemType.Rune, 34, Tiers.Tier3, "Werewolf's rune"),
 
                     new Item(new Dictionary<string, int>()
@@ -1028,7 +1054,10 @@ namespace ConsoleRPG
                         {StatsConstants.LifestealStat, 32},
                         {StatsConstants.DamageStat, 90},
                         {StatsConstants.CritChanceStat, 17}
-                    },ItemType.TwoHandedWeapon, WeaponType.Scythe, 70, Tiers.Tier4, "Cutthroat"),
+                    },ItemType.TwoHandedWeapon, WeaponType.Scythe, 70, Tiers.Tier4, "Cutthroat",
+                        new ActiveAbility("Deadly attacks","Ваш каждый удар становится все смертельнее",
+                            new Dictionary<string, int>(),
+                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,100}},ActiveAbilityType.PlayerCrit,5,1  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
