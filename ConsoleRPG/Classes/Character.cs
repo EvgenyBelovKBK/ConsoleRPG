@@ -106,7 +106,6 @@ namespace ConsoleRPG.Classes
             foreach (var activeAbility in GetActiveAbilities())
             {
                 activeAbility.CurrentCooldown = 0;
-                activeAbility.CurrentDuration = 0;
                 activeAbility.IsAffecting = false;
             }
         }

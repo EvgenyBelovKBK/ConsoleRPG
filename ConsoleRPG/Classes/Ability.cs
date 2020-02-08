@@ -9,7 +9,8 @@ namespace ConsoleRPG.Classes
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public bool IsAffecting { get; set; }
+
+        public virtual bool IsAffecting { get; set; }
         public Dictionary<string, int> ValueIncreases { get; }
         public Dictionary<string, double> PercentIncreases { get; }
         public bool IsActiveType { get; }

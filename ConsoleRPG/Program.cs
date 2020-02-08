@@ -19,7 +19,7 @@ namespace ConsoleRPG
         public const string SaveFileName = "Save.json";
         public const string RatingFileName = "RatingTable.json";
         public const string BestScoreFileName = "BestScore.json";
-        static readonly IMessageService MessageService = new ConsoleMessageService(Console.WriteLine,Console.Clear,Console.ReadLine);
+        public static readonly IMessageService MessageService = new ConsoleMessageService(Console.WriteLine,Console.Clear,Console.ReadLine);
         static readonly ThingRandomGenerator<Item> ItemRandomGenerator = new ThingRandomGenerator<Item>();
         static readonly ThingRandomGenerator<Enemy> EnemyRandomGenerator = new ThingRandomGenerator<Enemy>();
         static readonly FightingService FightingService = new FightingService(new NumbersRandomGenerator(),MessageService);
@@ -104,7 +104,12 @@ namespace ConsoleRPG
                 MessageService.ShowMessage(new Message("Набрано Очков:" + best.Points, ConsoleColor.Red));
                 MessageService.ShowMessage(new Message("Имя:" + best.Name, ConsoleColor.Cyan));
                 MessageService.ShowMessage(new Message("Раса:" + best.Race, ConsoleColor.Cyan));
-                Game.ShowConsolePlayerUi(best);
+                Interface.ShowConsolePlayerUi(best,
+                    new InterfaceBuilder().AddPart(InterfacePartType.Name)
+                        .AddPart(InterfacePartType.Gold)
+                        .AddPart(InterfacePartType.Inventory)
+                        .AddPart(InterfacePartType.Talents)
+                        .BuildInterface());
             }
         }
 
@@ -154,7 +159,11 @@ namespace ConsoleRPG
             foreach (var playableClass in Races)
             {
                 MessageService.ShowMessage(new Message($"{i}){playableClass.Name}",ConsoleColor.Cyan));
-                Game.ShowConsolePlayerUi(playableClass,withInventory:false,withName:false);
+                Interface.ShowConsolePlayerUi(playableClass,
+                    new InterfaceBuilder()
+                        .AddPart(InterfacePartType.Gold)
+                        .AddPart(InterfacePartType.Talents)
+                        .BuildInterface());
                 i++;
             }
 

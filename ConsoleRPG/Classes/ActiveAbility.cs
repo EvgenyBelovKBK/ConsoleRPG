@@ -13,6 +13,16 @@ namespace ConsoleRPG.Classes
         public int Cooldown { get;}
         public int CurrentCooldown { get; set; }
         public bool IsPermanent { get; }
+        private bool mIsAffecting;
+        public override bool IsAffecting
+        {
+            get => mIsAffecting;
+            set
+            {
+                CurrentDuration = 0;
+                mIsAffecting = value;
+            }
+        }
 
         public override void Activate(Character character)
         {
@@ -34,7 +44,6 @@ namespace ConsoleRPG.Classes
         {
             if(!IsAffecting || IsPermanent)
                 return;
-            CurrentDuration = 0;
             foreach (var value in ValueIncreases)
             {
                 character.Stats[value.Key] -= value.Value;

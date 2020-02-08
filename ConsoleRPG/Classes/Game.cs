@@ -34,7 +34,12 @@ namespace ConsoleRPG.Classes
             mMessageService.ShowMessage(new Message(killerEnemy.Name,ConsoleColor.Red));
             ConsoleMessageService.ShowConsoleBoxedInfo(killerEnemy.BaseStats.ToDictionary(x => x.Key, x => x.Value.ToString()));
             Thread.Sleep(1000);
-            ShowConsolePlayerUi(player);
+            Interface.ShowConsolePlayerUi(player,
+                new InterfaceBuilder().AddPart(InterfacePartType.Name)
+                    .AddPart(InterfacePartType.Gold)
+                    .AddPart(InterfacePartType.Inventory)
+                    .AddPart(InterfacePartType.Talents)
+                    .BuildInterface());
         }
 
         public void ProcessAbilities(Player player)
@@ -67,7 +72,10 @@ namespace ConsoleRPG.Classes
             {
                 var itemsWithAbilities = player.Inventory.Items.Where(x => x.ItemAbility != null).ToList();
                 ProcessAbilities(player);
-                ShowConsolePlayerUi(player,false,false,true,true,(item) => { return item.ItemAbility != null;});
+                Interface.ShowConsolePlayerUi(player,
+                    new InterfaceBuilder().AddPart(InterfacePartType.Name)
+                        .AddPart(InterfacePartType.Inventory)
+                        .BuildInterface(), (item) => item.ItemAbility != null);
                 level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;
                 var turn = isPlayerTurn ? "Ваш ход" : "Ход противника";
@@ -155,72 +163,6 @@ namespace ConsoleRPG.Classes
         public static bool IsGameEnd(int hp,int levelNumber)
         {
             return hp <= 0 || levelNumber == Program.Levels.Count - 1;
-        }
-
-        public static void ShowConsolePlayerUi(Player player,bool withGold = true,bool withTalents = true,bool withInventory = true,bool withName = true,Func<Item,bool> inventoryFilter = null)
-        {
-            if(withName)
-                mMessageService.ShowMessage(new Message($"{player.Name}", ConsoleColor.Cyan));
-            if(withGold)
-                mMessageService.ShowMessage(new Message($"Золото:{player.Gold}",ConsoleColor.Cyan));
-            mMessageService.ShowMessage(new Message($"Инвентарь:",ConsoleColor.Cyan));
-            var inventory = new List<Item>(player.Inventory.Items);
-            if (inventoryFilter != null)
-                inventory = inventory.Where(inventoryFilter).ToList();
-            var itemsShown = new List<string>();
-            if (withInventory)
-            {
-                for (int i = 0; i < inventory.Count; i++)
-                {
-                    var playerItem = inventory[i];
-                    if(itemsShown.Contains(playerItem.Name))
-                        continue;
-                    var itemCount = inventory.Count(x => x.Name == playerItem.Name);
-                    if (itemCount > 1)
-                        itemsShown.Add(playerItem.Name);
-                    mMessageService.ShowMessage(new Message($"{i + 1}){playerItem.Name}{(itemCount > 1 ? $"({itemCount})" : "")}", ConsoleColor.Cyan));
-                    ShowConsoleItemInfo(playerItem);
-                }
-            }
-
-            mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Blue));
-            if(withTalents)
-                ConsoleMessageService.ShowConsoleBoxedInfo(player.Abilities.ToDictionary(x => x.Name,x => x.Description));
-            ConsoleMessageService.ShowConsoleBoxedInfo(player.Stats.ToDictionary(x => x.Key,x => x.Value.ToString()));
-        }
-
-        public static void ShowConsoleItemInfo(Item item)
-        {
-            mMessageService.ShowMessage(new Message($"Тип:{EnumToString(item.Type)}", ConsoleColor.DarkCyan));
-            var isWeapon = item.Type < (ItemType)2;
-            if (isWeapon)
-            {
-                ShowWeaponType((Weapon)item);
-            }
-            mMessageService.ShowMessage(new Message($"Характеристики:", ConsoleColor.Cyan));
-            ConsoleMessageService.ShowConsoleBoxedInfo(item.Stats.ToDictionary(x => x.Key, x => x.Value.ToString()));
-            if (item.ItemAbility != null)
-            {
-                mMessageService.ShowMessage(new Message("Способность:",ConsoleColor.DarkCyan));
-                if (item.ItemAbility.IsActiveType)
-                {
-                    var active = item.ItemAbility as ActiveAbility;
-                    mMessageService.ShowMessage(new Message("Ходы:", ConsoleColor.DarkCyan));
-                    ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{"Дейсвует",active.TurnDuration.ToString()},{"Перезарядка",active.Cooldown.ToString()}});
-                }
-                ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{item.ItemAbility.Name,item.ItemAbility.Description}});
-                ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.ValueIncreases.ToDictionary(x => x.Key,x => x.Value.ToString()));
-                if (item.ItemAbility.PercentIncreases.Count > 0)
-                {
-                    mMessageService.ShowMessage(new Message("Усиления в процентах:", ConsoleColor.DarkCyan));
-                    ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.ValueIncreases.ToDictionary(x => x.Key, x => x.Value.ToString()));
-                }
-            }
-        }
-
-        public static void ShowWeaponType(Weapon weapon)
-        {
-            mMessageService.ShowMessage(new Message($"{EnumToString(weapon.WeaponType)}", ConsoleColor.Magenta));
         }
 
         public static string EnumToString(Enum enumString)

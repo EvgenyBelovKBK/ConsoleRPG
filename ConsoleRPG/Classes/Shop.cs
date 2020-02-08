@@ -61,7 +61,7 @@ namespace ConsoleRPG.Classes
             {
                 var item = Stock[i];
                 mMessageService.ShowMessage(new Message($"{i+1}){item.Cost} золота - {item.Name}",ConsoleColor.Yellow));
-                Game.ShowConsoleItemInfo(item);
+                Interface.ShowConsoleItemInfo(item);
             }
         }
 
@@ -77,7 +77,12 @@ namespace ConsoleRPG.Classes
                 mMessageService.ShowMessage(new Message("чтобы купить или продать предметы введите команду(b/s) и номер предмета!(b 2,s 1)", ConsoleColor.Cyan));
                 mMessageService.ShowMessage(new Message($"Чтобы выйти из магазина введите q", ConsoleColor.Cyan));
 
-                Game.ShowConsolePlayerUi(player);
+                Interface.ShowConsolePlayerUi(player,
+                    new InterfaceBuilder().AddPart(InterfacePartType.Name)
+                        .AddPart(InterfacePartType.Gold)
+                        .AddPart(InterfacePartType.Inventory)
+                        .AddPart(InterfacePartType.Talents)
+                        .BuildInterface());
                 ShowStock();
 
                 command = mMessageService.ReadPlayerInput();
