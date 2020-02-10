@@ -66,16 +66,20 @@ namespace ConsoleRPG.Classes
                 Program.MessageService.ShowMessage(new Message("Способность:",ConsoleColor.DarkCyan));
                 if (item.ItemAbility.IsActiveType)
                 {
-                    var active = item.ItemAbility as ActiveAbility;
+                    var activeAbility = item.ItemAbility as ActiveAbility;
                     Program.MessageService.ShowMessage(new Message("Ходы:", ConsoleColor.DarkCyan));
-                    ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{"Дейсвует",active.TurnDuration.ToString()},{"Перезарядка",active.Cooldown.ToString()}});
+                    ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>()
+                    {
+                        {"Дейсвует", $"{activeAbility.TurnDuration.ToString()}({activeAbility.CurrentDuration})"},
+                        {"Перезарядка", $"{activeAbility.Cooldown.ToString()}({activeAbility.CurrentCooldown})"}
+                    });
                 }
                 ConsoleMessageService.ShowConsoleBoxedInfo(new Dictionary<string, string>(){{item.ItemAbility.Name,item.ItemAbility.Description}});
                 ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.ValueIncreases.ToDictionary(x => x.Key,x => x.Value.ToString()));
                 if (item.ItemAbility.PercentIncreases.Count > 0)
                 {
                     Program.MessageService.ShowMessage(new Message("Усиления в процентах:", ConsoleColor.DarkCyan));
-                    ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.ValueIncreases.ToDictionary(x => x.Key, x => x.Value.ToString()));
+                    ConsoleMessageService.ShowConsoleBoxedInfo(item.ItemAbility.PercentIncreases.ToDictionary(x => x.Key, x => (x.Value * 100).ToString()));
                 }
             }
         }

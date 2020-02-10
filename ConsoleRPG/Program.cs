@@ -53,10 +53,9 @@ namespace ConsoleRPG
                 }
                 if(player.CurrentLevel.Number == Levels.Count) 
                     MessageService.ShowMessage(new Message("У тебя сердце воина,ты лучший из ныне живущих!Пока что...",ConsoleColor.Red));
-                Player bestExplorer;
-                var oldTable = new Dictionary<string, string>();
-                oldTable = JsonSerializingService<Dictionary<string, string>>.Load(RatingFileName);
-                bestExplorer = JsonSerializingService<Player>.Load(BestScoreFileName);
+
+                var oldTable = JsonSerializingService<Dictionary<string, string>>.Load(RatingFileName);
+                var bestExplorer = JsonSerializingService<Player>.Load(BestScoreFileName);
 
                 if (oldTable == null)
                     JsonSerializingService<Player>.Save(player, BestScoreFileName);
@@ -176,7 +175,6 @@ namespace ConsoleRPG
                 if (!valid && chosenClass == null)
                 {
                     MessageService.ShowMessage(new Message("Такого в списке нет!",ConsoleColor.Red));
-                    Thread.Sleep(sleepTime);
                     continue;
                 }
                 break;

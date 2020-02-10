@@ -42,22 +42,6 @@ namespace ConsoleRPG.Classes
                     .BuildInterface());
         }
 
-        public void ProcessAbilities(Player player)
-        {
-            foreach (var activeAbility in player.GetActiveAbilities().Where(x => !x.IsPermanent))
-            {
-                if (activeAbility.IsAffecting)
-                {
-                    activeAbility.CurrentDuration++;
-                    if (activeAbility.CurrentDuration == activeAbility.TurnDuration)
-                        activeAbility.DeActivate(player);
-
-                }
-                if (activeAbility.CurrentCooldown > 0)
-                    activeAbility.CurrentCooldown--;
-            }
-        }
-
         public void Fight(Player player,Level level)
         {
             mMessageService.ClearTextAction();
@@ -71,7 +55,7 @@ namespace ConsoleRPG.Classes
             while (level.Enemies.Count > 0 && !playerDied)
             {
                 var itemsWithAbilities = player.Inventory.Items.Where(x => x.ItemAbility != null).ToList();
-                ProcessAbilities(player);
+                player.ProcessAbilities();
                 Interface.ShowConsolePlayerUi(player,
                     new InterfaceBuilder().AddPart(InterfacePartType.Name)
                         .AddPart(InterfacePartType.Inventory)
@@ -84,6 +68,7 @@ namespace ConsoleRPG.Classes
                 var isAbilityUse = false;
                 while (true)
                 {
+                    isAbilityUse = false;
                     var input = mMessageService.ReadPlayerInput();
                     var number = input;
                     if (input.Contains("use"))
@@ -138,7 +123,7 @@ namespace ConsoleRPG.Classes
                         "Поздравляю,вы прошли одну из кампаний,у вас есть возможность зайти в магазин или продолжить(+20 золота)",
                         ConsoleColor.Cyan));
                     mMessageService.ShowMessage(new Message("Войти в магазин(y/n)", ConsoleColor.Yellow));
-                    enterShop = mMessageService.ReadInputAction().ToLowerInvariant() == "y";
+                    enterShop = mMessageService.ReadInputAction().ToLowerInvariant() != "n";
                 }
                 else
                     enterShop = true;

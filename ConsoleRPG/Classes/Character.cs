@@ -117,5 +117,20 @@ namespace ConsoleRPG.Classes
                 activeAbility.Activate(this);
             }
         }
+
+        public void ProcessAbilities()
+        {
+            foreach (var activeAbility in GetActiveAbilities().Where(x => !x.IsPermanent))
+            {
+                if (activeAbility.IsAffecting)
+                {
+                    activeAbility.CurrentDuration++;
+                    if (activeAbility.CurrentDuration == activeAbility.TurnDuration)
+                        activeAbility.DeActivate(this);
+                }
+                if (activeAbility.CurrentCooldown > 0)
+                    activeAbility.CurrentCooldown--;
+            }
+        }
     }
 }

@@ -56,7 +56,7 @@ namespace ConsoleRPG.Services
             if (isPlayerTurn)
             {
                 PlayerAction(player,playerDamageToEnemy,playerCrit,enemy);
-                if (CheckIfSomeoneDied(enemy.Stats[StatsConstants.HpStat]))
+                if (CheckForDeath(enemy.Stats[StatsConstants.HpStat]))
                 {
                     isEnemyDied = true;
                     EnemyDiedInFight(enemy,player);
@@ -64,7 +64,7 @@ namespace ConsoleRPG.Services
                 }
 
                 EnemyAction(enemy,enemyDamageToPlayer,enemyCrit,player);
-                if (CheckIfSomeoneDied(player.Stats[StatsConstants.HpStat]))
+                if (CheckForDeath(player.Stats[StatsConstants.HpStat]))
                 {
                     isPlayerDied = true;
                     PlayerDiedInFight(player,enemy);
@@ -73,7 +73,7 @@ namespace ConsoleRPG.Services
             else
             {
                 EnemyAction(enemy, enemyDamageToPlayer, enemyCrit, player);
-                if (CheckIfSomeoneDied(player.Stats[StatsConstants.HpStat]))
+                if (CheckForDeath(player.Stats[StatsConstants.HpStat]))
                 {
                     isPlayerDied = true;
                     PlayerDiedInFight(player,enemy);
@@ -81,7 +81,7 @@ namespace ConsoleRPG.Services
                 }
 
                 PlayerAction(player, playerDamageToEnemy, playerCrit, enemy);
-                if (CheckIfSomeoneDied(enemy.Stats[StatsConstants.HpStat]))
+                if (CheckForDeath(enemy.Stats[StatsConstants.HpStat]))
                 {
                     isEnemyDied = true;
                     EnemyDiedInFight(enemy,player);
@@ -140,7 +140,7 @@ namespace ConsoleRPG.Services
             DisplayFightAction(enemy.Name, FightAction.Lifesteal, enemyLifesteal);
         }
 
-        public bool CheckIfSomeoneDied(int hp)
+        public bool CheckForDeath(int hp)
         {
             return hp <= 0;
         }
