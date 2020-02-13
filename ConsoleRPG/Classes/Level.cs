@@ -34,6 +34,8 @@ namespace ConsoleRPG.Classes
                     enemy.Stats[StatsConstants.ArmorStat],
                     enemy.Stats[StatsConstants.LifestealStat],
                     enemy.Stats[StatsConstants.CritChanceStat],
+                    enemy.Stats[StatsConstants.BlockChanceStat],
+                    enemy.Stats[StatsConstants.EvadeChanceStat],
                     enemy.AsciiArt));
             }
         }

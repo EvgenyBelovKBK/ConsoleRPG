@@ -10,7 +10,9 @@ namespace ConsoleRPG.Enums
         Lifesteal,
         CriticalStrike,
         EnemyDeath,
-        PlayerDeath
+        PlayerDeath,
+        Evade,
+        Block
     } 
 
 }

@@ -108,6 +108,7 @@ namespace ConsoleRPG.Classes
             {
                 JsonSerializingService<Player>.ClearSave(Program.SaveFileName);
             });
+
             mMessageService.ClearTextField();
             bool enterShop;
             var currentLevelNumber = player.CurrentLevel.Number;

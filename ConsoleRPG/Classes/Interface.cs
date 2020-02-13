@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using ConsoleRPG.Enums;
 using ConsoleRPG.Interfaces;
 using ConsoleRPG.Services;
@@ -109,6 +110,38 @@ namespace ConsoleRPG.Classes
         private static void ShowGold(int gold)
         {
             Program.MessageService.ShowMessage(new Message($"Золото:{gold}", ConsoleColor.Cyan));
+        }
+
+
+        public static void DisplayFightAction(string subjectName, FightAction action, int actionNumber = 0, string objectName = "")
+        {
+            switch (action)
+            {
+                case FightAction.Damage:
+                    Program.MessageService.ShowMessage(new Message($"{subjectName} наносит {actionNumber} урона {objectName}", ConsoleColor.Cyan));
+                    break;
+                case FightAction.CriticalStrike:
+                    Program.MessageService.ShowMessage(new Message($"{subjectName} наносит {actionNumber} урона сокрушительным ударом по {objectName}!", ConsoleColor.Yellow));
+                    break;
+                case FightAction.Lifesteal:
+                    if (actionNumber < 1)
+                        break;
+                    Program.MessageService.ShowMessage(new Message($"{subjectName} восстанавливает {actionNumber} здоровья от вампиризма", ConsoleColor.Cyan));
+                    break;
+                case FightAction.EnemyDeath:
+                    Program.MessageService.ShowMessage(new Message($"{subjectName} поражен!", ConsoleColor.Yellow));
+                    break;
+                case FightAction.PlayerDeath:
+                    Program.MessageService.ShowMessage(new Message($"{subjectName} погиб!", ConsoleColor.Red));
+                    Thread.Sleep(3000);
+                    break;
+                case FightAction.Block:
+                    Program.MessageService.ShowMessage(new Message($"{subjectName} блокирует удар от {objectName} и получает {actionNumber} урона", ConsoleColor.Yellow));
+                    break;
+                case FightAction.Evade:
+                    Program.MessageService.ShowMessage(new Message($"{subjectName} уворачивается от удара {objectName}!", ConsoleColor.Yellow));
+                    break;
+            }
         }
     }
 }

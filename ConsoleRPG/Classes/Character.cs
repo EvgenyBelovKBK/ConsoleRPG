@@ -48,7 +48,10 @@ namespace ConsoleRPG.Classes
             return abilites;
         }
 
-        protected Character(Race race, List<Ability> abilities, Inventory inventory, int gold, string name,int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance)
+        protected Character(Race race, List<Ability> abilities, Inventory inventory, int gold, string name, int maxHp,
+            int damage, int armor, int lifestealPercent, int criticalStrikeChance, int blockChance,
+            int evadeChance) : base(maxHp, damage, armor, lifestealPercent, criticalStrikeChance, blockChance,
+            evadeChance)
         {
             Gold = gold;
             Name = name;
@@ -74,13 +77,7 @@ namespace ConsoleRPG.Classes
                 }
                 CalculateStatsFromItemsAndTalents(Inventory.Items);
             };
-            BaseStats = new Dictionary<string, int>();
-            BaseStats.Add(StatsConstants.MaxHpStat, maxHp);
-            BaseStats.Add(StatsConstants.HpStat, maxHp);
-            BaseStats.Add(StatsConstants.DamageStat, damage);
-            BaseStats.Add(StatsConstants.ArmorStat, armor);
-            BaseStats.Add(StatsConstants.LifestealStat, lifestealPercent);
-            BaseStats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
+            BaseStats = new Dictionary<string, int>(Stats);
         }
 
         public void CalculateStatsFromItemsAndTalents(IEnumerable<Item> items)

@@ -14,5 +14,7 @@ namespace ConsoleRPG.Constants
         public const string ArmorStat = "Armor";
         public const string LifestealStat = "Lifesteal";
         public const string CritChanceStat = "CritChance";
+        public const string BlockChanceStat = "BlockChance";
+        public const string EvadeChanceStat = "EvadeChance";
     }
 }

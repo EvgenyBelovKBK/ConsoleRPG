@@ -10,7 +10,7 @@ namespace ConsoleRPG.Interfaces
     {
         public Dictionary<string, int> Stats { get; set; }
 
-        protected Statistics(int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance)
+        protected Statistics(int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,int blockChance,int evadeChance)
         {
             Stats = new Dictionary<string, int>();
             Stats.Add(StatsConstants.MaxHpStat, maxHp);
@@ -19,6 +19,8 @@ namespace ConsoleRPG.Interfaces
             Stats.Add(StatsConstants.ArmorStat, armor);
             Stats.Add(StatsConstants.LifestealStat, lifestealPercent);
             Stats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
+            Stats.Add(StatsConstants.BlockChanceStat, blockChance);
+            Stats.Add(StatsConstants.EvadeChanceStat, evadeChance);
         }
     }
 }

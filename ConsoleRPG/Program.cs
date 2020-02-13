@@ -22,7 +22,7 @@ namespace ConsoleRPG
         public static readonly IMessageService MessageService = new ConsoleMessageService(Console.WriteLine,Console.Clear,Console.ReadLine);
         static readonly ThingRandomGenerator<Item> ItemRandomGenerator = new ThingRandomGenerator<Item>();
         static readonly ThingRandomGenerator<Enemy> EnemyRandomGenerator = new ThingRandomGenerator<Enemy>();
-        static readonly FightingService FightingService = new FightingService(new NumbersRandomGenerator(),MessageService);
+        public static readonly FightingService FightingService = new FightingService(new NumbersRandomGenerator(),MessageService);
         public static List<Level> Levels =new List<Level>();
         public static List<Enemy> Enemies = new List<Enemy>();
         public static List<Item> Items = new List<Item>();
@@ -503,6 +503,16 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 5}
                     }, ItemType.Armour,2, Tiers.Tier1, "Leather coat"),
 
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.EvadeChanceStat, 10}
+                    }, ItemType.Armour,2, Tiers.Tier1, "Silk coat"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.EvadeChanceStat, 15}
+                    }, ItemType.Helmet,6, Tiers.Tier1, "Archer hood"),
+
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 10},
@@ -534,7 +544,8 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 5}
+                        {StatsConstants.ArmorStat, 4},
+                        {StatsConstants.EvadeChanceStat, 10},
                     }, ItemType.Helmet,3, Tiers.Tier1, "Wolf pelt"),
 
                     new Item(new Dictionary<string, int>()
@@ -607,16 +618,18 @@ namespace ConsoleRPG
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 8},
-                        {StatsConstants.DamageStat, 7}
+                        {StatsConstants.DamageStat, 7},
+                        {StatsConstants.BlockChanceStat, 15}
                     }, ItemType.OneHandedWeapon,WeaponType.Shield,9, Tiers.Tier1, "Silver shield"),
 
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 7},
+                        {StatsConstants.BlockChanceStat, 7}
                     }, ItemType.OneHandedWeapon,WeaponType.Shield,5, Tiers.Tier1, "Broken wooden shield",
                         new ActiveAbility("Shield knowledge","Ваши знания о щитах позволяют эффективно блокировать атаки",
                             new Dictionary<string, int>(){{StatsConstants.ArmorStat,7}},
-                            new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,10,4  )),
+                            new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,20,4  )),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -627,7 +640,8 @@ namespace ConsoleRPG
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 100},
-                        {StatsConstants.DamageStat, 10}
+                        {StatsConstants.DamageStat, 10},
+                        {StatsConstants.EvadeChanceStat, 9}
                     },ItemType.OneHandedWeapon,WeaponType.Dagger, 14, Tiers.Tier1, "Old Drakula's fang",
                         new ActiveAbility("Blood magic","Магия старой крови на время восполняет вашу жизненную силу",
                             new Dictionary<string, int>(){{StatsConstants.LifestealStat,200},{StatsConstants.HpStat,50}},
@@ -690,12 +704,14 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.ArmorStat, 25},
                         {StatsConstants.DamageStat, 25},
+                        {StatsConstants.BlockChanceStat, 15}
                     }, ItemType.OneHandedWeapon,WeaponType.Shield,17, Tiers.Tier2, "Broken orc shield"),
 
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.ArmorStat, 35},
                         {StatsConstants.DamageStat, 26},
+                        {StatsConstants.BlockChanceStat, 21}
                     }, ItemType.OneHandedWeapon,WeaponType.Shield,26, Tiers.Tier2, "Golden knight's shield",
                         new ActiveAbility("Shield bash","Вы совершаете оглушающий удар щитом",
                             new Dictionary<string, int>(){{StatsConstants.DamageStat,70}},
@@ -707,8 +723,8 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 10},
                     }, ItemType.Ring,15, Tiers.Tier2, "Golden ring",
                          new ActiveAbility("Ancient call","Оказалось что это кольцо не простое",
-                             new Dictionary<string, int>(){{StatsConstants.CritChanceStat,40},{StatsConstants.MaxHpStat,40}},
-                             new Dictionary<string, double>(){{StatsConstants.LifestealStat,0.50},{StatsConstants.DamageStat,0.50}},ActiveAbilityType.PlayerUseAbility,17,2  )),
+                             new Dictionary<string, int>(){{StatsConstants.CritChanceStat,15},{StatsConstants.MaxHpStat,40}},
+                             new Dictionary<string, double>(){{StatsConstants.LifestealStat,0.25},{StatsConstants.DamageStat,0.25}},ActiveAbilityType.PlayerUseAbility,17,2  )),
 
 
                     new Item(new Dictionary<string, int>()
@@ -724,6 +740,7 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.CritChanceStat, 8},
                         {StatsConstants.DamageStat, 30},
+                        {StatsConstants.EvadeChanceStat, 5}
                     }, ItemType.TwoHandedWeapon,WeaponType.Bow,18, Tiers.Tier2, "Palladium bow"),
 
                     new Weapon(new Dictionary<string, int>()
@@ -748,6 +765,17 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.ArmorStat, 20}
                     },ItemType.Armour, 12, Tiers.Tier2, "Knight's armour"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.EvadeChanceStat, 22}
+                    },ItemType.Armour, 16, Tiers.Tier2, "Assassin's gauntlets"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.EvadeChanceStat, 17},
+                        {StatsConstants.DamageStat,10 }
+                    },ItemType.Armour, 21, Tiers.Tier2, "Hunter's cape"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -789,9 +817,9 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.LifestealStat, 21},
+                        {StatsConstants.LifestealStat, 12},
                         {StatsConstants.DamageStat, 30},
-                        {StatsConstants.CritChanceStat, 17}
+                        {StatsConstants.CritChanceStat, 15}
                     },ItemType.OneHandedWeapon, WeaponType.Dagger,24, Tiers.Tier2, "Alakyr's dagger"),
 
                     new Item(new Dictionary<string, int>()
@@ -823,6 +851,13 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
+                        {StatsConstants.EvadeChanceStat, 14},
+                        {StatsConstants.CritChanceStat, 10},
+                    },ItemType.Boots, 31, Tiers.Tier2, "Quick steppers"),
+
+
+                    new Item(new Dictionary<string, int>()
+                    {
                         {StatsConstants.ArmorStat, 44}
                     },ItemType.Helmet, 27, Tiers.Tier2, "Resonance helmet",
                         new ActiveAbility("Vibration block","Атаки ваших противников отбрасывают их",
@@ -832,12 +867,14 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 16},
+                        {StatsConstants.EvadeChanceStat, 7}
                     },ItemType.Rune, 14, Tiers.Tier2, "Elven rune"),
 
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 20},
-                        {StatsConstants.ArmorStat, 15}
+                        {StatsConstants.ArmorStat, 15},
+                        {StatsConstants.BlockChanceStat, 5}
                     },ItemType.Rune, 21, Tiers.Tier2, "Knigt's rune"),
 
                     #endregion
@@ -846,8 +883,9 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 40},
+                        {StatsConstants.ArmorStat, 25},
                         {StatsConstants.DamageStat, 37},
+                        {StatsConstants.BlockChanceStat, 25}
                     }, ItemType.OneHandedWeapon, WeaponType.Shield,39, Tiers.Tier3, "Orc warrior shield",
                         new ActiveAbility("Battle-born","Смерть противника вдохновляет вас",
                             new Dictionary<string, int>(),
@@ -855,9 +893,10 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 60},
+                        {StatsConstants.ArmorStat, 40},
                         {StatsConstants.DamageStat, 35},
                         {StatsConstants.CritChanceStat, 14},
+                        {StatsConstants.BlockChanceStat, 13}
                     }, ItemType.OneHandedWeapon, WeaponType.Shield,44, Tiers.Tier3, "Cobalt dust shield"),
 
                     new Item(new Dictionary<string, int>()
@@ -880,17 +919,18 @@ namespace ConsoleRPG
                         {StatsConstants.MaxHpStat, 70}
                     },ItemType.Food, 27, Tiers.Tier3, "Bear's heart",
                         new ActiveAbility("Wild rage","Животна ярость просыпается внутри вас",
-                            new Dictionary<string, int>(){{StatsConstants.LifestealStat,40},{StatsConstants.DamageStat,25}},
+                            new Dictionary<string, int>(){{StatsConstants.LifestealStat,10},{StatsConstants.DamageStat,25}},
                             new Dictionary<string, double>(){{StatsConstants.DamageStat, 0.10 } },ActiveAbilityType.PlayerUseAbility,25,10)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.LifestealStat, 35},
-                        {StatsConstants.DamageStat, 47}
+                        {StatsConstants.DamageStat, 47},
+                        {StatsConstants.BlockChanceStat, 10}
                     },ItemType.OneHandedWeapon, WeaponType.OneHandedAxe, 37, Tiers.Tier3, "Troll axe",
                         new ActiveAbility("Enrage","Тролли всегда славились своей боевой яростью",
                             new Dictionary<string, int>(){{StatsConstants.DamageStat,40},{StatsConstants.CritChanceStat,20}},
-                            new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,18,6)),
+                            new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,18,3)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -917,6 +957,7 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.CritChanceStat, 15},
                         {StatsConstants.DamageStat, 55},
+                        {StatsConstants.EvadeChanceStat, 5}
                     }, ItemType.TwoHandedWeapon, WeaponType.Bow,35, Tiers.Tier3, "Mythril Longbow",
                         new ActiveAbility("Mythril protection","Мифрил ненадолго окутывает вас защитным полем",
                             new Dictionary<string, int>(){{StatsConstants.ArmorStat,20}},
@@ -950,6 +991,15 @@ namespace ConsoleRPG
                         {StatsConstants.ArmorStat, 65},
                         {StatsConstants.MaxHpStat, 20}
                     },ItemType.Boots, 36, Tiers.Tier3, "Phoenix boots"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.MaxHpStat, 32},
+                        {StatsConstants.EvadeChanceStat, 17}
+                    },ItemType.Helmet, 29, Tiers.Tier3, "Brotherhood of shadow's hood",
+                        new ActiveAbility("Deadly combo","После вашего критического удара,у врага не остается шансов",
+                            new Dictionary<string, int>(){{StatsConstants.CritChanceStat,25}},
+                            new Dictionary<string, double>(),ActiveAbilityType.PlayerCrit,9,2  )),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1004,7 +1054,7 @@ namespace ConsoleRPG
                     {
                         {StatsConstants.LifestealStat, 70},
                         {StatsConstants.DamageStat, 20},
-                        {StatsConstants.MaxHpStat, -50},
+                        {StatsConstants.MaxHpStat, -25},
                     }, ItemType.Ring,54, Tiers.Tier3, "Bat ring"),
 
                     new Item(new Dictionary<string, int>()
@@ -1022,7 +1072,8 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 30},
-                        {StatsConstants.CritChanceStat, 21}
+                        {StatsConstants.CritChanceStat, 21},
+                        {StatsConstants.EvadeChanceStat, 12}
                     },ItemType.Rune, 40, Tiers.Tier3, "Assasin's rune"),
 
                     #endregion
@@ -1031,19 +1082,21 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 90},
+                        {StatsConstants.ArmorStat, 75},
                         {StatsConstants.DamageStat, 150},
                         {StatsConstants.CritChanceStat, 12},
+                        {StatsConstants.BlockChanceStat, 28}
                     }, ItemType.OneHandedWeapon, WeaponType.Shield,78, Tiers.Tier4, "Olymp defender",
                         new ActiveAbility("God's rage","Ярось богов охватывает вас на мгновения",
                             new Dictionary<string, int>(),
-                            new Dictionary<string, double>(){{StatsConstants.DamageStat,1.00},{StatsConstants.ArmorStat,100}},ActiveAbilityType.PlayerUseAbility,10,2)),
+                            new Dictionary<string, double>(){{StatsConstants.DamageStat,1.00},{StatsConstants.ArmorStat,1.00}},ActiveAbilityType.PlayerUseAbility,10,2)),
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 120},
+                        {StatsConstants.ArmorStat, 90},
                         {StatsConstants.DamageStat, 110},
                         {StatsConstants.LifestealStat, 20},
+                        {StatsConstants.BlockChanceStat, 40}
                     }, ItemType.OneHandedWeapon, WeaponType.Shield,61, Tiers.Tier4, "Wallbreaker"),
 
                     new Item(new Dictionary<string, int>()
@@ -1064,7 +1117,7 @@ namespace ConsoleRPG
                     },ItemType.TwoHandedWeapon, WeaponType.Scythe, 70, Tiers.Tier4, "Cutthroat",
                         new ActiveAbility("Deadly attacks","Ваш каждый удар становится все смертельнее",
                             new Dictionary<string, int>(),
-                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,100}},ActiveAbilityType.PlayerCrit,5,1  )),
+                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,1.00}},ActiveAbilityType.PlayerCrit,5,1  )),
 
                     new Weapon(new Dictionary<string, int>()
                     {
@@ -1106,8 +1159,9 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat, 240},
-                        {StatsConstants.CritChanceStat, -70}
+                        {StatsConstants.DamageStat, 270},
+                        {StatsConstants.CritChanceStat, -50},
+                        {StatsConstants.EvadeChanceStat, -20}
                     }, ItemType.TwoHandedWeapon, WeaponType.Mace,68, Tiers.Tier4, "Ogre club"),
 
                     new Weapon(new Dictionary<string, int>()
@@ -1128,7 +1182,8 @@ namespace ConsoleRPG
                     new Weapon(new Dictionary<string, int>()
                     {
                         {StatsConstants.CritChanceStat, 23},
-                        {StatsConstants.DamageStat, 150}
+                        {StatsConstants.DamageStat, 150},
+                        {StatsConstants.BlockChanceStat, 15}
                     },ItemType.OneHandedWeapon,  WeaponType.OneHandedSword,78, Tiers.Tier4, "Pirate sabre"),
 
                     new Weapon(new Dictionary<string, int>()
@@ -1153,6 +1208,11 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
+                        {StatsConstants.EvadeChanceStat, 42}
+                    },ItemType.Armour, 90, Tiers.Tier4, "Elven's light breastplate"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
                         {StatsConstants.CritChanceStat, 27},
                         {StatsConstants.MaxHpStat, 68},
                         {StatsConstants.ArmorStat, 60}
@@ -1161,8 +1221,16 @@ namespace ConsoleRPG
                     new Item(new Dictionary<string, int>()
                     {
                         {StatsConstants.DamageStat, 100},
-                        {StatsConstants.ArmorStat, 100}
-                    },ItemType.Boots, 76, Tiers.Tier4, "Miracle boots"),
+                        {StatsConstants.ArmorStat, 100},
+                        {StatsConstants.BlockChanceStat, 10},
+                        {StatsConstants.EvadeChanceStat, 10}
+                    },ItemType.Boots, 86, Tiers.Tier4, "Miracle boots"),
+
+                    new Item(new Dictionary<string, int>()
+                    {
+                        {StatsConstants.CritChanceStat, 21},
+                        {StatsConstants.EvadeChanceStat, 26}
+                    },ItemType.Boots, 79, Tiers.Tier4, "Very very very silent boots"),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1202,8 +1270,8 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat, 120},
-                        {StatsConstants.CritChanceStat, -37},
+                        {StatsConstants.DamageStat, 140},
+                        {StatsConstants.CritChanceStat, -27},
                         {StatsConstants.ArmorStat, 50},
                     },ItemType.Rune, 74, Tiers.Tier4, "Meginord's rune"),
 
@@ -1213,18 +1281,19 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 80},
                         {StatsConstants.DamageStat, 200},
                         {StatsConstants.CritChanceStat, 8},
                         {StatsConstants.LifestealStat, 25},
+                        {StatsConstants.BlockChanceStat, 35}
                     }, ItemType.OneHandedWeapon, WeaponType.Shield,97, Tiers.Tier5, "Aegis aurora"),
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 150},
+                        {StatsConstants.ArmorStat, 100},
                         {StatsConstants.DamageStat, 180},
                         {StatsConstants.CritChanceStat, 20},
-                    }, ItemType.OneHandedWeapon, WeaponType.Shield,110, Tiers.Tier5, "God's rebuke",
+                        {StatsConstants.BlockChanceStat, 27}
+                    }, ItemType.OneHandedWeapon, WeaponType.Shield,117, Tiers.Tier5, "God's rebuke",
                         new ActiveAbility("Mars might","Бог войны дарует вам победу в битве",
                             new Dictionary<string, int>(),
                             new Dictionary<string, double>(){{StatsConstants.ArmorStat,2.00},{StatsConstants.DamageStat,2.00}},ActiveAbilityType.PlayerUseAbility,8,1)),
@@ -1248,7 +1317,8 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat, 300}
+                        {StatsConstants.DamageStat, 300},
+                        {StatsConstants.EvadeChanceStat, 15}
                     },ItemType.OneHandedWeapon, WeaponType.OneHandedSword, 90, Tiers.Tier5, "Aragorn's sword"),
 
                     new Item(new Dictionary<string, int>()
@@ -1259,7 +1329,16 @@ namespace ConsoleRPG
                     },ItemType.Helmet, 86, Tiers.Tier5, "Volcano helmet",
                         new ActiveAbility("Burning","Вы извергаете лаву,обращая противников в прах",
                             new Dictionary<string, int>(){{StatsConstants.DamageStat,1500}},
-                            new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,30,1)),
+                            new Dictionary<string, double>(),ActiveAbilityType.PlayerUseAbility,20,1)),
+
+                    new Item(new Dictionary<string, int>()
+                        {
+                            {StatsConstants.EvadeChanceStat, 22},
+                            {StatsConstants.ArmorStat, 150},
+                        },ItemType.Gloves, 99, Tiers.Tier5, "Hidden blades gloves",
+                        new ActiveAbility("Sudden attack","Внезапная атака в самое слабое место",
+                            new Dictionary<string, int>(){{StatsConstants.DamageStat,277}},
+                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,0.75}},ActiveAbilityType.PlayerUseAbility,8,1)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1275,7 +1354,8 @@ namespace ConsoleRPG
 
                     new Weapon(new Dictionary<string, int>()
                     {
-                        {StatsConstants.LifestealStat, 60},{StatsConstants.DamageStat, 220},
+                        {StatsConstants.LifestealStat, 60},
+                        {StatsConstants.DamageStat, 220},
                     },ItemType.TwoHandedWeapon, WeaponType.TwoHandedAxe, 105, Tiers.Tier5, "Wild bear claws Axe"),
 
                     new Weapon(new Dictionary<string, int>()
@@ -1316,7 +1396,8 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.ArmorStat, 245},
+                        {StatsConstants.ArmorStat, 200},
+                        {StatsConstants.BlockChanceStat, 20}
                     },ItemType.Armour, 89, Tiers.Tier5, "Platinum plate"),
 
                     new Weapon(new Dictionary<string, int>()
@@ -1326,7 +1407,7 @@ namespace ConsoleRPG
                     },ItemType.TwoHandedWeapon,  WeaponType.Bow,130, Tiers.Tier5, "Elven bow",
                         new ActiveAbility("Precise shot","Меткий выстрел прямо в сердце",
                             new Dictionary<string, int>(),
-                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,1.00}},ActiveAbilityType.PlayerUseAbility,14,1)),
+                            new Dictionary<string, double>(){{StatsConstants.CritChanceStat,1.00}},ActiveAbilityType.PlayerUseAbility,10,1)),
 
                     new Item(new Dictionary<string, int>()
                     {
@@ -1336,7 +1417,7 @@ namespace ConsoleRPG
 
                     new Item(new Dictionary<string, int>()
                     {
-                        {StatsConstants.DamageStat, 140},
+                        {StatsConstants.DamageStat, 350},
                         {StatsConstants.CritChanceStat, -33},
                         {StatsConstants.LifestealStat, -20},
                     },ItemType.Rune, 85, Tiers.Tier5, "Giant's rune"),
@@ -1372,16 +1453,16 @@ namespace ConsoleRPG
         {
             Races = new List<Player>()
             {
-                new Player(Race.Human,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,              "Human",70,7,5,0,15 ),
-                new Player(Race.Giant,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",125,26,-4,0,0 ),
-                new Player(Race.Elf,new List<Ability>(Talents.Where(x => x.Name == "Precision")),new Inventory(new ObservableCollection<Item>()),StartGold,                    "Elf",50,16,2,0,45 ),
-                new Player(Race.Undead,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold,             "Undead",90,12,-2,40,-5 ),
-                new Player(Race.Troll,new List<Ability>(Talents.Where(x => x.Name == "Dual wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,           "Troll",76,7,2,50,5 ),
-                new Player(Race.Gnome,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold + 3, "Gnome",45,5,8,0,10),
-                new Player(Race.Orc,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,                  "Orc",85,9,6,-7,5 ),
-                new Player(Race.Ogre,new List<Ability>(Talents.Where(x => x.Name == "Two handed wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,       "Ogre",170,48,- 10,-15,-15 ),
-                new Player(Race.Cursed,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold - 6,     "Cursed",20,20,20,20,20 ),
-                new Player(Race.Goblin,new List<Ability>(Talents.Where(x => x.Name == "Sneaky")),new Inventory(new ObservableCollection<Item>()),StartGold + 9,       "Goblin",32,5,2,0,12 )
+                new Player(Race.Human,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,              "Human",70,7,5,0,15 ,5,5),
+                new Player(Race.Giant,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold,         "Giant",125,26,-4,0,0 ,8,0),
+                new Player(Race.Elf,new List<Ability>(Talents.Where(x => x.Name == "Precision")),new Inventory(new ObservableCollection<Item>()),StartGold,                    "Elf",50,16,2,0,45 ,0,15),
+                new Player(Race.Undead,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold,             "Undead",90,12,-2,40,-5 ,5,0),
+                new Player(Race.Troll,new List<Ability>(Talents.Where(x => x.Name == "Dual wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,           "Troll",76,7,2,50,5 ,15,0),
+                new Player(Race.Gnome,new List<Ability>(Talents.Where(x => x.Name == "Inner strength")),new Inventory(new ObservableCollection<Item>()),StartGold + 3, "Gnome",45,5,8,0,10,8,3),
+                new Player(Race.Orc,new List<Ability>(Talents.Where(x => x.Name == "Endurance")),new Inventory(new ObservableCollection<Item>()),StartGold,                  "Orc",85,9,6,-7,5 ,10,2),
+                new Player(Race.Ogre,new List<Ability>(Talents.Where(x => x.Name == "Two handed wielder")),new Inventory(new ObservableCollection<Item>()),StartGold,       "Ogre",170,48,- 10,-15,-15 ,0,0),
+                new Player(Race.Cursed,new List<Ability>(Talents.Where(x => x.Name == "Savagery")),new Inventory(new ObservableCollection<Item>()),StartGold - 6,     "Cursed",20,20,20,20,20 ,10,10),
+                new Player(Race.Goblin,new List<Ability>(Talents.Where(x => x.Name == "Sneaky")),new Inventory(new ObservableCollection<Item>()),StartGold + 9,       "Goblin",32,5,2,0,12 ,0,12)
             };
             foreach (var race in Races)
             {
