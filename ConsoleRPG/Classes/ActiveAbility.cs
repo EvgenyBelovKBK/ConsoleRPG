@@ -29,10 +29,9 @@ namespace ConsoleRPG.Classes
             if(IsAffecting || CurrentCooldown > 0)
                 return;
             CurrentCooldown = Cooldown;
-            foreach (var value in ValueIncreases)
-            {
-                character.Stats[value.Key] += value.Value;
-            }
+
+            character.AddStats(ValueIncreases);
+
             foreach (var percent in PercentIncreases)
             {
                 character.Stats[percent.Key] = int.Parse(Math.Round(character.Stats[percent.Key] * (1 + percent.Value)).ToString());

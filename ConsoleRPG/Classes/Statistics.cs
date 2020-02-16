@@ -1,10 +1,7 @@
-﻿using ConsoleRPG.Classes;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using ConsoleRPG.Constants;
 
-namespace ConsoleRPG.Interfaces
+namespace ConsoleRPG.Classes
 {
     public abstract class Statistics
     {
@@ -12,15 +9,23 @@ namespace ConsoleRPG.Interfaces
 
         protected Statistics(int maxHp, int damage, int armor, int lifestealPercent, int criticalStrikeChance,int blockChance,int evadeChance)
         {
-            Stats = new Dictionary<string, int>();
-            Stats.Add(StatsConstants.MaxHpStat, maxHp);
-            Stats.Add(StatsConstants.HpStat, maxHp);
-            Stats.Add(StatsConstants.DamageStat, damage);
-            Stats.Add(StatsConstants.ArmorStat, armor);
-            Stats.Add(StatsConstants.LifestealStat, lifestealPercent);
-            Stats.Add(StatsConstants.CritChanceStat, criticalStrikeChance);
-            Stats.Add(StatsConstants.BlockChanceStat, blockChance);
-            Stats.Add(StatsConstants.EvadeChanceStat, evadeChance);
+            Stats = new Dictionary<string, int>
+            {
+                {StatsConstants.MaxHpStat, maxHp},
+                {StatsConstants.HpStat, maxHp},
+                {StatsConstants.DamageStat, damage},
+                {StatsConstants.ArmorStat, armor},
+                {StatsConstants.LifestealStat, lifestealPercent},
+                {StatsConstants.CritChanceStat, criticalStrikeChance},
+                {StatsConstants.BlockChanceStat, blockChance},
+                {StatsConstants.EvadeChanceStat, evadeChance}
+            };
         }
+
+        protected Statistics(Dictionary<string, int> stats)
+        {
+            Stats = new Dictionary<string, int>(stats);
+        }
+
     }
 }

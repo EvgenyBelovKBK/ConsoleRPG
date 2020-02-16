@@ -9,7 +9,7 @@ using ConsoleRPG.Enums;
 
 namespace ConsoleRPG.Classes
 {
-    public class Shop : IZone
+    public class Shop
     {
         public static IMessageService mMessageService;
         public string Name { get; set; }

@@ -15,6 +15,8 @@ namespace ConsoleRPG.Services
         private readonly IRandomGenerator mRandomGenerator;
 
         private readonly IMessageService mMessageService;
+        private const double CRIT_MULTIPLIER = 1.65;
+        private const double DAMAGE_AFTER_BLOCK_MULTIPLIER = 0.35;
         public FightingService(IRandomGenerator randomGenerator, IMessageService messageService)
         {
             mRandomGenerator = randomGenerator;
@@ -33,13 +35,13 @@ namespace ConsoleRPG.Services
                 return 0;
             }
             fightResult = new FightResultBuilder().SetDamage(isCrit);
-            var damageAfterCritRoll = isCrit ? damage * 2.0 : damage;
+            var damageAfterCritRoll = isCrit ? damage * CRIT_MULTIPLIER : damage;
             var finalDamage = damageAfterCritRoll - targetArmor;
             //Блокирование удара нивелирует 65% урона
             if (isBlock)
             {
                 fightResult = new FightResultBuilder().SetBlock();
-                finalDamage *= 0.35;
+                finalDamage *= DAMAGE_AFTER_BLOCK_MULTIPLIER;
             }
             finalDamage = finalDamage < 0 ? 0 : finalDamage;
             return (int)finalDamage;

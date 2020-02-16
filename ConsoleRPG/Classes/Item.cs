@@ -7,15 +7,15 @@ using ConsoleRPG.Enums;
 
 namespace ConsoleRPG.Classes
 {
-    public class Item : INameable,ITierable
+    public class Item : Statistics,INameable,ITierable
     {
-        public Dictionary<string,int> Stats { get; }
         public int Cost { get; }
         public string Name {get; set; }
         public Tiers Tier { get; set; }
         public ItemType Type { get; }
         public Ability ItemAbility { get; set; }
-        public Item(Dictionary<string, int> stats, ItemType type, int cost, Tiers rarity, string name, Ability itemAbility = null)
+        public Item(Dictionary<string, int> stats, ItemType type, int cost, Tiers rarity, string name,
+            Ability itemAbility = null) :base(stats)
         {
             Type = type;
             Stats = stats;

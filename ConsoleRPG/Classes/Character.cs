@@ -87,10 +87,7 @@ namespace ConsoleRPG.Classes
             Stats[StatsConstants.HpStat] = currentHp;
             foreach (var item in items)
             {
-                foreach (var stat in item.Stats)
-                {
-                    Stats[stat.Key] += stat.Value;
-                }
+                AddStats(item.Stats);
             }
             if (Stats[StatsConstants.HpStat] > Stats[StatsConstants.MaxHpStat])
                 Stats[StatsConstants.HpStat] = Stats[StatsConstants.MaxHpStat];
@@ -115,7 +112,19 @@ namespace ConsoleRPG.Classes
             }
         }
 
-        public void ProcessAbilities()
+        public Character AddStats(Dictionary<string, int> statsToAdd,bool withBase = false)
+        {
+            foreach (var stat in statsToAdd)
+            {
+                Stats[stat.Key] += stat.Value;
+                if (withBase)
+                    BaseStats[stat.Key] += stat.Value;
+            }
+
+            return this;
+        }
+
+        public void ProcessActiveAbilities()
         {
             foreach (var activeAbility in GetActiveAbilities().Where(x => !x.IsPermanent))
             {

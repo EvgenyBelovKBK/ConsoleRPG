@@ -12,9 +12,8 @@ namespace ConsoleRPG.Classes
 {
     public class Game
     {
-        private static IMessageService mMessageService;
-
-        private static FightingService mFightingService;
+        private readonly IMessageService mMessageService;
+        private readonly FightingService mFightingService;
         public Game(IMessageService messageService,FightingService fightingService)
         {
             mMessageService = messageService;
@@ -55,11 +54,11 @@ namespace ConsoleRPG.Classes
             while (level.Enemies.Count > 0 && !playerDied)
             {
                 var itemsWithAbilities = player.Inventory.Items.Where(x => x.ItemAbility != null).ToList();
-                player.ProcessAbilities();
+                player.ProcessActiveAbilities();
                 Interface.ShowConsolePlayerUi(player,
                     new InterfaceBuilder().AddPart(InterfacePartType.Name)
                         .AddPart(InterfacePartType.Inventory)
-                        .BuildInterface(), (item) => item.ItemAbility != null);
+                        .BuildInterface(), (item) => item.ItemAbility != null,true);
                 level.ShowEnemies();
                 isPlayerTurn = !isPlayerTurn;
                 var turn = isPlayerTurn ? "Ваш ход" : "Ход противника";
@@ -118,32 +117,62 @@ namespace ConsoleRPG.Classes
                 return;
             if (currentLevelNumber % 10 == 0)
             {
-                if (currentLevelNumber != 0)
-                {
-                    mMessageService.ShowMessage(new Message(
-                        "Поздравляю,вы прошли одну из кампаний,у вас есть возможность зайти в магазин или продолжить(+20 золота)",
-                        ConsoleColor.Cyan));
-                    mMessageService.ShowMessage(new Message("Войти в магазин(y/n)", ConsoleColor.Yellow));
-                    enterShop = mMessageService.ReadInputAction().ToLowerInvariant() != "n";
-                }
-                else
-                    enterShop = true;
-
-                if (enterShop)
-                {
-                    var shopTier = currentLevelNumber != 0
-                        ? (Tiers) (currentLevelNumber / 10)
-                        : Tiers.Tier1;
-                    var shop = Program.Shops.First(x => x.Tier == shopTier);
-                    shop.Enter(shop, player);
-                    shop.Leave(shop);
-                }
-                else
-                    player.Gold += 20;
+                var currentTier = currentLevelNumber != 0
+                    ? (Tiers)(currentLevelNumber / 10)
+                    : Tiers.Tier1;
+                mMessageService.ShowMessage(new Message(
+                    $"Кампания {currentLevelNumber % 10} пройдена!",
+                    ConsoleColor.Cyan));
+                if(currentLevelNumber != 0)
+                    SelectBonus(player, currentTier);
+                var shop = Program.Shops.First(x => x.Tier == currentTier);
+                shop.Enter(shop, player);
+                shop.Leave(shop);
             }
 
             Thread.Sleep(1500);
             player.CurrentLevel = Program.Levels.ToArray()[currentLevelNumber + 1];
+        }
+
+        public void SelectBonus(Player player,Tiers currenTier)
+        {
+            var random = new Random();
+            var tierBelow = (Tiers)(currenTier - (Tiers) 1);
+            var items = Program.Items.Where(x => x.Tier == tierBelow && x.Type != ItemType.OneHandedWeapon && x.Type != ItemType.TwoHandedWeapon).ToList();
+            var statBonuses = Program.StatBonuses.Where(x => x.Tier == currenTier).ToList();
+            var randomItem = items[random.Next(0, items.Count)];
+            var randomStatBonus = statBonuses[random.Next(0, statBonuses.Count)];
+            Interface.ShowConsolePlayerUi(player,new InterfaceBuilder().AddPart(InterfacePartType.Inventory).AddPart(InterfacePartType.Talents).BuildInterface());
+            mMessageService.ShowMessage(new Message("Выберите 1 из 2 бонусов:",ConsoleColor.Cyan));
+            mMessageService.ShowMessage(new Message("1)",ConsoleColor.Cyan));
+            Interface.ShowConsoleItemInfo(randomItem);
+            mMessageService.ShowMessage(new Message("2)", ConsoleColor.Cyan));
+            Interface.ShowStats(randomStatBonus.Stats);
+            mMessageService.ShowMessage(new Message("Выбранный предмет заменяет текущий, если предмет такого типа уже надет!(в зависимости от ограничения на ношение)", ConsoleColor.Red));
+            var bonusNumber = 0;
+            while (true)
+            {
+                bonusNumber = int.Parse(mMessageService.ReadPlayerInput());
+                if(bonusNumber < 1 || bonusNumber > 2)
+                    mMessageService.ShowMessage(new Message("Номер бонуса введен не верно!"));
+                else
+                    break;
+            }
+
+            if (bonusNumber == 1)
+            {
+                var isAllowedToWear = player.Inventory.Items.Count(x => x.Type == randomItem.Type) + 1 <= player.Inventory.ItemRestrictions[randomItem.Type];
+                if (!isAllowedToWear)
+                {
+                    player.Inventory.Items.Remove(player.Inventory.Items.First(x => x.Type == randomItem.Type));
+                }
+                player.Inventory.Items.Add(randomItem);
+            }
+            else
+                player.AddStats(randomStatBonus.Stats,true);
+            
+            mMessageService.ShowMessage(new Message("Бонус выбран!",ConsoleColor.Yellow));
+            Thread.Sleep(700);
         }
 
         public static bool IsGameEnd(int hp,int levelNumber)
