@@ -25,7 +25,6 @@ namespace ConsoleRPG.Services
 
         private int CalculateFinalDamage(int damage, int criticalStrikeChance, int targetArmor,int targetBlockChance,int targetEvadeChance,out FightResult fightResult)
         {
-            fightResult = null;
             var isCrit = mRandomGenerator.IsRolled(criticalStrikeChance);
             var isEvade = mRandomGenerator.IsRolled(targetEvadeChance);
             var isBlock = mRandomGenerator.IsRolled(targetBlockChance);
